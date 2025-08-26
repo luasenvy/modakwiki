@@ -1,6 +1,6 @@
 import { GalleryVerticalEnd } from "lucide-react";
 import { SigninForm } from "@/components/pages/signin/SigninForm";
-import { betterAuth } from "@/config";
+import { betterAuth, isDev } from "@/config";
 import { Language } from "@/lib/i18n/config";
 
 export default async function SigninPage(ctx: PageProps<"/[lng]/signin">) {
@@ -17,6 +17,7 @@ export default async function SigninPage(ctx: PageProps<"/[lng]/signin">) {
 
         <SigninForm
           lng={lngParam as Language}
+          dev={isDev}
           turnstileSiteKey={betterAuth.providers.cloudflare.turnstile.siteKey}
         />
       </div>

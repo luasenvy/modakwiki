@@ -13,7 +13,7 @@ const { version } = packageJson;
 
 export const config = {
   matcher: [
-    `/((?!favicon.ico|.+.webp|sitemap.xml|_next/image|_next/static|.+/error|languages/.+).{1,})`,
+    `/((?!favicon.ico|.+.webp|sitemap.xml|_next/image|_next/static|.+/error|languages/.+|api/auth/.+).{1,})`,
     `/`,
   ],
 };
