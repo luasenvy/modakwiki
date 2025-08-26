@@ -1,19 +1,19 @@
 :root {
-  --text-weak: hsl(0, 0%, 60%); /* #999 to hsl */
-  --bg-diff-addition: hsl(134, 61%, 90%); /* #dafbe1 to hsl */
-  --bg-diff-deletion: hsl(0, 100%, 95%); /* #ffebe9 to hsl */
-  --bg-code-background: hsl(0, 0%, 97%); /* #fefefe to hsl */
-  --bg-code-highlight: hsl(213, 50%, 97%); /* #f0f4f9 to hsl */
-  --border-code-highlight: hsl(217, 91%, 60%); /* rgb(59, 130, 246) to hsl */
+  --text-weak: oklch(68.30% 0 0);
+  --bg-diff-addition: oklch(95.74% 0.049 151.63);
+  --bg-diff-deletion: oklch(95.55% 0.022 24.44);
+  --bg-code-background: oklch(99.70% 0 0);
+  --bg-code-highlight: oklch(96.55% 0.008 253.85);
+  --border-code-highlight: oklch(50.37% 52.09 275.46);
 }
 
 [data-theme="dark"] {
-  --text-weak: hsl(0, 0%, 40%); /* #555 to hsl */
-  --bg-diff-addition: hsl(134, 61%, 20%, 0.15); /* #2ea04326 to hsl */
-  --bg-diff-deletion: hsl(0, 78%, 63%, 0.15); /* #f8514926 to hsl */
-  --bg-code-background: hsl(0, 0%, 20%); /* #212121 to hsl */
-  --bg-code-highlight: hsl(216, 8%, 16%); /* #27292c to hsl */
-  --border-code-highlight: hsl(212, 98%, 62%, 0.4); /* #388bfd66 to hsl */
+  --text-weak: oklch(44.95% 0 0);
+  --bg-diff-addition: oklch(50.66% 37.68 257.75);
+  --bg-diff-deletion: oklch(45.69% 25.67 284.31);
+  --bg-code-background: oklch(24.78% 0 0);
+  --bg-code-highlight: oklch(28.01% 0.006 258.36);
+  --border-code-highlight: oklch(52.43% 53.7 274.93);
 }
 
 .parent-container-of-pre {
@@ -35,9 +35,9 @@ pre code {
 }
 
 pre {
-  padding: 0.5rem 1rem;
+  padding: 0;
   border: 1px solid var(--text-weak);
-  border-radius: 5px;
+  border-radius: 0;
 
   overflow-x: auto;
 }

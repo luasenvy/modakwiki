@@ -11,9 +11,9 @@ export async function Document({ content }: DocumentProps) {
   const toc = getToc(content);
 
   return (
-    <div className="relative flex h-[calc(100dvh_-_var(--spacing)_*_12)] gap-4 overflow-y-auto px-2">
+    <div className="relative flex h-[calc(100dvh_-_var(--spacing)_*_12)] w-full gap-4 overflow-auto p-4">
       <TOCProvider toc={toc} single={false}>
-        <article className="prose dark:prose-invert max-w-none grow py-6 pl-6">
+        <article className="prose dark:prose-invert max-w-full xl:max-w-[calc(100%_-_286px)]">
           <MDXLoader source={content} />
         </article>
 

@@ -9,17 +9,13 @@ import LanguageSql from "highlight.js/lib/languages/sql";
 import LanguageTypescript from "highlight.js/lib/languages/typescript";
 import LanguageXml from "highlight.js/lib/languages/xml";
 
-import { Pilcrow } from "lucide-react";
-import Link, { type LinkProps } from "next/link";
-import { Children } from "react";
+import Link from "next/link";
 import { Options } from "react-markdown";
 import rehypeHighlight, { Options as HighlightOptions } from "rehype-highlight";
 import rehypeHighlightCodeLines, { HighlightLinesOptions } from "rehype-highlight-code-lines";
 import remarkFlexibleCodeTitles from "remark-flexible-code-titles";
-import remarkFrontmatter from "remark-frontmatter";
 import remarkGfm from "remark-gfm";
 import remarkHeadingId from "remark-heading-id";
-import remarkMdxFrontmatter from "remark-mdx-frontmatter";
 import { ImageZoom } from "@/components/ui/shadcn-io/image-zoom";
 
 export const components = {
@@ -44,9 +40,7 @@ export const mdxOptions: Options = {
   remarkPlugins: [
     remarkGfm,
     [remarkHeadingId, { defaults: true, uniqueDefaults: false }],
-    remarkFrontmatter,
     remarkFlexibleCodeTitles,
-    [remarkMdxFrontmatter, { name: "metadata" }],
   ],
   rehypePlugins: [
     [

@@ -8,19 +8,29 @@ export default async function HowToPage(ctx: PageProps<"/[lng]/how-to">) {
 
 ## 일반 문법
 
-### 타이포그래피
+### 헤드라인
 
-\\# 문자를 반복하여 헤드라인과 그 레벨을 지정할 수 있습니다.
+\`\`\`plain
+## 일반 문법
+
+### 헤드라인
+\`\`\`
+
+\`#\` 문자를 반복하여 헤드라인과 레벨을 지정할 수 있습니다.
+
+### 일반
+
+아무런 문법없이 글을 입력하면 엔터를 두번 입력하기 전까지 한 문단으로 구성됩니다. 
 
 ## 특수 문법
 
 ### 코드블록
 
-특수문자 \\\`를 3번 반복한 특수 문법을 코드의 시작과 끝에 작성하여 코드 블록으로 활용할 수 있습니다.
+특수문자 **\\\`** 를 3번 반복하여 코드의 시작과 끝을 묶어 코드 블록으로 활용할 수 있습니다.
 
 \`\`\`ts:hello.ts
 (() => {
-  const hello = "world";
+  const hello = "world";const hello = "world";const hello = "world";const hello = "world";const hello = "world";const hello = "world";const hello = "world";
   console.info(hello);
 })();
 \`\`\`

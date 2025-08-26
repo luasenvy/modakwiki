@@ -16,7 +16,7 @@ export default async function DefaultLayout({ params, children }: LayoutProps<"/
   const session = await auth.api.getSession({ headers: await headers() });
 
   return (
-    <SidebarProvider>
+    <SidebarProvider className="max-w-screen">
       <AppSidebar lng={lngParam as Language} session={session} />
       <SidebarInset>
         <header className="sticky top-0 flex h-12 shrink-0 items-center gap-2 border-b bg-background px-4">
