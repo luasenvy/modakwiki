@@ -1,100 +1,31 @@
-import { AlignLeft, Link } from "lucide-react";
-import { TOCProvider, TOCScrollArea } from "@/components/fumadocs/toc";
-import TocClerk from "@/components/fumadocs/toc-clerk";
+import { Document } from "@/components/core/Document";
 
 export default async function HowToPage(ctx: PageProps<"/[lng]/how-to">) {
-  const toc = [
-    {
-      url: "#문서구조",
-      depth: 2,
-      title: "문서구조",
-    },
-  ];
+  const content = `
+## 개요
 
-  return (
-    <section className="relative flex size-full gap-4 px-2">
-      <TOCProvider toc={toc} single={false}>
-        <article className="prose dark:prose-invert max-w-none grow py-6 pl-6">
-          <h2 className="group">
-            <a href="#문서구조" className="no-underline hover:underline">
-              <Link className="-ml-5 absolute hidden size-4 translate-y-1/2 text-muted-foreground group-hover:block" />
-              문서구조
-            </a>
-          </h2>
-          <p>이 문서에서는 프로젝트의 구조에 대해 설명합니다.</p>
-          <p>이 문서에서는 프로젝트의 구조에 대해 설명합니다.</p>
-          <p>이 문서에서는 프로젝트의 구조에 대해 설명합니다.</p>
-          <p>이 문서에서는 프로젝트의 구조에 대해 설명합니다.</p>
-          <p>이 문서에서는 프로젝트의 구조에 대해 설명합니다.</p>
-          <p>이 문서에서는 프로젝트의 구조에 대해 설명합니다.</p>
-          <p>이 문서에서는 프로젝트의 구조에 대해 설명합니다.</p>
-          <p>이 문서에서는 프로젝트의 구조에 대해 설명합니다.</p>
-          <p>이 문서에서는 프로젝트의 구조에 대해 설명합니다.</p>
-          <p>이 문서에서는 프로젝트의 구조에 대해 설명합니다.</p>
-          <p>이 문서에서는 프로젝트의 구조에 대해 설명합니다.</p>
-          <p>이 문서에서는 프로젝트의 구조에 대해 설명합니다.</p>
-          <p>이 문서에서는 프로젝트의 구조에 대해 설명합니다.</p>
-          <p>이 문서에서는 프로젝트의 구조에 대해 설명합니다.</p>
-          <p>이 문서에서는 프로젝트의 구조에 대해 설명합니다.</p>
-          <p>이 문서에서는 프로젝트의 구조에 대해 설명합니다.</p>
-          <p>이 문서에서는 프로젝트의 구조에 대해 설명합니다.</p>
-          <p>이 문서에서는 프로젝트의 구조에 대해 설명합니다.</p>
-          <p>이 문서에서는 프로젝트의 구조에 대해 설명합니다.</p>
-          <p>이 문서에서는 프로젝트의 구조에 대해 설명합니다.</p>
-          <p>이 문서에서는 프로젝트의 구조에 대해 설명합니다.</p>
-          <p>이 문서에서는 프로젝트의 구조에 대해 설명합니다.</p>
-          <p>이 문서에서는 프로젝트의 구조에 대해 설명합니다.</p>
-          <p>이 문서에서는 프로젝트의 구조에 대해 설명합니다.</p>
-          <p>이 문서에서는 프로젝트의 구조에 대해 설명합니다.</p>
-          <p>이 문서에서는 프로젝트의 구조에 대해 설명합니다.</p>
-          <p>이 문서에서는 프로젝트의 구조에 대해 설명합니다.</p>
-          <p>이 문서에서는 프로젝트의 구조에 대해 설명합니다.</p>
-          <p>이 문서에서는 프로젝트의 구조에 대해 설명합니다.</p>
-          <p>이 문서에서는 프로젝트의 구조에 대해 설명합니다.</p>
-          <p>이 문서에서는 프로젝트의 구조에 대해 설명합니다.</p>
-          <p>이 문서에서는 프로젝트의 구조에 대해 설명합니다.</p>
-          <p>이 문서에서는 프로젝트의 구조에 대해 설명합니다.</p>
-          <p>이 문서에서는 프로젝트의 구조에 대해 설명합니다.</p>
-          <p>이 문서에서는 프로젝트의 구조에 대해 설명합니다.</p>
-          <p>이 문서에서는 프로젝트의 구조에 대해 설명합니다.</p>
-          <p>이 문서에서는 프로젝트의 구조에 대해 설명합니다.</p>
-          <p>이 문서에서는 프로젝트의 구조에 대해 설명합니다.</p>
-          <p>이 문서에서는 프로젝트의 구조에 대해 설명합니다.</p>
-          <p>이 문서에서는 프로젝트의 구조에 대해 설명합니다.</p>
-          <p>이 문서에서는 프로젝트의 구조에 대해 설명합니다.</p>
-          <p>이 문서에서는 프로젝트의 구조에 대해 설명합니다.</p>
-          <p>이 문서에서는 프로젝트의 구조에 대해 설명합니다.</p>
-          <p>이 문서에서는 프로젝트의 구조에 대해 설명합니다.</p>
-          <p>이 문서에서는 프로젝트의 구조에 대해 설명합니다.</p>
-          <p>이 문서에서는 프로젝트의 구조에 대해 설명합니다.</p>
-          <p>이 문서에서는 프로젝트의 구조에 대해 설명합니다.</p>
-          <p>이 문서에서는 프로젝트의 구조에 대해 설명합니다.</p>
-          <p>이 문서에서는 프로젝트의 구조에 대해 설명합니다.</p>
-          <p>이 문서에서는 프로젝트의 구조에 대해 설명합니다.</p>
-          <p>이 문서에서는 프로젝트의 구조에 대해 설명합니다.</p>
-          <p>이 문서에서는 프로젝트의 구조에 대해 설명합니다.</p>
-          <p>이 문서에서는 프로젝트의 구조에 대해 설명합니다.</p>
-          <p>이 문서에서는 프로젝트의 구조에 대해 설명합니다.</p>
-          <p>이 문서에서는 프로젝트의 구조에 대해 설명합니다.</p>
-          <p>이 문서에서는 프로젝트의 구조에 대해 설명합니다.</p>
-          <p>이 문서에서는 프로젝트의 구조에 대해 설명합니다.</p>
-        </article>
+문서에 대한 작성방법과 권장되는 구조를 설명합니다.
 
-        {toc.length > 0 && (
-          <nav
-            id="nav-toc"
-            className="sticky top-[calc(var(--spacing)_*_12)] h-[calc(100dvh_-_var(--spacing)_*_12)] w-[286px] shrink-0 pt-6 [mask-image:linear-gradient(to_bottom,transparent,white_16px,white_calc(100%-16px),transparent)] max-lg:hidden"
-          >
-            <div className="mb-2 flex items-center gap-2">
-              <AlignLeft className="size-4" />
-              <p className="m-0 text-muted-foreground text-sm">목차</p>
-            </div>
-            <TOCScrollArea className="overflow-auto p-0">
-              <TocClerk />
-            </TOCScrollArea>
-          </nav>
-        )}
-      </TOCProvider>
-    </section>
-  );
+## 일반 문법
+
+### 타이포그래피
+
+\\# 문자를 반복하여 헤드라인과 그 레벨을 지정할 수 있습니다.
+
+## 특수 문법
+
+### 코드블록
+
+특수문자 \\\`를 3번 반복한 특수 문법을 코드의 시작과 끝에 작성하여 코드 블록으로 활용할 수 있습니다.
+
+\`\`\`ts:hello.ts
+(() => {
+  const hello = "world";
+  console.info(hello);
+})();
+\`\`\`
+
+`.trim();
+
+  return <Document content={content} />;
 }
