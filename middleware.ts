@@ -1,0 +1,97 @@
+import { match } from "@formatjs/intl-localematcher";
+import { getSessionCookie } from "better-auth/cookies";
+import Negotiator from "negotiator";
+import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
+
+import type { Language } from "@/lib/i18n/config";
+import { cookieName, fallbackLng, languages } from "@/lib/i18n/config";
+import { redirectStamp, reqStamp, resStamp } from "@/lib/log";
+import packageJson from "@/package.json";
+
+const { version } = packageJson;
+
+export const config = {
+  matcher: [
+    `/((?!favicon.ico|.+.webp|sitemap.xml|_next/image|_next/static|.+/error|languages/.+).{1,})`,
+    `/`,
+  ],
+};
+
+const redirect = (url: URL, reason: string) => {
+  console.debug(`${redirectStamp(url, reason)}\n`);
+  return NextResponse.redirect(url);
+};
+
+const getSigninPathname = (req: NextRequest, language: Language) => {
+  const { origin, pathname: callbackUrl } = req.nextUrl;
+  return `${origin}/${language}/signin?${new URLSearchParams({ callbackUrl })}`;
+};
+
+const redirectToSignin = (req: NextRequest, language: Language) => {
+  return redirect(new URL(getSigninPathname(req, language)), `Unauthorized`);
+};
+
+const getLocale = (req: NextRequest): Language => {
+  const acceptLanguages = new Negotiator({
+    headers: {
+      "accept-language":
+        req.cookies.get(cookieName)?.value || (req.headers.get("accept-language") as string),
+    },
+  }).languages();
+
+  try {
+    return match(acceptLanguages, languages, fallbackLng) as Language;
+  } catch (err) {
+    /**
+     * SSR 내에서 `fetch`를 사용할 경우,
+     * 브라우저에서 사용중인 언어정보와 동기화하여 함수를 호출할 수 있는 방법을 제공해야함.
+     * `accept-language`가 브라우저와 다르거나, 아니면 정보가 비어있어서 오류가 발생할 수 있음.
+     */
+    if (err instanceof RangeError) return match([fallbackLng], languages, fallbackLng) as Language;
+
+    throw err;
+  }
+};
+
+const PostMiddleware = (res: NextResponse) => {
+  // 버전정보 삽입
+  res.headers.set("X-WM-Version", version);
+
+  console.debug(`${resStamp(res)}\n`);
+
+  return res;
+};
+
+export default async function (req: NextRequest) {
+  // 인증 유효성 검사 전 모든 요청에 대한 작업
+
+  /** 요청 로깅 **********************************
+   * middleware는 runtime: edge로 사용되므로     *
+   * nodejs API를 사용하고 있는                  *
+   * `winston` 패키지를 사용할 수 없음           *
+   * 서버 로그 파일을 재활용할 수 없으므로       *
+   * `console.debug()`를 통해 로그를 남김         *
+   * ******************************************* */
+  if ("OPTIONS" !== req.method) console.debug(reqStamp(req));
+
+  // API를 제외한 나머지 페이지에 대하여 다국어 적용
+  if (req.nextUrl.pathname.startsWith("/api")) return PostMiddleware(NextResponse.next());
+
+  const { origin, pathname, search } = req.nextUrl;
+
+  const lng: Language = getLocale(req);
+
+  // URL 기준으로 언어 선택
+  const hasLocaleInPath = languages.some(
+    (language) => pathname.startsWith(`/${language}/`) || pathname === `/${language}`,
+  );
+
+  if (!hasLocaleInPath)
+    return redirect(new URL(`${origin}/${lng}${pathname}${search}`), "Unlocale");
+
+  const isStricted = pathname.startsWith(`${lng}/staffonly/`);
+  if (isStricted && !getSessionCookie(req)) return redirectToSignin(req, lng);
+
+  return PostMiddleware(NextResponse.next());
+}

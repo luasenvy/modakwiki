@@ -1,0 +1,19 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "ignoreExportsUsedInFile": true,
+  "ignoreDependencies": [
+    "@mdx-js/*",
+    "@next/mdx",
+    "@radix-ui/*",
+    "@tailwindcss/typography",
+    "@types/*",
+    "lint-staged",
+    "tw-animate-css"
+  ],
+  "ignore": [
+    "lib/i18n/next.ts",
+    "ecosystem.config.js",
+    "i18next-scanner.mjs",
+    "hooks/use-mobile.ts"
+  ]
+}

@@ -1,0 +1,122 @@
+@reference "./tailwind.css";
+
+@layer components {
+  .prose {
+    & > h2 {
+      @apply border-b-4 pb-1 border-double;
+      &[data-highlight="true"] a {
+        @apply transition-colors duration-200 ease-in-out text-primary;
+      }
+    }
+
+    & > h3 {
+      @apply border-b-2 pb-1;
+      &[data-highlight="true"] a {
+        @apply transition-colors duration-200 ease-in-out text-primary;
+      }
+    }
+
+    & > h4 {
+      @apply border-b pb-1;
+      &[data-highlight="true"] a {
+        @apply transition-colors duration-200 ease-in-out text-primary;
+      }
+    }
+
+    & > h5 {
+      &[data-highlight="true"] a {
+        @apply transition-colors duration-200 ease-in-out text-primary;
+      }
+    }
+
+    p {
+      @apply m-0 mb-4 first-letter:ml-4;
+
+      a {
+        @apply font-semibold no-underline hover:underline text-sky-500 hover:text-sky-600;
+      }
+    }
+
+    & > ol li,
+    & > ul li {
+      @apply break-words;
+    }
+
+    ul li,
+    ol li {
+      & > p {
+        @apply first-letter:ml-0;
+      }
+    }
+
+    blockquote {
+      p {
+        @apply first-letter:ml-0;
+      }
+    }
+
+    em {
+      @apply text-secondary-foreground font-semibold;
+    }
+
+    img {
+      @apply bg-card !m-0;
+    }
+
+    sup [data-footnote-ref="true"] {
+      @apply italic mr-0.5 !text-sky-500 hover:!text-sky-600;
+
+      &[data-highlight="true"] {
+        @apply transition-colors duration-200 ease-in-out text-primary;
+      }
+    }
+
+    sub {
+      @apply italic mr-0.5 text-muted-foreground;
+    }
+
+    strong {
+      @apply bg-gradient-to-r from-[#d247bf] to-primary text-transparent bg-clip-text decoration-clone;
+    }
+
+    table {
+      thead {
+        th {
+          @apply font-bold text-center;
+        }
+      }
+    }
+
+    & > section.footnotes {
+      @apply text-sm border-t border-[var(--tw-prose-hr)] dark:border-[var(--tw-prose-invert-hr)];
+      @apply mt-[3em] pt-[3em];
+      & > ol li {
+        & > p {
+          @apply first-letter:ml-0;
+        }
+        &[data-highlight="true"] {
+          @apply transition-colors duration-200 ease-in-out text-primary;
+        }
+      }
+    }
+
+    pre {
+      @apply overflow-x-hidden !rounded-none !p-2;
+
+      code {
+        @apply !font-mono w-full;
+        @apply max-h-[70vh];
+        @apply overflow-x-auto;
+      }
+
+      code:not(.hljs) {
+        @apply mx-0.5 px-1.5 py-0.5 rounded-sm border;
+
+        &:before,
+        &:after {
+          @apply hidden;
+        }
+      }
+    }
+  }
+}

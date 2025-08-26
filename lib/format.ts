@@ -1,0 +1,79 @@
+type DateFormatType =
+  | "default"
+  | "iso"
+  | "ymd"
+  | "hms"
+  | "md h"
+  | "md hm"
+  | "ymd h"
+  | "ymd hm"
+  | "ymd hms"
+  | "full"
+  | "log"
+  | "LLL";
+
+/**
+ * 날짜를 다양한 형식으로 반환한다.
+ *
+ * @description
+ * 날짜 객체를 지정된 형식으로 변환한다.
+ *
+ * @example
+ * formatter(new Date(), { type: "ymd hm" })
+ *
+ * @param date `Date` | `number`
+ * @param options.type `default` | `iso` | `ymd` | `hms` | `md h` | `md hm` | `ymd h` | `ymd hm` | `ymd hms` | `full` | `log` | `LLL`
+ * @returns string
+ */
+export const date = (timestamp: Date | number, options?: { type?: DateFormatType }) => {
+  const date = timestamp instanceof Date ? timestamp : new Date(timestamp);
+
+  const { type = "default" } = options ?? { type: "default" };
+
+  if ("iso" === type) return date.toISOString();
+
+  if ("ymd" === type) return date.toISOString().substring(0, 10);
+
+  const intlOptions: Intl.DateTimeFormatOptions = { hourCycle: "h23" };
+
+  // toLocaleString() 함수는 시스템에 맞추어 자동으로
+  // 타임존 오프셋을 조정하므로 undefined를 전달함
+  if ("LLL" === type) return date.toLocaleString(undefined, intlOptions);
+
+  const localeStr = date.toLocaleString(undefined, {
+    ...intlOptions,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  });
+
+  if ("hms" === type) return localeStr.replace(/\d+\. \d+\. \d+\./, "").trim();
+
+  const full = localeStr.replace(/(\d+)\. (\d+)\. (\d+)\./, "$1-$2-$3");
+
+  if ("md h" === type) return full.replace(/^\d+-|(:\d+){2}$/g, "");
+  if ("ymd h" === type) return full.replace(/(:\d+){2}$/g, "");
+  if ("md hm" === type) return full.replace(/^\d+-|:\d+$/g, "");
+  if ("ymd hm" === type) return full.replace(/:\d+$/g, "");
+
+  // if (["full", "ymd hms", "log"].includes(type))
+  return full;
+};
+
+export const MINUTE = 60_000;
+export const HOUR = MINUTE * 60;
+export const DAY = HOUR * 24;
+
+export function fromNow(epoch: number | Date) {
+  if (epoch instanceof Date) epoch = epoch.getTime();
+  const diff = Date.now() - epoch;
+
+  if (diff < HOUR) return `${Math.ceil(diff / MINUTE)} 분 전`;
+
+  if (diff < DAY) return `${Math.ceil(diff / HOUR)} 시간 전`;
+
+  return `${Math.ceil(diff / DAY)} 일 전`;
+}

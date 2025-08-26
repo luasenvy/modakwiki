@@ -1,0 +1,18 @@
+.remark-code-container {
+  & > .remark-code-title {
+    padding: 0.25rem 0.5rem;
+    font-weight: 600;
+    text-align: left;
+    border-top: 1px solid var(--color-border);
+    border-left: 1px solid var(--color-border);
+    border-right: 1px solid var(--color-border);
+  }
+
+  & > .remark-code-title ~ pre {
+    margin-top: 0;
+    border-radius: 0;
+    padding-top: 0;
+    padding-left: 0;
+    padding-right: 0;
+  }
+}

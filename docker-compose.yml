@@ -1,0 +1,11 @@
+services:
+  web:
+    image: ghcr.io/luasenvy/modakwiki:1.0.0
+    ports:
+      - 8006:3000
+    volumes:
+      - /mnt/modakwiki:/mnt/modakwiki
+    env_file:
+      - .env.docker.local
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

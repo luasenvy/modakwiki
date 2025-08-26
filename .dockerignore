@@ -1,0 +1,37 @@
+# Version control & editor settings
+.git
+.gitignore
+.gitattributes
+.vscode
+.idea
+.DS_Store
+
+# Dependencies & caches
+node_modules
+npm-debug.log*
+yarn-error.log*
+pnpm-lock.yaml
+*.log
+
+# Build/test artifacts
+coverage
+.dist
+out
+build
+dist
+tmp
+
+# Environment files (do not bake secrets into images)
+.env
+.env.*
+!.env.example
+
+# Husky & misc
+.husky
+.playground*
+
+# Next.js build cache (keep build outputs for current Dockerfile flow)
+.next/cache
+
+# OS/other
+Thumbs.db
