@@ -23,12 +23,12 @@ const data = {
       url: "#",
       items: [
         {
-          title: "문서구조",
-          url: "/how-to",
+          title: "모닥위키",
+          url: "/what-is-it",
         },
         {
-          title: "Project Structure",
-          url: "#",
+          title: "문서구조",
+          url: "/how-to",
         },
       ],
     },
