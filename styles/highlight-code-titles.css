@@ -1,18 +1,27 @@
 .remark-code-container {
+  display: flex;
+  flex-direction: column-reverse;
+  margin-bottom: 1.25em;
+
   & > .remark-code-title {
-    padding: 0.25rem 0.5rem;
-    font-weight: 600;
-    text-align: left;
-    border-top: 1px solid var(--text-weak);
-    border-left: 1px solid var(--text-weak);
-    border-right: 1px solid var(--text-weak);
+    text-align: center;
+    color: var(--muted-foreground);
+    border-bottom: 1px solid var(--border);
+    border-left: 1px solid var(--border);
+    border-right: 1px solid var(--border);
   }
 
-  & > .remark-code-title ~ pre {
-    margin-top: 0;
+  & > pre {
+    margin: 0;
     border-radius: 0;
-    padding-top: 0;
-    padding-left: 0;
-    padding-right: 0;
+
+    /* hljs */
+    & > code {
+      display: block;
+      overflow-x: auto;
+      padding: 1em;
+      background: #1e1e1e;
+      color: #dcdcdc;
+    }
   }
 }

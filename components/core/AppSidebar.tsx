@@ -1,9 +1,11 @@
 import Link from "next/link";
 import { NavUser } from "@/components/core/NavUser";
 import { SearchForm } from "@/components/core/SearchForm";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -12,6 +14,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { site } from "@/config";
 import { Session } from "@/lib/auth/server";
 import { Language } from "@/lib/i18n/config";
 
@@ -29,61 +32,6 @@ const data = {
         {
           title: "문서구조",
           url: "/how-to",
-        },
-      ],
-    },
-    {
-      title: "Building Your Application",
-      url: "#",
-      items: [
-        {
-          title: "Routing",
-          url: "#",
-        },
-        {
-          title: "Data Fetching",
-          url: "#",
-          isActive: true,
-        },
-        {
-          title: "Rendering",
-          url: "#",
-        },
-        {
-          title: "Caching",
-          url: "#",
-        },
-        {
-          title: "Styling",
-          url: "#",
-        },
-        {
-          title: "Optimizing",
-          url: "#",
-        },
-        {
-          title: "Configuring",
-          url: "#",
-        },
-        {
-          title: "Testing",
-          url: "#",
-        },
-        {
-          title: "Authentication",
-          url: "#",
-        },
-        {
-          title: "Deploying",
-          url: "#",
-        },
-        {
-          title: "Upgrading",
-          url: "#",
-        },
-        {
-          title: "Examples",
-          url: "#",
         },
       ],
     },
@@ -182,6 +130,26 @@ export function AppSidebar({ lng: lngParam, session, ...props }: AppSidebarProps
           </SidebarGroup>
         ))}
       </SidebarContent>
+
+      <SidebarFooter>
+        <div className="p-1">
+          <SidebarFooterAddon />
+        </div>
+
+        <p className="py-4 text-center text-xs">
+          &copy; 2025 {new URL(site.baseurl).hostname} All rights reserved.
+        </p>
+      </SidebarFooter>
     </Sidebar>
+  );
+}
+
+export function SidebarFooterAddon() {
+  return (
+    <Card className="gap-2 bg-muted py-4 shadow-none">
+      <CardContent className="px-4 py-6">
+        <p className="text-center text-muted-foreground text-sm">Advertising area</p>
+      </CardContent>
+    </Card>
   );
 }

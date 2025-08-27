@@ -135,4 +135,10 @@
   [role="button"]:not(:disabled) {
     cursor: pointer;
   }
+
+  .prose {
+    a {
+      @apply text-blue-500 hover:underline;
+    }
+  }
 }
