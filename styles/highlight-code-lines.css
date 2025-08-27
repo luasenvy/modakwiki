@@ -2,8 +2,8 @@
   --text-weak: oklch(68.30% 0 0);
   --bg-diff-addition: oklch(95.74% 0.049 151.63);
   --bg-diff-deletion: oklch(95.55% 0.022 24.44);
-  --bg-code-background: oklch(99.70% 0 0);
-  --bg-code-highlight: oklch(96.55% 0.008 253.85);
+  --bg-code-background: oklch(24.78% 0 0);
+  --bg-code-highlight: oklch(28.01% 0.006 258.36);
   --border-code-highlight: oklch(50.37% 52.09 275.46);
 }
 
@@ -59,11 +59,11 @@ pre > code {
 }
 
 .code-line.inserted {
-  background-color: var(--bg-diff-addition);
+  background-color: #144212;
 }
 
 .code-line.deleted {
-  background-color: var(--bg-diff-deletion);
+  background-color: #600;
 }
 
 .highlighted-code-line {

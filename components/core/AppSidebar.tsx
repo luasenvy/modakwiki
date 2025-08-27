@@ -30,7 +30,7 @@ const data = {
           url: "/what-is-it",
         },
         {
-          title: "문서구조",
+          title: "사용법",
           url: "/how-to",
         },
       ],
