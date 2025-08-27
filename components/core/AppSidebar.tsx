@@ -1,3 +1,4 @@
+import { Inbox } from "lucide-react";
 import Link from "next/link";
 import { NavUser } from "@/components/core/NavUser";
 import { SearchForm } from "@/components/core/SearchForm";
@@ -14,6 +15,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { Skeleton } from "@/components/ui/skeleton";
 import { site } from "@/config";
 import { Session } from "@/lib/auth/server";
 import { Language } from "@/lib/i18n/config";
@@ -32,7 +34,7 @@ const data = {
       ],
     },
     {
-      title: "기능",
+      title: "문서",
       url: "#",
       items: [
         {
@@ -40,19 +42,7 @@ const data = {
           url: "#",
         },
         {
-          title: "Fast Refresh",
-          url: "#",
-        },
-        {
-          title: "Next.js Compiler",
-          url: "#",
-        },
-        {
-          title: "Supported Browsers",
-          url: "#",
-        },
-        {
-          title: "Turbopack",
+          title: "변경내역",
           url: "#",
         },
       ],
@@ -70,6 +60,13 @@ const data = {
           url: "/editors/tip",
         },
       ],
+    },
+  ],
+  navSub: [
+    {
+      title: "내 문서",
+      url: "#",
+      icon: Inbox,
     },
   ],
   user: {
@@ -109,6 +106,23 @@ export function AppSidebar({ lng: lngParam, session, ...props }: AppSidebarProps
             </SidebarGroupContent>
           </SidebarGroup>
         ))}
+
+        <SidebarGroup className="mt-auto">
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {data.navSub.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild size="sm">
+                    <a href={item.url}>
+                      <item.icon />
+                      <span>{item.title}</span>
+                    </a>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
       </SidebarContent>
 
       <SidebarFooter>
@@ -125,11 +139,17 @@ export function AppSidebar({ lng: lngParam, session, ...props }: AppSidebarProps
 }
 
 export function SidebarFooterAddon() {
-  return (
-    <Card className="gap-2 bg-muted py-4 shadow-none">
+  {
+    /* <Card className="gap-2 bg-muted py-4 shadow-none">
       <CardContent className="px-4 py-6">
-        <p className="text-center text-muted-foreground text-sm">Advertising area</p>
+        <p className="text-center text-muted-foreground text-sm">Advertisement</p>
       </CardContent>
-    </Card>
+    </Card> */
+  }
+
+  return (
+    <Skeleton className="w-full rounded-xl px-4 py-10">
+      <p className="text-center text-muted-foreground text-sm">Advertisement</p>
+    </Skeleton>
   );
 }
