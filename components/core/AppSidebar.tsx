@@ -29,48 +29,14 @@ const data = {
           title: "모닥위키",
           url: "/what-is-it",
         },
-        {
-          title: "사용법",
-          url: "/how-to",
-        },
       ],
     },
     {
-      title: "API Reference",
+      title: "기능",
       url: "#",
       items: [
         {
-          title: "Components",
-          url: "#",
-        },
-        {
-          title: "File Conventions",
-          url: "#",
-        },
-        {
-          title: "Functions",
-          url: "#",
-        },
-        {
-          title: "next.config.js Options",
-          url: "#",
-        },
-        {
-          title: "CLI",
-          url: "#",
-        },
-        {
-          title: "Edge Runtime",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Architecture",
-      url: "#",
-      items: [
-        {
-          title: "Accessibility",
+          title: "임의문서",
           url: "#",
         },
         {
@@ -88,6 +54,20 @@ const data = {
         {
           title: "Turbopack",
           url: "#",
+        },
+      ],
+    },
+    {
+      title: "에디터",
+      url: "#",
+      items: [
+        {
+          title: "위키문법",
+          url: "/editors/syntax",
+        },
+        {
+          title: "작성요령",
+          url: "/editors/tip",
         },
       ],
     },

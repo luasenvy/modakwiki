@@ -1,4 +1,5 @@
 import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 import { AppSidebar } from "@/components/core/AppSidebar";
 import { ThemeToggler } from "@/components/core/ThemeToggler";
 import {
@@ -13,9 +14,12 @@ import { Language } from "@/lib/i18n/config";
 
 export default async function StrictLayout({ params, children }: LayoutProps<"/[lng]">) {
   const lngParam = (await params).lng;
+  const lng = lngParam ? `/${lngParam}` : "";
+
   const session = await auth.api.getSession({ headers: await headers() });
 
-  console.info(session, "<< social session");
+  if (!session) return redirect(`${lng}/signin`);
+
   return (
     <SidebarProvider>
       <AppSidebar lng={lngParam as Language} session={session} />

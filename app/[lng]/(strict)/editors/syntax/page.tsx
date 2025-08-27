@@ -1,7 +1,6 @@
-import DOMpurify from "isomorphic-dompurify";
 import { Document } from "@/components/core/Document";
 
-export default async function HowToPage(ctx: PageProps<"/[lng]/how-to">) {
+export default async function HowToPage(ctx: PageProps<"/[lng]/editors/syntax">) {
   const content = `
 ## 마크다운 문법
 
@@ -129,10 +128,6 @@ function sayHello(x: number) {
 +   <h2>추가된 라인</h2>
 </div>
 ~~~
-
-## 주의점: 문서의 간결성 유지
-
-문서는 최대한 간결하게 유지해야 하도록 노력해야합니다. 2-3 레벨을 권장하고 예외적으로 4레벨을 지원합니다. 문서가 4레벨을 요구한다면 고쳐야할 점이 없는지 문서를 다시 한 번 검토해보시기 바랍니다.
 
 `;
 

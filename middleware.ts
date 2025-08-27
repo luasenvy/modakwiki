@@ -1,5 +1,4 @@
 import { match } from "@formatjs/intl-localematcher";
-import { getSessionCookie } from "better-auth/cookies";
 import Negotiator from "negotiator";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
@@ -21,15 +20,6 @@ export const config = {
 const redirect = (url: URL, reason: string) => {
   console.debug(`${redirectStamp(url, reason)}\n`);
   return NextResponse.redirect(url);
-};
-
-const getSigninPathname = (req: NextRequest, language: Language) => {
-  const { origin, pathname: callbackUrl } = req.nextUrl;
-  return `${origin}/${language}/signin?${new URLSearchParams({ callbackUrl })}`;
-};
-
-const redirectToSignin = (req: NextRequest, language: Language) => {
-  return redirect(new URL(getSigninPathname(req, language)), `Unauthorized`);
 };
 
 const getLocale = (req: NextRequest): Language => {
@@ -89,9 +79,6 @@ export default async function (req: NextRequest) {
 
   if (!hasLocaleInPath)
     return redirect(new URL(`${origin}/${lng}${pathname}${search}`), "Unlocale");
-
-  const isStricted = pathname.startsWith(`${lng}/staffonly/`);
-  if (isStricted && !getSessionCookie(req)) return redirectToSignin(req, lng);
 
   return PostMiddleware(NextResponse.next());
 }

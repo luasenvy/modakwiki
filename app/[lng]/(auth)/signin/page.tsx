@@ -1,10 +1,20 @@
 import { GalleryVerticalEnd } from "lucide-react";
+import { headers as nextHeaders } from "next/headers";
+import { redirect } from "next/navigation";
 import { SigninForm } from "@/components/pages/signin/SigninForm";
-import { betterAuth, isDev } from "@/config";
+import { betterAuth } from "@/config";
+import { auth } from "@/lib/auth/server";
 import { Language } from "@/lib/i18n/config";
 
 export default async function SigninPage(ctx: PageProps<"/[lng]/signin">) {
   const { lng: lngParam } = await ctx.params;
+
+  const headers = await nextHeaders();
+  const referer = headers.get("referer") || "/";
+
+  const session = await auth.api.getSession({ headers });
+  if (session) return redirect(referer);
+
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-muted p-6 md:p-10">
       <div className="flex w-full max-w-sm flex-col gap-6">
@@ -17,7 +27,7 @@ export default async function SigninPage(ctx: PageProps<"/[lng]/signin">) {
 
         <SigninForm
           lng={lngParam as Language}
-          dev={isDev}
+          referer={referer}
           turnstileSiteKey={betterAuth.providers.cloudflare.turnstile.siteKey}
         />
       </div>

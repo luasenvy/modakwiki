@@ -12,12 +12,12 @@ export async function Document({ content }: DocumentProps) {
   const toc = getToc(content);
 
   return (
-    <div className="relative flex h-[calc(100dvh_-_var(--spacing)_*_12)] w-full overflow-auto">
+    <div className="relative flex h-[calc(100dvh_-_var(--spacing)_*_12)] w-full justify-center overflow-auto">
       <TOCProvider toc={toc} single={false}>
         <article
           className={cn(
             "prose dark:prose-invert",
-            "h-auto max-w-full grow p-4 xl:max-w-[calc(100%_-_286px)]",
+            "h-auto max-w-full px-4 pt-8 md:max-w-2xl xl:max-w-4xl",
             "h-fit break-keep pb-24",
             // Link
             "prose-a:text-blue-600 prose-a:no-underline prose-a:hover:underline dark:prose-a:text-blue-500",
@@ -33,7 +33,7 @@ export async function Document({ content }: DocumentProps) {
         {toc.length > 0 && (
           <nav
             id="nav-toc"
-            className="sticky top-0 h-[calc(100dvh_-_var(--spacing)_*_12)] w-[286px] shrink-0 pt-4 pl-4 [mask-image:linear-gradient(to_bottom,transparent,white_16px,white_calc(100%-16px),transparent)] max-xl:hidden"
+            className="sticky top-0 h-[calc(100dvh_-_var(--spacing)_*_12)] w-[286px] shrink-0 pt-8 pl-4 [mask-image:linear-gradient(to_bottom,transparent,white_16px,white_calc(100%-16px),transparent)] max-xl:hidden"
           >
             <div className="mb-2 flex items-center gap-2">
               <AlignLeft className="size-4" />

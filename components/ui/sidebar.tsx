@@ -314,9 +314,7 @@ function SidebarInset({ className, ...props }: React.ComponentProps<"main">) {
         "bg-background relative flex flex-1 flex-col w-full overflow-x-hidden overflow-y-auto",
         "md:peer-data-[variant=inset]:m-2 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:shadow-sm md:peer-data-[variant=inset]:peer-data-[state=collapsed]:ml-2",
         "max-w-full",
-        {
-          "xl:max-w-[calc(100%_-_var(--sidebar-width))]": !isMobile && state === "expanded" 
-        },
+        { "xl:max-w-[calc(100%_-_var(--sidebar-width))] transition-normal delay-200 ease-in-out": !isMobile && state === "expanded" },
         className,
       )}
       {...props}

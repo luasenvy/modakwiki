@@ -12,11 +12,7 @@ import { logo, site } from "@/config";
 import type { Language } from "@/lib/i18n/config";
 
 const pretendard = localFont({
-  src: [
-    {
-      path: "../../public/fonts/pretendard/PretendardVariable.woff2",
-    },
-  ],
+  src: [{ path: "../../public/fonts/pretendard/PretendardVariable.woff2" }],
   display: "swap",
   weight: "45 920",
   variable: "--font-pretendard",
@@ -24,8 +20,8 @@ const pretendard = localFont({
 
 const nanumGothicCoding = Nanum_Gothic_Coding({
   weight: ["400", "700"],
-  subsets: [],
-  variable: "--font-mono",
+  preload: false,
+  variable: "--font-nanum-gothic-coding",
   display: "swap",
 });
 
@@ -43,8 +39,13 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[ln
   const lng = (await params).lng as Language;
 
   return (
-    <html lang={lng} dir={dir(lng)} className="scroll-pt-13 scroll-smooth" suppressHydrationWarning>
-      <body className={`${pretendard.className} ${nanumGothicCoding.variable}`}>
+    <html
+      lang={lng}
+      dir={dir(lng)}
+      className={`scroll-pt-13 scroll-smooth ${nanumGothicCoding.variable}`}
+      suppressHydrationWarning
+    >
+      <body className={pretendard.className}>
         <ThemeProvider defaultTheme="light" enableSystem disableTransitionOnChange>
           {children}
           <Toaster />

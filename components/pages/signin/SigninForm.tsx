@@ -11,17 +11,19 @@ import { Language } from "@/lib/i18n/config";
 interface SigninFormProps {
   lng: Language;
   turnstileSiteKey: string;
-  dev?: boolean;
+  referer?: string;
 }
 
 const authClient = createAuthClient();
 
-export function SigninForm({ lng: lngParam, turnstileSiteKey }: SigninFormProps) {
+export function SigninForm({ lng: lngParam, referer, turnstileSiteKey }: SigninFormProps) {
   const lng = lngParam ? `/${lngParam}` : "";
 
+  console.info(referer, "@@@@@@@@@");
   const handleClickGoogleSignin = async () => {
     const { error } = await authClient.signIn.social({
       provider: "google",
+      callbackURL: referer,
       scopes: ["https://www.googleapis.com/auth/userinfo.email"],
     });
 
