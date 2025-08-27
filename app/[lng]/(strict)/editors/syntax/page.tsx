@@ -4,7 +4,7 @@ export default async function HowToPage(ctx: PageProps<"/[lng]/editors/syntax">)
   const content = `
 ## 마크다운 문법
 
-[마크다운 문법](https://commonmark.org/help/)으로 문서를 작성할 수 있습니다. 링크를 통해 사용법을 익히고 바로 사용할 수 있습니다.
+가장 기본적인 형태의 마크다운 문법을 사용할 수 있습니다. 본문 하단의 연관링크를 통하여 사용법을 익히고 바로 사용할 수 있습니다.
 
 ## 특수 문법: 첨자
 
@@ -21,7 +21,7 @@ export default async function HowToPage(ctx: PageProps<"/[lng]/editors/syntax">)
 
 ## 특수 문법: Github 스타일 표
 
-[Github 스타일의 표](https://github.com/micromark/micromark-extension-gfm-table?tab=readme-ov-file#syntax) 문법을 지원합니다.
+Github 스타일의 표 문법을 지원합니다. 자세한 사항은 연관링크를 참고하세요.
 
 ~~~plain:Github^스타일^표^마크다운
 | Alpha bravo charlie |               delta |
@@ -129,6 +129,13 @@ function sayHello(x: number) {
 </div>
 ~~~
 
+
+---
+| 연관링크                                      |
+| ----------------------------------------------|
+| [Micromark](https://github.com/micromark/micromark?tab=readme-ov-file#what-is-this) |
+| [마크다운 문법](https://commonmark.org/help/) |
+| [Github 스타일의 표](https://github.com/micromark/micromark-extension-gfm-table?tab=readme-ov-file#syntax) |
 `;
 
   return <Document content={content.trim()} />;

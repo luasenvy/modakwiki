@@ -1,8 +1,12 @@
 import { Document } from "@/components/core/Document";
 
-export default async function HowToPage(ctx: PageProps<"/[lng]/how-to">) {
+import Logo from "@/public/logo.webp";
+
+export default async function HowToPage(ctx: PageProps<"/[lng]/what-is-this">) {
   const content = `
 ## 환영합니다!
+
+![로고](${Logo.src})
 
 모닥위키는 여러 위키들이 협업할 수 있는 위키엔진입니다.
 
