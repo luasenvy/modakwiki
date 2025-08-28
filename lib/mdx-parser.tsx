@@ -13,16 +13,18 @@ export function getTocId(text: string) {
 }
 
 export function getToc(source: string): Array<TOCItemType> {
-  return (source?.replace(/`{3}[^`]+`{3}/g, "").match(/^#[^\n]+/gm) ?? []).map((head) => {
-    const [, depth, text] = head.split(/(#+) ?/g);
+  return (source?.replace(/`{3}[^`]+`{3}|~{3}[^~]+~{3}/g, "").match(/^#[^\n]+/gm) ?? []).map(
+    (head) => {
+      const [, depth, text] = head.split(/(#+) ?/g);
 
-    const title = text.trim();
-    return {
-      url: getTocId(title),
-      title,
-      depth: depth.length,
-    } as TOCItemType;
-  });
+      const title = text.trim();
+      return {
+        url: getTocId(title),
+        title,
+        depth: depth.length,
+      } as TOCItemType;
+    },
+  );
 }
 
 export function MDXLoader({ source }: { source?: string }) {
