@@ -13,6 +13,7 @@ import LanguageTypescript from "highlight.js/lib/languages/typescript";
 import LanguageXml from "highlight.js/lib/languages/xml";
 
 import { Children } from "react";
+import { Components } from "react-markdown";
 import rehypeHighlight, { Options as HighlightOptions } from "rehype-highlight";
 import rehypeHighlightCodeLines, { HighlightLinesOptions } from "rehype-highlight-code-lines";
 import remarkFlexibleCodeTitles from "remark-flexible-code-titles";
@@ -23,7 +24,7 @@ import { ImageZoom } from "@/components/ui/shadcn-io/image-zoom";
 import remarkGfmTable from "@/lib/remark-gfm-table";
 import { cn } from "@/lib/utils";
 
-export const components = {
+export const components: Components = {
   a: AutoLink,
   p: (props: React.HTMLAttributes<HTMLParagraphElement>) =>
     Children.toArray(props.children).some((child) =>
@@ -63,7 +64,7 @@ export const components = {
   },
 };
 
-export const mdxOptions: NextMDXOptions["options"] = {
+export const mdxOptions = {
   remarkPlugins: [
     remarkSuperSub,
     remarkGfmTable,
@@ -110,4 +111,4 @@ export const mdxOptions: NextMDXOptions["options"] = {
     ],
     [rehypeHighlightCodeLines, { showLineNumbers: true } as HighlightLinesOptions],
   ],
-};
+} satisfies NextMDXOptions["options"];

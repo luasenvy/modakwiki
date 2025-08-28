@@ -1,10 +1,15 @@
 import { ExternalLink } from "lucide-react";
 import Link, { LinkProps } from "next/link";
+import { ExtraProps } from "react-markdown";
+import { UrlObject } from "url";
 import { cn } from "@/lib/utils";
 
-type AutoLinkProps = React.HTMLAttributes<HTMLAnchorElement> &
-  LinkProps & {
+type AutoLinkProps = React.ClassAttributes<HTMLAnchorElement> &
+  React.AnchorHTMLAttributes<HTMLAnchorElement> &
+  ExtraProps &
+  Omit<LinkProps, "href"> & {
     icon?: boolean;
+    href?: string;
   };
 
 export function AutoLink({ href, children, className, icon = true, ...props }: AutoLinkProps) {
@@ -13,7 +18,8 @@ export function AutoLink({ href, children, className, icon = true, ...props }: A
   return (
     <Link
       {...props}
-      href={href}
+      // Avoid Nextjs Type
+      href={href as string | UrlObject}
       className={cn(className, "group text-blue-500 no-underline hover:underline")}
       target={isExternal ? "_blank" : undefined}
       rel={isExternal ? "noopener noreferrer" : undefined}
