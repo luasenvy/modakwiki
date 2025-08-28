@@ -17,7 +17,7 @@ export async function Document({ content }: DocumentProps) {
         <article
           className={cn(
             "prose dark:prose-invert relative",
-            "h-auto max-w-full pt-8 pr-2 pl-4 lg:max-w-3xl xl:w-[calc(100%_-_286px)] xl:max-w-4xl",
+            "max-w-full pt-8 pr-2 pl-4 lg:max-w-3xl xl:w-[calc(100%_-_286px)] xl:max-w-4xl",
             "h-fit break-keep pb-24",
             // Link
             "prose-a:text-blue-600 prose-a:no-underline prose-a:hover:underline dark:prose-a:text-blue-500",

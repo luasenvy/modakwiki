@@ -1,5 +1,6 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { Children } from "react";
 import { AppSidebar } from "@/components/core/AppSidebar";
 import { ThemeToggler } from "@/components/core/ThemeToggler";
 import {

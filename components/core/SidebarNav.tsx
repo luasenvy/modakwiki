@@ -25,7 +25,6 @@ export function SidebarNav({ lng: lngParam }: NavMenuProps) {
   const mainNavs = useNavItems((state) => state.mainNavs);
   const subNavs = useNavItems((state) => state.subNavs);
 
-  console.info(lng, pathname);
   return (
     <>
       {mainNavs.map((item) => (
