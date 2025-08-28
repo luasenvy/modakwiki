@@ -1,10 +1,24 @@
 import { Document } from "@/components/core/Document";
 
+import Logo from "@/public/logo.webp";
+
 export default async function HowToPage(ctx: PageProps<"/[lng]/editors/syntax">) {
   const content = `
 ## 마크다운 문법
 
 가장 기본적인 형태의 마크다운 문법을 사용할 수 있습니다. 본문 하단의 연관링크를 통하여 사용법을 익히고 바로 사용할 수 있습니다.
+
+## 특수 문법: 이미지 크기 설정
+
+~~~plain:마크다운
+![로고 width-24](${Logo.src})
+~~~
+
+![로고 width-24](${Logo.src})
+
+이미지 마크다운은 기본 문법으로 제공됩니다. 모든 이미지는 기본값 100%의 크기로 화면에 표시됩니다. 크기를 조정하고 싶을 때 이미지 명칭에 \`width-[size]\` 또는 \`height-[size]\`를 추가하여 이미지의 크기를 조정할 수 있습니다. 크기값은 4의 배수로 4부터 40까지 또는 선정의된 컨테이너 크기인 \`3xs\`, \`2xs\`, \`xs\`, \`sm\`, \`md\`, \`lg\`, \`xl\`, \`2xl\`, \`3xl\`, \`4xl\`, \`5xl\`, \`6xl\`, \`7xl\` 값으로 설정할 수 있습니다. 이미지의 크기는 \`max-width\`와 \`max-height\`를 제한하는 방식이므로 가로 설정의 경우 문서의 최대 크기인 4xl 이상을 벗어날 수 없습니다.
+
+크기에 대한 더 자세한 내용은 문서 하단의 연관링크 \`Tailwindcss v4 sizing width\` 문서에서 확인할 수 있습니다.
 
 ## 특수 문법: 첨자
 
@@ -133,6 +147,7 @@ function sayHello(x: number) {
 ---
 | 연관링크                                      |
 | ----------------------------------------------|
+| [Tailwindcss v4 sizing width](https://tailwindcss.com/docs/width) |
 | [Micromark](https://github.com/micromark/micromark?tab=readme-ov-file#what-is-this) |
 | [마크다운 문법](https://commonmark.org/help/) |
 | [Github 스타일의 표](https://github.com/micromark/micromark-extension-gfm-table?tab=readme-ov-file#syntax) |

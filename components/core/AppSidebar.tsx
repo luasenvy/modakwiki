@@ -29,7 +29,7 @@ const data = {
       items: [
         {
           title: "모닥위키",
-          url: "/what-is-it",
+          url: "/what-is-this",
         },
       ],
     },
