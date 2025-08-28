@@ -37,7 +37,7 @@ export async function Document({ content }: DocumentProps) {
             "prose-img:[&[alt*=width-28]]:max-w-28",
             "prose-img:[&[alt*=width-32]]:max-w-32",
             "prose-img:[&[alt*=width-36]]:max-w-36",
-            "prose-img:[&[alt*=width-40]]:!max-w-40", // Aviod Duplicate with w-4
+            "prose-img:[&[alt*=width-40]]:!max-w-40", // Avoid Duplicate with w-4
             "prose-img:[&[alt*=width-3xs]]:max-w-3xs",
             "prose-img:[&[alt*=width-2xs]]:max-w-2xs",
             "prose-img:[&[alt*=width-xs]]:max-w-xs",
@@ -60,7 +60,7 @@ export async function Document({ content }: DocumentProps) {
             "prose-img:[&[alt*=height-28]]:max-h-28",
             "prose-img:[&[alt*=height-32]]:max-h-32",
             "prose-img:[&[alt*=height-36]]:max-h-36",
-            "prose-img:[&[alt*=height-40]]:max-h-40",
+            "prose-img:[&[alt*=height-40]]:!max-h-40", // Avoid Duplicate with h-4
             "prose-img:[&[alt*=height-3xs]]:max-h-3xs",
             "prose-img:[&[alt*=height-2xs]]:max-h-2xs",
             "prose-img:[&[alt*=height-xs]]:max-h-xs",
