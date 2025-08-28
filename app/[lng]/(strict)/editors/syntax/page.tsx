@@ -1,5 +1,4 @@
 import { Document } from "@/components/core/Document";
-
 import Logo from "@/public/logo.webp";
 
 export default async function HowToPage(ctx: PageProps<"/[lng]/editors/syntax">) {
@@ -14,11 +13,23 @@ export default async function HowToPage(ctx: PageProps<"/[lng]/editors/syntax">)
 ![로고 width-24](${Logo.src})
 ~~~
 
-![로고 width-24](${Logo.src})
+이미지 마크다운은 기본 문법으로 제공됩니다. 이미지는 영역을 채울 수 있도록 항상 가로 크기 100%로 설정되며 크기를 변경하고 싶을 때 이미지 명칭에 \`width-[size]\` 또는 \`height-[size]\`를 포함시켜 조정할 수 있습니다. 이것은 이미지 자체의 크기를 설정하는 것이 아닌 이미지의 최대크기를 제한하는 방식입니다. 이 작동 방식은 작은 이미지를 사용하더라도 항상 가용영역을 모두 채우려하므로 *설정된 크기보다 작은 이미지를 사용한다면 계단현상이 발생*합니다.
 
-이미지 마크다운은 기본 문법으로 제공됩니다. 모든 이미지는 기본값 100%의 크기로 화면에 표시됩니다. 크기를 조정하고 싶을 때 이미지 명칭에 \`width-[size]\` 또는 \`height-[size]\`를 추가하여 이미지의 크기를 조정할 수 있습니다. 크기값은 4의 배수로 4부터 40까지 또는 선정의된 컨테이너 크기인 \`3xs\`, \`2xs\`, \`xs\`, \`sm\`, \`md\`, \`lg\`, \`xl\`, \`2xl\`, \`3xl\`, \`4xl\`, \`5xl\`, \`6xl\`, \`7xl\` 값으로 설정할 수 있습니다. 이미지의 크기는 \`max-width\`와 \`max-height\`를 제한하는 방식이므로 가로 설정의 경우 문서의 최대 크기인 4xl 이상을 벗어날 수 없습니다.
+| width-4            | width-8            | width-12           | width-16           | width-20           | 
+| :----------------: | :----------------: | :----------------: | :----------------: | :----------------: |
+| ![로고 width-4](${Logo.src}) | ![로고 width-8](${Logo.src}) | ![로고 width-12](${Logo.src}) | ![로고 width-16](${Logo.src}) | ![로고 width-20](${Logo.src}) |
 
-크기에 대한 더 자세한 내용은 문서 하단의 연관링크 \`Tailwindcss v4 sizing width\` 문서에서 확인할 수 있습니다.
+| width-24           | width-28           | width-32           | width-36           | width-40           |
+| :----------------: | :----------------: | :----------------: | :----------------: | :----------------: |
+| ![로고 width-24](${Logo.src}) | ![로고 width-28](${Logo.src}) | ![로고 width-32](${Logo.src}) | ![로고 width-36](${Logo.src}) | ![로고 width-40](${Logo.src}) |
+
+크기를 설정할 때에는 4의 배수로 40이하의 값을 설정할 수 있습니다. 크기는 tailwindcss의 기본단위인 \`0.25rem(4px)\` 단위를 기준으로 배수 설정됩니다.
+
+| width-3xs          | width-2xs          | width-xs           | width-sm           | width-md           |
+| :----------------: | :----------------: | :----------------: | :----------------: | :----------------: |
+| ![로고 width-3xs](${Logo.src}) | ![로고 width-2xs](${Logo.src}) | ![로고 width-xs](${Logo.src}) | ![로고 width-sm](${Logo.src}) | ![로고 width-md](${Logo.src}) | 
+
+tailwindcss에서 제공해주는 선정의된 컨테이너 크기도 사용할 수 있습니다. 더 자세한 내용은 문서 하단의 연관링크 \`Tailwindcss v4 sizing width\`를 통해 확인하실 수 있습니다. 최대 크기를 제한하는 방식이므로 매우 큰 사이즈로 설정되어도 문서의 최대 크기인 4xl 이상을 벗어날 수 없습니다.
 
 ## 특수 문법: 첨자
 

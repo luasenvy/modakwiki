@@ -34,13 +34,13 @@ export const components = {
     ) : (
       <p {...props} />
     ),
-  img: (props: React.ImgHTMLAttributes<HTMLImageElement>) => {
-    return (
-      <ImageZoom>
-        <img {...props} loading="lazy" />
-      </ImageZoom>
-    );
-  },
+  // img: (props: React.ImgHTMLAttributes<HTMLImageElement>) => {
+  //   return (
+  //     <ImageZoom>
+  //       <img {...props} loading="lazy" />
+  //     </ImageZoom>
+  //   );
+  // },
   sub: ({ children, ...props }: React.DelHTMLAttributes<HTMLElement>) => {
     return <sub {...props}>({children})</sub>;
   },

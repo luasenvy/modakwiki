@@ -12,17 +12,18 @@ export async function Document({ content }: DocumentProps) {
   const toc = getToc(content);
 
   return (
-    <div className="relative flex h-[calc(100dvh_-_var(--spacing)_*_12)] w-full justify-center overflow-auto">
+    <div className="flex h-[calc(100dvh_-_var(--spacing)_*_12)] w-full justify-center overflow-auto">
       <TOCProvider toc={toc} single={false}>
         <article
           className={cn(
-            "prose dark:prose-invert",
-            "h-auto max-w-full px-4 pt-8 md:max-w-2xl lg:max-w-3xl xl:max-w-4xl",
+            "prose dark:prose-invert relative",
+            "h-auto max-w-full pt-8 pr-2 pl-4 lg:max-w-3xl xl:w-[calc(100%_-_286px)] xl:max-w-4xl",
             "h-fit break-keep pb-24",
             // Link
             "prose-a:text-blue-600 prose-a:no-underline prose-a:hover:underline dark:prose-a:text-blue-500",
             // Table
             "prose-table:m-0",
+            "prose-td:[&>img]:m-auto",
             // Code
             "prose-pre:max-h-96",
             // Image
@@ -36,7 +37,7 @@ export async function Document({ content }: DocumentProps) {
             "prose-img:[&[alt*=width-28]]:max-w-28",
             "prose-img:[&[alt*=width-32]]:max-w-32",
             "prose-img:[&[alt*=width-36]]:max-w-36",
-            "prose-img:[&[alt*=width-40]]:max-w-40",
+            "prose-img:[&[alt*=width-40]]:!max-w-40", // Aviod Duplicate with w-4
             "prose-img:[&[alt*=width-3xs]]:max-w-3xs",
             "prose-img:[&[alt*=width-2xs]]:max-w-2xs",
             "prose-img:[&[alt*=width-xs]]:max-w-xs",
@@ -81,12 +82,13 @@ export async function Document({ content }: DocumentProps) {
         {toc.length > 0 && (
           <nav
             id="nav-toc"
-            className="sticky top-0 h-[calc(100dvh_-_var(--spacing)_*_12)] w-[286px] shrink-0 pt-8 pl-4 [mask-image:linear-gradient(to_bottom,transparent,white_16px,white_calc(100%-16px),transparent)] max-xl:hidden"
+            className="sticky top-0 flex h-[calc(100dvh_-_var(--spacing)_*_12)] w-[286px] shrink-0 flex-col pt-8 pr-4 pl-2 [mask-image:linear-gradient(to_bottom,transparent,white_16px,white_calc(100%-16px),transparent)] max-xl:hidden"
           >
             <div className="mb-2 flex items-center gap-2">
               <AlignLeft className="size-4" />
               <p className="m-0 text-muted-foreground text-sm">목차</p>
             </div>
+
             <TOCScrollArea className="overflow-auto p-0">
               <TocClerk />
             </TOCScrollArea>

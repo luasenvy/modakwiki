@@ -139,16 +139,8 @@ export function AppSidebar({ lng: lngParam, session, ...props }: AppSidebarProps
 }
 
 export function SidebarFooterAddon() {
-  {
-    /* <Card className="gap-2 bg-muted py-4 shadow-none">
-      <CardContent className="px-4 py-6">
-        <p className="text-center text-muted-foreground text-sm">Advertisement</p>
-      </CardContent>
-    </Card> */
-  }
-
   return (
-    <Skeleton className="w-full rounded-xl px-4 py-10">
+    <Skeleton className="w-full rounded-xl px-4 py-16">
       <p className="text-center text-muted-foreground text-sm">Advertisement</p>
     </Skeleton>
   );
