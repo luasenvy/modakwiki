@@ -3,9 +3,9 @@ import Logo from "@/public/logo.webp";
 
 export default async function HowToPage(ctx: PageProps<"/[lng]/editors/syntax">) {
   const content = `
-## 마크다운 문법
+## Micromark 문법
 
-가장 기본적인 형태의 마크다운 문법을 사용할 수 있습니다. 본문 하단의 연관링크를 통하여 사용법을 익히고 바로 사용할 수 있습니다.
+Micromark에서 제공하는 마크다운 문법을 지원합니다. 본문 하단의 [연관링크](#연관링크)를 통하여 학습할 수 있습니다.
 
 ## 특수 문법: 이미지 크기 설정
 
@@ -33,20 +33,17 @@ tailwindcss에서 제공해주는 선정의된 컨테이너 크기도 사용할 
 
 ## 특수 문법: 첨자
 
-모닥위키는 취소선, 각주와 같은 문법을 지원하지 않습니다. 대신 밑첨자를 사용하여 문서의 간결함을 유지할 수 있습니다.
-
 ~~~plain:마크다운
-> 밑첨자는 틸더문자를 감싸서 표현합니다. 부연 설명~또는 간단한 메모나 첨언~으로 사용할 수 있습니다.\\
-> 윗첨자는 캐럿문자를 감싸서 표현합니다. H^2^O처럼 사용할 수 있습니다.
+~또는 간단한 메모나 첨언~
+H^2^O
 ~~~
 
-> 밑첨자는 틸더문자를 감싸서 표현합니다. 부연 설명~또는 간단한 메모나 첨언~으로 사용할 수 있습니다.\\
-> 윗첨자는 캐럿문자를 감싸서 표현합니다. H^2^O처럼 사용할 수 있습니다.
+모닥위키는 취소선, 각주와 같은 문법을 지원하지 않습니다. 대신 밑첨자를 사용하여 문서의 간결함을 유지할 수 있습니다. 밑첨자는 틸더문자를 감싸서 표현합니다. 부연 설명~또는 간단한 메모나 첨언~으로 사용할 수 있습니다. 윗첨자는 캐럿문자를 감싸서 표현합니다. H^2^O처럼 사용할 수 있습니다.
 
 
 ## 특수 문법: Github 스타일 표
 
-Github 스타일의 표 문법을 지원합니다. 자세한 사항은 연관링크를 참고하세요.
+Github 스타일의 표 문법을 지원합니다. 자세한 사항은 문서 하단의 [연관링크](#연관링크)를 참고하세요.
 
 ~~~plain:Github^스타일^표^마크다운
 | Alpha bravo charlie |               delta |
@@ -156,12 +153,12 @@ function sayHello(x: number) {
 
 
 ---
-| 연관링크                                      |
-| ----------------------------------------------|
-| [Tailwindcss v4 sizing width](https://tailwindcss.com/docs/width) |
-| [Micromark](https://github.com/micromark/micromark?tab=readme-ov-file#what-is-this) |
-| [마크다운 문법](https://commonmark.org/help/) |
-| [Github 스타일의 표](https://github.com/micromark/micromark-extension-gfm-table?tab=readme-ov-file#syntax) |
+## 연관링크
+
+- [Tailwindcss v4 sizing width](https://tailwindcss.com/docs/width)
+- [Micromark](https://github.com/micromark/micromark?tab=readme-ov-file#what-is-this)
+- [마크다운 문법](https://commonmark.org/help/)
+- [Github 스타일의 표](https://github.com/micromark/micromark-extension-gfm-table?tab=readme-ov-file#syntax)
 `;
 
   return <Document content={content.trim()} />;
