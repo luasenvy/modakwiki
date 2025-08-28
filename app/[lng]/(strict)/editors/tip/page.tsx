@@ -64,8 +64,6 @@ export default async function HowToPage(ctx: PageProps<"/[lng]/editors/tip">) {
 | [연관링크 D](https://www.google.com) | [참고문헌 D](https://www.google.com) |                                  |
 | [연관링크 E](https://www.google.com) |                                      |                                  |
 
-> 
-
 `;
 
   return <Document content={content.trim()} />;
