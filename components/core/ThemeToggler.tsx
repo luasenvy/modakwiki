@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/shadcn-io/theme-toggle-button";
 import { cn } from "@/lib/utils";
 
-export function ThemeToggler({ className, ...props }: Parameters<typeof Button>[0]) {
+export function ThemeToggler({ className }: Parameters<typeof Button>[0]) {
   const { theme = "light", setTheme } = useTheme();
   const { startTransition } = useThemeTransition();
 

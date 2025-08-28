@@ -1,6 +1,6 @@
 import { Document } from "@/components/core/Document";
 
-export default async function HowToPage(ctx: PageProps<"/[lng]/editors/tip">) {
+export default async function HowToPage(ctx: PageProps<"/[lng]/editor/tip">) {
   const content = `
 ## 간결한 문서
 

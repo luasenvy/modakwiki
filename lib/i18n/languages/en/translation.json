@@ -21,5 +21,9 @@
   "Password": "Password",
   "Sign Up": "Sign Up",
   "Name": "Name",
-  "This is your public display name": "This is your public display name"
+  "This is your public display name": "This is your public display name",
+  "My Account": "My Account",
+  "Log out": "Log out",
+  "Sign In": "Sign In",
+  "Writing": "Writing"
 }

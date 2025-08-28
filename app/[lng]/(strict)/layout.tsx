@@ -12,6 +12,7 @@ import {
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { auth } from "@/lib/auth/server";
 import { Language } from "@/lib/i18n/config";
+import { cn } from "@/lib/utils";
 
 export default async function StrictLayout({ params, children }: LayoutProps<"/[lng]">) {
   const lngParam = (await params).lng;
@@ -38,7 +39,9 @@ export default async function StrictLayout({ params, children }: LayoutProps<"/[
           <ThemeToggler className="ml-auto" />
         </header>
 
-        {children}
+        <div className="flex h-[calc(100dvh_-_var(--spacing)_*_12)] w-full overflow-auto xl:justify-center">
+          {children}
+        </div>
       </SidebarInset>
     </SidebarProvider>
   );

@@ -8,5 +8,9 @@
   "Password": "비밀번호",
   "Sign Up": "가입하기",
   "Name": "사용자 닉네임",
-  "This is your public display name": "다른 사용자에게 공개되는 이름입니다."
+  "This is your public display name": "다른 사용자에게 공개되는 이름입니다.",
+  "My Account": "내 정보",
+  "Log out": "로그아웃",
+  "Sign In": "로그인",
+  "Writing": "새 문서"
 }

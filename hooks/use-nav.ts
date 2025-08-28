@@ -41,11 +41,15 @@ export const mainNavs: Array<NavItem> = [
     items: [
       {
         title: "위키문법",
-        url: "/editors/syntax",
+        url: "/editor/syntax",
       },
       {
         title: "작성요령",
-        url: "/editors/tip",
+        url: "/editor/tip",
+      },
+      {
+        title: "새 문서",
+        url: "/editor/write",
       },
     ],
   },
@@ -54,7 +58,7 @@ export const mainNavs: Array<NavItem> = [
 export const subNavs: Array<NavItem> = [
   {
     title: "내 문서",
-    url: "/me",
+    url: "/me/docs",
     icon: Inbox,
   },
 ];

@@ -1,7 +1,7 @@
 import { Document } from "@/components/core/Document";
 import Logo from "@/public/logo.webp";
 
-export default async function HowToPage(ctx: PageProps<"/[lng]/editors/syntax">) {
+export default async function HowToPage(ctx: PageProps<"/[lng]/editor/syntax">) {
   const content = `
 ## Micromark 문법
 
