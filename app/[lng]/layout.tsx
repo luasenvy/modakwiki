@@ -42,7 +42,7 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[ln
     <html
       lang={lng}
       dir={dir(lng)}
-      className={`scroll-pt-13 scroll-smooth ${nanumGothicCoding.variable}`}
+      className={`scroll-smooth ${nanumGothicCoding.variable}`}
       suppressHydrationWarning
     >
       <body className={pretendard.className}>
