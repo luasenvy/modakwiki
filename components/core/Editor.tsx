@@ -23,6 +23,7 @@ import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/react";
 import { getSelectedLine, getToc, proseClassName, rehypePlugins, remarkPlugins } from "@/lib/mdx";
 import { DocumentForm, documentForm } from "@/lib/schema/document";
+import { cn } from "@/lib/utils";
 
 interface EditorProps {
   lng: Language;
@@ -144,8 +145,13 @@ export function Editor({ lng: lngParam }: EditorProps) {
               </nav>
             </div>
 
-            <Card className="h-[calc(100dvh_-_var(--spacing)_*_(12_+_32))] scroll-pt-8 overflow-y-auto scroll-smooth md:col-span-2 xl:col-span-4">
-              <CardContent className={proseClassName}>
+            <Card className="h-[calc(100dvh_-_var(--spacing)_*_(12_+_32))] gap-0 p-0 md:col-span-2 xl:col-span-4">
+              <CardContent
+                className={cn(
+                  proseClassName,
+                  "max-w-full grow scroll-pt-8 overflow-y-auto scroll-smooth py-8",
+                )}
+              >
                 {currValueRef.current ? (
                   <Markdown
                     components={mdxComponents}
@@ -160,7 +166,7 @@ export function Editor({ lng: lngParam }: EditorProps) {
                   <p className="text-muted-foreground">{t("Empty Line")}</p>
                 )}
               </CardContent>
-              <CardFooter className="mt-auto justify-end">
+              <CardFooter className="!py-2 mt-auto justify-end border-t">
                 <Button
                   type="submit"
                   variant="default"
