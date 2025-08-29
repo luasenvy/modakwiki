@@ -29,13 +29,16 @@ export function Editor({ lng: lngParam }: EditorProps) {
   const [markdown, setMarkdown] = useState<string>("");
   const prevValueRef = useRef<string>(null);
   const currValueRef = useRef<string>(null);
-  const [_, setLineChange] = useState<number>(0);
+  const [lineChange, setLineChange] = useState<number>(0);
 
   const syncMarkdownPreview = debounce(() => {
     if (!textareaRef.current) return;
 
     currValueRef.current = getSelectedLine(textareaRef.current);
-    if (prevValueRef.current !== currValueRef.current) setLineChange((prev) => prev + 1);
+    if (prevValueRef.current !== currValueRef.current) {
+      prevValueRef.current = currValueRef.current;
+      setLineChange((prev) => prev + 1);
+    }
   }, 100);
 
   const handleKeyUpMarkdown = syncMarkdownPreview;
@@ -47,7 +50,7 @@ export function Editor({ lng: lngParam }: EditorProps) {
     if (prevValueRef.current !== currValueRef.current) setLineChange((prev) => prev + 1);
   }, 100);
 
-  const toc = useMemo(() => getToc(markdown), [markdown]);
+  const toc = useMemo(() => getToc(currValueRef.current || ""), [lineChange]);
 
   return (
     <div className="grid gap-2 md:grid-cols-3 xl:grid-cols-6">
@@ -57,7 +60,7 @@ export function Editor({ lng: lngParam }: EditorProps) {
             ref={textareaRef}
             name="markdown"
             className="h-56 resize-none"
-            placeholder={t("Please input markdown here...")}
+            placeholder={t("Please input text here")}
             defaultValue={markdown}
             onKeyUp={handleKeyUpMarkdown}
             onClick={handleClickMarkdown}
@@ -90,8 +93,10 @@ export function Editor({ lng: lngParam }: EditorProps) {
               >
                 {currValueRef.current}
               </Markdown>
+            ) : currValueRef.current === null ? (
+              <p className="text-muted-foreground">{t("Please input text")}</p>
             ) : (
-              <p className="text-muted-foreground">{t("Please input markdown...")}</p>
+              <p className="text-muted-foreground">{t("Empty Line")}</p>
             )}
           </CardContent>
         </Card>

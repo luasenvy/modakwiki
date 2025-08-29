@@ -105,7 +105,7 @@ export function getSelectedLine(textarea: HTMLTextAreaElement): string | null {
     if (!value.length) return null;
 
     if (/\n/.test(curr) && /\n|^$/.test(prev)) {
-      return null;
+      return "";
     } else if (prev === "\n") {
       const least = value.substring(selectionStart).trim();
       return least.substring(0, least.search(/\n|$/));

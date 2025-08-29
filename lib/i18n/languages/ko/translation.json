@@ -12,5 +12,8 @@
   "My Account": "내 정보",
   "Log out": "로그아웃",
   "Sign In": "로그인",
-  "Writing": "새 문서"
+  "Writing": "새 문서",
+  "Please input text here": "여기에 텍스트를 입력해주세요",
+  "Please input text": "텍스트를 입력해주세요",
+  "Empty Line": "빈 줄"
 }
