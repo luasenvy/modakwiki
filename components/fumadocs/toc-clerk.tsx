@@ -90,7 +90,7 @@ export default function ClerkTOCItems({ ref, className, ...props }: ComponentPro
       <div ref={mergeRefs(containerRef, ref)} className={cn("flex flex-col", className)} {...props}>
         {items.map((item, i) => (
           <TOCItem
-            key={item.url}
+            key={`tocitem-${i}`}
             item={item}
             upper={items[i - 1]?.depth}
             lower={items[i + 1]?.depth}

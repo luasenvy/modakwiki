@@ -16,14 +16,7 @@ import TocClerk from "@/components/fumadocs/toc-clerk";
 import mdxComponents from "@/components/mdx";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Language } from "@/lib/i18n/config";
@@ -57,7 +50,7 @@ export function Editor({ lng: lngParam }: EditorProps) {
   const handleClickMarkdown = handleKeyUpMarkdown;
 
   const handleBlurMarkdown = debounce((e: React.FocusEvent<HTMLTextAreaElement>) => {
-    currValueRef.current = e.target.value;
+    currValueRef.current = e.target.value || null;
     if (prevValueRef.current !== currValueRef.current) setLineChange((prev) => prev + 1);
   }, 100);
 
@@ -151,7 +144,7 @@ export function Editor({ lng: lngParam }: EditorProps) {
               </nav>
             </div>
 
-            <Card className="h-[calc(100dvh_-_var(--spacing)_*_(12_+_32))] scroll-pt-8 overflow-y-auto md:col-span-2 xl:col-span-4">
+            <Card className="h-[calc(100dvh_-_var(--spacing)_*_(12_+_32))] scroll-pt-8 overflow-y-auto scroll-smooth md:col-span-2 xl:col-span-4">
               <CardContent className={proseClassName}>
                 {currValueRef.current ? (
                   <Markdown
