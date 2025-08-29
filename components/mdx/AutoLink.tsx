@@ -1,5 +1,6 @@
 import { ExternalLink } from "lucide-react";
 import Link, { LinkProps } from "next/link";
+import { Children, isValidElement } from "react";
 import { ExtraProps } from "react-markdown";
 import { UrlObject } from "url";
 import { cn } from "@/lib/utils";
@@ -15,6 +16,9 @@ type AutoLinkProps = React.ClassAttributes<HTMLAnchorElement> &
 export function AutoLink({ href, children, className, icon = true, ...props }: AutoLinkProps) {
   const isExternal = /^(https?:)?\/\//.test(href as string);
 
+  const [child] = Children.toArray(children);
+  const isImage = isValidElement(child) && child.type === "img";
+
   return (
     <Link
       {...props}
@@ -25,7 +29,7 @@ export function AutoLink({ href, children, className, icon = true, ...props }: A
       rel={isExternal ? "noopener noreferrer" : undefined}
     >
       {children}
-      {icon && isExternal && <ExternalLink className="inline size-3" />}
+      {!isImage && icon && isExternal && <ExternalLink className="inline size-3" />}
     </Link>
   );
 }

@@ -8,7 +8,7 @@ export default async function () {
   const { user } = (await auth.api.getSession({ headers: await headers() }))!;
 
   return (
-    <Container>
+    <Container className="lg:max-w-3xl xl:max-w-4xl">
       <div className="flex space-x-2">
         <Avatar className="h-8 w-8 rounded-full">
           {user.image && <AvatarImage src={user.image} alt={user.name} />}

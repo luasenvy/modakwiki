@@ -6,8 +6,7 @@ export default async function WritePage(ctx: PageProps<"/[lng]/editor/write">) {
   const lngParam = (await ctx.params).lng as Language;
 
   return (
-    <Container>
-      <h2>새 문서</h2>
+    <Container className="lg:max-w-3xl xl:max-w-4xl">
       <Editor lng={lngParam} />
     </Container>
   );
