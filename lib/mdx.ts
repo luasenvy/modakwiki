@@ -125,6 +125,8 @@ export const proseClassName = cn(
   "prose dark:prose-invert",
   "pr-2 pl-4",
   "break-keep",
+  // Sub
+  "[sub]:text-muted-foreground",
   // Link
   "prose-a:text-blue-600 prose-a:no-underline prose-a:hover:underline dark:prose-a:text-blue-500",
   // Table
