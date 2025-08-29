@@ -27,7 +27,7 @@ export default {
   },
   table: ({ className, ...props }: React.TableHTMLAttributes<HTMLTableElement>) => {
     return (
-      <div className="mb-[1.25em] max-h-96 overflow-auto rounded-none border">
+      <div className="mb-[1.25em] max-h-[calc(var(--spacing)_*_100)] overflow-auto rounded-none border">
         <table
           className={cn(
             "[&>thead>tr>th]:pt-2",

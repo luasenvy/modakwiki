@@ -2,7 +2,7 @@ import { AlignLeft } from "lucide-react";
 import { MDXLoader } from "@/components/core/MdxLoader";
 import { TOCProvider, TOCScrollArea } from "@/components/fumadocs/toc";
 import TocClerk from "@/components/fumadocs/toc-clerk";
-import { getToc, proseClassName } from "@/lib/mdx";
+import { getToc } from "@/lib/mdx";
 import { cn } from "@/lib/utils";
 
 interface DocumentProps {
@@ -16,7 +16,6 @@ export async function Document({ content }: DocumentProps) {
     <TOCProvider toc={toc} single={false}>
       <article
         className={cn(
-          proseClassName,
           "relative max-w-full lg:max-w-3xl xl:w-[calc(100%_-_286px)] xl:max-w-4xl",
           "h-fit pt-8 pb-24",
           "prose dark:prose-invert",
@@ -30,7 +29,7 @@ export async function Document({ content }: DocumentProps) {
           "prose-table:m-0",
           "prose-td:[&>img]:m-auto",
           // Code
-          "prose-pre:max-h-96",
+          "prose-pre:max-h-[calc(var(--spacing)_*_100)]",
           // Image
           "prose-img:w-full",
           "prose-img:[&[alt*=width-4]]:max-w-4",

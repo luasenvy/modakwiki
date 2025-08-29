@@ -38,7 +38,7 @@ export function AppSidebar({ lng: lngParam, session, ...props }: AppSidebarProps
 
 export function SidebarFooterAddon() {
   return (
-    <Skeleton className="w-full rounded-xl border px-4 py-16 shadow-sm">
+    <Skeleton className="w-full rounded-xl border px-4 py-12 shadow-sm">
       <p className="text-center text-muted-foreground text-sm">Advertisement</p>
     </Skeleton>
   );
