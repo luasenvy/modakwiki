@@ -1,6 +1,5 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { Children } from "react";
 import { AppSidebar } from "@/components/core/AppSidebar";
 import { ThemeToggler } from "@/components/core/ThemeToggler";
 import {
@@ -12,7 +11,6 @@ import {
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { auth } from "@/lib/auth/server";
 import { Language } from "@/lib/i18n/config";
-import { cn } from "@/lib/utils";
 
 export default async function StrictLayout({ params, children }: LayoutProps<"/[lng]">) {
   const lngParam = (await params).lng;

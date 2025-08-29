@@ -20,12 +20,14 @@ import rehypeHighlightCodeLines, { HighlightLinesOptions } from "rehype-highligh
 import remarkFlexibleCodeTitles from "remark-flexible-code-titles";
 import remarkHeadingId from "remark-heading-id";
 import remarkSuperSub from "remark-supersub";
+import remarkGfmFootnote from "@/lib/remark-gfm-footnote";
 import remarkGfmTable from "@/lib/remark-gfm-table";
 import { cn } from "@/lib/utils";
 
 export const remarkPlugins = [
   remarkSuperSub,
   remarkGfmTable,
+  remarkGfmFootnote,
   [remarkHeadingId, { defaults: true, uniqueDefaults: false }],
   [remarkFlexibleCodeTitles, { tokenForSpaceInTitle: "^" }],
 ] satisfies MdxOptions["remarkPlugins"];
@@ -178,4 +180,6 @@ export const proseClassName = cn(
   "prose-img:[&[alt*=height-5xl]]:max-h-5xl",
   "prose-img:[&[alt*=height-6xl]]:max-h-6xl",
   "prose-img:[&[alt*=height-7xl]]:max-h-7xl",
+  // footnote
+  "[&>section.footnotes]:border-t [&>section.footnotes]:mt-24",
 );

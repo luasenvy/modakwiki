@@ -80,9 +80,9 @@ export function Editor({ lng: lngParam }: EditorProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)}>
-        <div className="grid gap-2 md:grid-cols-3 xl:grid-cols-6">
+        <div className="flex">
           <TOCProvider toc={toc} single={false}>
-            <div className="space-y-2 xl:col-span-2">
+            <div className="sticky top-0 h-fit w-[286px] shrink-0 space-y-2 pt-8 pr-2">
               <FormField
                 control={form.control}
                 name="title"
@@ -129,43 +129,44 @@ export function Editor({ lng: lngParam }: EditorProps) {
                   </FormItem>
                 )}
               />
-
-              <nav
-                id="nav-toc"
-                className="sticky top-0 flex h-[calc(100dvh_-_var(--spacing)_*_(12_+_8_+_36_+_24_+_13))] shrink-0 flex-col pt-8 pr-4 pl-2 [mask-image:linear-gradient(to_bottom,transparent,white_16px,white_calc(100%-16px),transparent)] max-md:hidden"
-              >
-                <div className="mb-2 flex items-center gap-2">
-                  <AlignLeft className="size-4" />
-                  <p className="m-0 text-muted-foreground text-sm">목차</p>
-                </div>
-
-                <TOCScrollArea className="overflow-auto p-0">
-                  <TocClerk />
-                </TOCScrollArea>
-              </nav>
             </div>
 
-            <Card className="h-[calc(100dvh_-_var(--spacing)_*_(12_+_32))] gap-0 p-0 md:col-span-2 xl:col-span-4">
-              <CardContent
-                className={cn(
-                  proseClassName,
-                  "max-w-full grow scroll-pt-8 overflow-y-auto scroll-smooth py-8",
-                )}
-              >
-                {currValueRef.current ? (
-                  <Markdown
-                    components={mdxComponents}
-                    remarkPlugins={remarkPlugins}
-                    rehypePlugins={rehypePlugins}
-                  >
-                    {currValueRef.current}
-                  </Markdown>
-                ) : currValueRef.current === null ? (
-                  <p className="text-muted-foreground">{t("Please input text")}</p>
-                ) : (
-                  <p className="text-muted-foreground">{t("Empty Line")}</p>
-                )}
-              </CardContent>
+            <article
+              className={cn(
+                proseClassName,
+                "relative max-w-full lg:max-w-3xl xl:w-[calc(100%_-_(286px_*_2))] xl:max-w-4xl",
+                "h-fit pt-8 pb-24",
+              )}
+            >
+              {currValueRef.current ? (
+                <Markdown
+                  components={mdxComponents}
+                  remarkPlugins={remarkPlugins}
+                  rehypePlugins={rehypePlugins}
+                >
+                  {currValueRef.current}
+                </Markdown>
+              ) : currValueRef.current === null ? (
+                <p className="text-muted-foreground">{t("Please input text")}</p>
+              ) : (
+                <p className="text-muted-foreground">{t("Empty Line")}</p>
+              )}
+            </article>
+
+            <nav
+              id="nav-toc"
+              className="sticky top-0 flex h-[calc(100dvh_-_var(--spacing)_*_12)] w-[286px] shrink-0 flex-col pt-8 pr-4 pl-2 [mask-image:linear-gradient(to_bottom,transparent,white_16px,white_calc(100%-16px),transparent)] max-xl:hidden"
+            >
+              <div className="mb-2 flex items-center gap-2">
+                <AlignLeft className="size-4" />
+                <p className="m-0 text-muted-foreground text-sm">목차</p>
+              </div>
+
+              <TOCScrollArea className="overflow-auto p-0">
+                <TocClerk />
+              </TOCScrollArea>
+            </nav>
+            {/* <Card className="h-[calc(100dvh_-_var(--spacing)_*_(12_+_32))] gap-0 p-0 md:col-span-2 xl:col-span-4">
               <CardFooter className="!py-2 mt-auto justify-end border-t">
                 <Button
                   type="submit"
@@ -176,7 +177,7 @@ export function Editor({ lng: lngParam }: EditorProps) {
                   {t("Save")}
                 </Button>
               </CardFooter>
-            </Card>
+            </Card> */}
           </TOCProvider>
         </div>
       </form>

@@ -1,6 +1,14 @@
 "use client";
 
-import { Inbox, LucideIcon } from "lucide-react";
+import {
+  File,
+  FilePenLine,
+  FilePlus2,
+  Inbox,
+  LucideIcon,
+  ScrollText,
+  SpellCheck,
+} from "lucide-react";
 import { create } from "zustand";
 
 export interface NavItem {
@@ -42,14 +50,17 @@ export const mainNavs: Array<NavItem> = [
       {
         title: "위키문법",
         url: "/editor/syntax",
+        icon: SpellCheck,
       },
       {
         title: "작성요령",
         url: "/editor/tip",
+        icon: ScrollText,
       },
       {
         title: "새 문서",
         url: "/editor/write",
+        icon: FilePlus2,
       },
     ],
   },

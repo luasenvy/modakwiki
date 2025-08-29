@@ -15,11 +15,21 @@ type AutoLinkProps = React.ClassAttributes<HTMLAnchorElement> &
 
 export function AutoLink({ href, children, className, icon = true, ...props }: AutoLinkProps) {
   const isExternal = /^(https?:)?\/\//.test(href as string);
+  const isInner = href?.startsWith("#");
 
   const [child] = Children.toArray(children);
   const isImage = isValidElement(child) && child.type === "img";
 
-  return (
+  return isInner ? (
+    <a
+      {...props}
+      href={href}
+      className={cn(className, "group text-blue-500 no-underline hover:underline")}
+    >
+      {children}
+      {!isImage && icon && isExternal && <ExternalLink className="inline size-3" />}
+    </a>
+  ) : (
     <Link
       {...props}
       // Avoid Nextjs Type
