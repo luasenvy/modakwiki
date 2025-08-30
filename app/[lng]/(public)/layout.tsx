@@ -32,9 +32,7 @@ export default async function DefaultLayout({ params, children }: LayoutProps<"/
           <ThemeToggler className="ml-auto" />
         </header>
 
-        <div className="flex h-[calc(100dvh_-_var(--spacing)_*_12)] w-full scroll-pt-8 overflow-auto xl:justify-center">
-          {children}
-        </div>
+        {children}
       </SidebarInset>
     </SidebarProvider>
   );

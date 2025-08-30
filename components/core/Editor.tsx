@@ -4,6 +4,8 @@ import "highlight.js/styles/vs2015.min.css";
 import "@/styles/highlight-code-lines.css";
 import "@/styles/highlight-code-titles.css";
 
+import "katex/dist/katex.min.css";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import debounce from "lodash.debounce";
 import { AlignLeft } from "lucide-react";
@@ -11,11 +13,10 @@ import { useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import Markdown from "react-markdown";
 import { toast } from "sonner";
+import { Container } from "@/components/core/Container";
 import { TOCProvider, TOCScrollArea } from "@/components/fumadocs/toc";
 import TocClerk from "@/components/fumadocs/toc-clerk";
 import mdxComponents from "@/components/mdx";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -45,7 +46,7 @@ export function Editor({ lng: lngParam }: EditorProps) {
       prevValueRef.current = currValueRef.current;
       setLineChange((prev) => prev + 1);
     }
-  }, 100);
+  }, 130);
 
   const handleKeyUpMarkdown = syncMarkdownPreview;
   const handleClickMarkdown = handleKeyUpMarkdown;
@@ -53,7 +54,7 @@ export function Editor({ lng: lngParam }: EditorProps) {
   const handleBlurMarkdown = debounce((e: React.FocusEvent<HTMLTextAreaElement>) => {
     currValueRef.current = e.target.value || null;
     if (prevValueRef.current !== currValueRef.current) setLineChange((prev) => prev + 1);
-  }, 100);
+  }, 130);
 
   const form = useForm<DocumentForm>({
     resolver: zodResolver(documentForm),
@@ -80,21 +81,19 @@ export function Editor({ lng: lngParam }: EditorProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)}>
-        <div className="flex">
-          <TOCProvider toc={toc} single={false}>
+        <TOCProvider toc={toc} single={false}>
+          <Container>
             <article
               className={cn(
-                "relative max-w-full sm:w-[calc(100%_-_286px)] sm:max-w-xl md:max-w-2xl lg:max-w-3xl xl:max-w-4xl",
-                "h-fit pt-8 pr-2 pb-24 pl-4",
+                "relative w-full max-w-full lg:max-w-3xl xl:w-[calc(100%_-_286px)] xl:max-w-4xl",
+                "h-fit pt-8 pb-24",
                 "prose dark:prose-invert",
+                "pr-2 pl-4",
                 "break-keep",
                 // Sub
-                "[sub]:text-muted-foreground",
+                "[&_sub]:text-muted-foreground",
                 // Link
                 "prose-a:text-blue-600 prose-a:no-underline prose-a:hover:underline dark:prose-a:text-blue-500",
-                // Table
-                "prose-table:m-0",
-                "prose-td:[&>img]:m-auto",
                 // Code
                 "prose-pre:max-h-[calc(var(--spacing)_*_100)]",
                 // Image
@@ -145,8 +144,16 @@ export function Editor({ lng: lngParam }: EditorProps) {
                 "prose-img:[&[alt*=height-5xl]]:max-h-5xl",
                 "prose-img:[&[alt*=height-6xl]]:max-h-6xl",
                 "prose-img:[&[alt*=height-7xl]]:max-h-7xl",
+                // Task
+                "prose-ol:[&.contains-task-list]:[&_[type=checkbox]]:mr-2",
+                "prose-ul:[&.contains-task-list]:[&_[type=checkbox]]:mr-2",
+                // Table
+                "prose-table:m-0",
+                "prose-td:[&>img]:m-auto",
                 // footnote
                 "[&>section.footnotes]:mt-24 [&>section.footnotes]:border-t",
+                "prose-a:[&[data-footnote-ref]]:before:content-['[']",
+                "prose-a:[&[data-footnote-ref]]:after:content-[']']",
               )}
             >
               {currValueRef.current ? (
@@ -226,8 +233,8 @@ export function Editor({ lng: lngParam }: EditorProps) {
                 </TOCScrollArea>
               </nav>
             </div>
-          </TOCProvider>
-        </div>
+          </Container>
+        </TOCProvider>
       </form>
     </Form>
   );

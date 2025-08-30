@@ -5,7 +5,11 @@ export default async function WelcomePage(ctx: PageProps<"/[lng]">) {
   const { lng: lngParam } = await ctx.params;
 
   try {
-    return <Hero lng={lngParam as Language} />;
+    return (
+      <>
+        <Hero lng={lngParam as Language} className="mx-auto" />
+      </>
+    );
   } catch (err) {
     throw err;
   }

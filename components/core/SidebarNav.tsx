@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { createElement } from "react";
+import { createElement, useMemo } from "react";
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -16,18 +16,28 @@ import { Language } from "@/lib/i18n/config";
 
 interface NavMenuProps {
   lng: Language;
+  scope?: number;
 }
 
-export function SidebarNav({ lng: lngParam }: NavMenuProps) {
+export function SidebarNav({ lng: lngParam, scope: userScope = 0 }: NavMenuProps) {
   const lng = lngParam ? `/${lngParam}` : "";
   const pathname = usePathname();
 
   const mainNavs = useNavItems((state) => state.mainNavs);
   const subNavs = useNavItems((state) => state.subNavs);
 
+  const scopedMainNavs = useMemo(
+    () => mainNavs.filter(({ scope }) => (!scope ? true : scope <= userScope)),
+    [mainNavs],
+  );
+  const scopedSubNavs = useMemo(
+    () => subNavs.filter(({ scope }) => (!scope ? true : scope <= userScope)),
+    [subNavs],
+  );
+
   return (
     <>
-      {mainNavs.map((item) => (
+      {scopedMainNavs.map((item) => (
         <SidebarGroup key={item.title}>
           <SidebarGroupLabel>{item.title}</SidebarGroupLabel>
           <SidebarGroupContent>
@@ -54,7 +64,7 @@ export function SidebarNav({ lng: lngParam }: NavMenuProps) {
       <SidebarGroup className="mt-auto">
         <SidebarGroupContent>
           <SidebarMenu>
-            {subNavs.map((item) => (
+            {scopedSubNavs.map((item) => (
               <SidebarMenuItem key={item.title}>
                 <SidebarMenuButton asChild size="sm" isActive={`${lng}${item.url}` === pathname}>
                   <Link href={item.url}>

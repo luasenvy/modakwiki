@@ -1,19 +1,13 @@
 "use client";
 
-import {
-  File,
-  FilePenLine,
-  FilePlus2,
-  Inbox,
-  LucideIcon,
-  ScrollText,
-  SpellCheck,
-} from "lucide-react";
+import { FilePlus2, Inbox, LucideIcon, ScrollText, SpellCheck } from "lucide-react";
 import { create } from "zustand";
+import { RoleEnum, roleEnum } from "@/lib/schema/role";
 
 export interface NavItem {
   title: string;
   url: string;
+  scope?: RoleEnum;
   items?: Array<NavItem>;
   icon?: LucideIcon;
 }
@@ -45,6 +39,7 @@ export const mainNavs: Array<NavItem> = [
   },
   {
     title: "에디터",
+    scope: roleEnum.admin,
     url: "#",
     items: [
       {

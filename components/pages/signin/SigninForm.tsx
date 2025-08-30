@@ -19,7 +19,6 @@ const authClient = createAuthClient();
 export function SigninForm({ lng: lngParam, referer, turnstileSiteKey }: SigninFormProps) {
   const lng = lngParam ? `/${lngParam}` : "";
 
-  console.info(referer, "@@@@@@@@@");
   const handleClickGoogleSignin = async () => {
     const { error } = await authClient.signIn.social({
       provider: "google",

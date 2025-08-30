@@ -10,13 +10,13 @@ import {
 import { Language } from "@/lib/i18n/config";
 import { cn } from "@/lib/utils";
 
-interface HeroProps {
+interface HeroProps extends React.ComponentProps<"div"> {
   lng?: Language;
 }
 
-export default function Hero({}: HeroProps) {
+export default function Hero({ lng, className, ...props }: HeroProps) {
   return (
-    <div className="flex flex-col gap-16 px-8 py-24 text-center">
+    <div className={cn("flex flex-col gap-16 px-8 py-24 text-center", className)} {...props}>
       <div className="flex flex-col items-center justify-center gap-8">
         <Link href="#">
           <Announcement>

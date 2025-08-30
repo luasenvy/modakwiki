@@ -13,20 +13,24 @@ import LanguagePlaintext from "highlight.js/lib/languages/plaintext";
 import LanguageSql from "highlight.js/lib/languages/sql";
 import LanguageTypescript from "highlight.js/lib/languages/typescript";
 import LanguageXml from "highlight.js/lib/languages/xml";
-import kebabcase from "lodash.kebabcase";
 
+import kebabcase from "lodash.kebabcase";
 import rehypeHighlight, { Options as HighlightOptions } from "rehype-highlight";
 import rehypeHighlightCodeLines, { HighlightLinesOptions } from "rehype-highlight-code-lines";
+import rehypeKatex from "rehype-katex";
 import remarkFlexibleCodeTitles from "remark-flexible-code-titles";
 import remarkHeadingId from "remark-heading-id";
 import remarkSuperSub from "remark-supersub";
 import remarkGfmFootnote from "@/lib/remark-gfm-footnote";
 import remarkGfmTable from "@/lib/remark-gfm-table";
-import { cn } from "@/lib/utils";
+import remarkGfmTask from "@/lib/remark-gfm-task";
+import remarkKatex from "@/lib/remark-katex";
 
 export const remarkPlugins = [
   remarkSuperSub,
+  remarkGfmTask,
   remarkGfmTable,
+  remarkKatex,
   remarkGfmFootnote,
   [remarkHeadingId, { defaults: true, uniqueDefaults: false }],
   [remarkFlexibleCodeTitles, { tokenForSpaceInTitle: "^" }],
@@ -70,6 +74,7 @@ export const rehypePlugins = [
       },
     } as HighlightOptions,
   ],
+  rehypeKatex,
   [rehypeHighlightCodeLines, { showLineNumbers: true } as HighlightLinesOptions],
 ] satisfies MdxOptions["rehypePlugins"];
 

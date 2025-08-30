@@ -20,7 +20,7 @@ export function AppSidebar({ lng: lngParam, session, ...props }: AppSidebarProps
         <SearchForm />
       </SidebarHeader>
       <SidebarContent>
-        <SidebarNav lng={lngParam} />
+        <SidebarNav lng={lngParam} scope={session?.user.scope} />
       </SidebarContent>
 
       <SidebarFooter>
