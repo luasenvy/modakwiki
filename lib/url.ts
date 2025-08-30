@@ -1,3 +1,5 @@
+import { Language } from "@/lib/i18n/config";
+
 /**
  * URL 해석기
  *
@@ -64,4 +66,8 @@ export const parse = (url: string): (URL & { baseurl: string }) | undefined => {
 
 export function unwrap(url: string): string {
   return url.replace(/\0|\.{2,}|\/{2,}/g, "");
+}
+
+export function localePrefix(lng?: Language): string {
+  return lng ? `/${lng}` : "";
 }

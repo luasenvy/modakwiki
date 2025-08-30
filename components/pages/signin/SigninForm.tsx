@@ -17,7 +17,7 @@ interface SigninFormProps {
 const authClient = createAuthClient();
 
 export function SigninForm({ lng: lngParam, referer, turnstileSiteKey }: SigninFormProps) {
-  const lng = lngParam ? `/${lngParam}` : "";
+  // const lng = lngParam ? `/${lngParam}` : "";
 
   const handleClickGoogleSignin = async () => {
     const { error } = await authClient.signIn.social({

@@ -23,7 +23,21 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react"
+import { createContext, createElement, useCallback, useContext, useEffect, useMemo, useState } from "react"
+
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbList,
+  BreadcrumbPage,
+} from "@/components/ui/breadcrumb";
+
+import dynamic from "next/dynamic";
+// import { useBreadcrumb } from "@/hooks/use-breadcrumb"
+import Link from "next/link"
+
+// Avoid SSR for the ThemeToggler component
+const ThemeToggler = await dynamic(() => import("@/components/core/ThemeToggler").then(mod => mod.ThemeToggler), { ssr: false });
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state"
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
@@ -32,10 +46,17 @@ const SIDEBAR_WIDTH_MOBILE = "18rem"
 const SIDEBAR_WIDTH_ICON = "3rem"
 const SIDEBAR_KEYBOARD_SHORTCUT = "b"
 
+export interface BreadcrumbItem {
+  title: string;
+  href?: string;
+}
+
 type SidebarContextProps = {
   state: "expanded" | "collapsed"
   open: boolean
   setOpen: (open: boolean) => void
+  breadcrumbs: Array<BreadcrumbItem>
+  setBreadcrumbs: (breadcrumbs: Array<BreadcrumbItem>) => void
   openMobile: boolean
   setOpenMobile: (open: boolean) => void
   isMobile: boolean
@@ -88,6 +109,13 @@ function SidebarProvider({
     [setOpenProp, open]
   )
 
+  const [breadcrumbs, _setBreadcrumbs] = useState<Array<BreadcrumbItem>>([])
+  const setBreadcrumbs = useCallback(
+    (value: Array<BreadcrumbItem> | ((value: Array<BreadcrumbItem>) => Array<BreadcrumbItem>)) =>
+      _setBreadcrumbs(typeof value === "function" ? value(breadcrumbs) : value),
+    [breadcrumbs]
+  )
+
   // Helper to toggle the sidebar.
   const toggleSidebar = useCallback(() => {
     return isMobile ? setOpenMobile((open) => !open) : setOpen((open) => !open)
@@ -116,6 +144,8 @@ function SidebarProvider({
   const contextValue = useMemo<SidebarContextProps>(
     () => ({
       state,
+      breadcrumbs,
+      setBreadcrumbs,
       open,
       setOpen,
       isMobile,
@@ -123,7 +153,7 @@ function SidebarProvider({
       setOpenMobile,
       toggleSidebar,
     }),
-    [state, open, setOpen, isMobile, openMobile, setOpenMobile, toggleSidebar]
+    [state, breadcrumbs, setBreadcrumbs, open, setOpen, isMobile, openMobile, setOpenMobile, toggleSidebar]
   )
 
   return (
@@ -304,8 +334,8 @@ function SidebarRail({ className, ...props }: React.ComponentProps<"button">) {
   )
 }
 
-function SidebarInset({ className, ...props }: React.ComponentProps<"main">) {
-  const { state, isMobile } = useSidebar()
+function SidebarInset({ className, children, ...props }: React.ComponentProps<"main">) {
+  const { state, breadcrumbs, isMobile } = useSidebar()
 
   return (
     <main
@@ -318,7 +348,41 @@ function SidebarInset({ className, ...props }: React.ComponentProps<"main">) {
         className,
       )}
       {...props}
-    />
+    >
+      <header className="sticky top-0 flex h-12 shrink-0 items-center gap-2 border-b bg-background px-4">
+        <SidebarTrigger className="-ml-1" />
+        
+        <Breadcrumb>
+          <BreadcrumbList>
+            {breadcrumbs.map(({ title, href }, i) => {
+              const isCurrent = breadcrumbs.length - 1 === i;
+              return (
+                <BreadcrumbItem key={`breadcrumb-${i}`} className={cn("text-muted-foreground")}>
+                  <BreadcrumbPage className={cn({
+                    "font-semibold": isCurrent,
+                    "text-muted-foreground": !isCurrent,
+                  })}>
+                    {(href && breadcrumbs.length - 1 > i) ? (
+                      <Link href={href} className="text-muted-foreground hover:text-blue-500 hover:underline">{title}</Link>
+                    ) : (
+                      title
+                    )}
+                  </BreadcrumbPage>
+
+                  {!isCurrent && (
+                    <Separator orientation="vertical" className="bg-sidebar-border mx-2 !h-4" />
+                  )}
+                </BreadcrumbItem>
+              )
+            })}
+          </BreadcrumbList>
+        </Breadcrumb>
+
+        <ThemeToggler className="ml-auto" />
+      </header>
+
+      {children}
+    </main>
   )
 }
 
