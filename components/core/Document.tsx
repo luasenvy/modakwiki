@@ -1,9 +1,9 @@
 import { AlignLeft } from "lucide-react";
 import { Container } from "@/components/core/Container";
-import { MDXLoader } from "@/components/core/MdxLoader";
 import { TOCProvider, TOCScrollArea } from "@/components/fumadocs/toc";
 import TocClerk from "@/components/fumadocs/toc-clerk";
-import { getToc } from "@/lib/mdx";
+import { MdxLoader } from "@/lib/mdx/server";
+import { getToc } from "@/lib/mdx/utils";
 import { cn } from "@/lib/utils";
 
 interface DocumentProps {
@@ -89,7 +89,7 @@ export async function Document({ content }: DocumentProps) {
             "prose-a:[&[data-footnote-ref]]:after:content-[']']",
           )}
         >
-          <MDXLoader source={content} />
+          <MdxLoader source={content} />
         </article>
 
         {toc.length > 0 && (

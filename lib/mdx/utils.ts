@@ -125,3 +125,68 @@ export function getSelectedLine(textarea: HTMLTextAreaElement): string | null {
     }
   }
 }
+
+function getEnterIndex(value: string, indicator: number, direction: "prev" | "next") {
+  const regex = /\n{2,}|^$/;
+  while (indicator > 0 || indicator < value.length) {
+    if (direction === "prev") {
+      if (regex.test(value.substring(indicator - 2, indicator))) break;
+      indicator--;
+    } else {
+      if (regex.test(value.substring(indicator, indicator + 2))) break;
+      indicator++;
+    }
+  }
+
+  return indicator;
+}
+
+export function getSelectedHunk(textarea: HTMLTextAreaElement) {
+  const value = textarea.value;
+  const selectionStart = textarea.selectionStart;
+  const selectionEnd = textarea.selectionEnd;
+
+  const startOfHunk = getEnterIndex(textarea.value, selectionStart, "prev");
+  const endOfHunk = getEnterIndex(textarea.value, selectionEnd, "next");
+
+  return value.substring(startOfHunk, endOfHunk);
+}
+
+export function getHunks(content: string) {
+  const lines = [];
+
+  let indicator = 0;
+  while (indicator < content.length) {
+    if (content.startsWith("```", indicator)) {
+      let endOfHunk = content.indexOf("```", indicator + 3);
+
+      // syntax
+      if (endOfHunk < 0) endOfHunk = content.length;
+      else endOfHunk += 3;
+
+      lines.push(content.substring(indicator, endOfHunk));
+      indicator = endOfHunk;
+    } else if (content.startsWith("$$", indicator)) {
+      let endOfHunk = content.indexOf("$$", indicator + 2);
+
+      // syntax
+      if (endOfHunk < 0) endOfHunk = content.length;
+      else endOfHunk += 2;
+
+      lines.push(content.substring(indicator, endOfHunk));
+      indicator = endOfHunk;
+    } else {
+      let endOfHunk = content.indexOf("\n\n", indicator + 2);
+
+      if (endOfHunk < 0) {
+        indicator += 1;
+      } else {
+        endOfHunk += 2;
+        lines.push(content.substring(indicator, endOfHunk).trim());
+        indicator = endOfHunk;
+      }
+    }
+  }
+
+  return lines;
+}

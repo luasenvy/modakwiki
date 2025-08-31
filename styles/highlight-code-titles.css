@@ -6,9 +6,9 @@
   & > .remark-code-title {
     text-align: center;
     color: var(--muted-foreground);
-    border-bottom: 1px solid var(--border);
-    border-left: 1px solid var(--border);
-    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--text-weak);
+    border-left: 1px solid var(--text-weak);
+    border-right: 1px solid var(--text-weak);
   }
 
   & > pre {

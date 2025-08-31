@@ -23,7 +23,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import { createContext, createElement, useCallback, useContext, useEffect, useMemo, useState } from "react"
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react"
 
 import {
   Breadcrumb,
@@ -37,7 +37,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link"
 
 // Avoid SSR for the ThemeToggler component
-const ThemeToggler = await dynamic(() => import("@/components/core/ThemeToggler").then(mod => mod.ThemeToggler), { ssr: false });
+const ThemeToggler = dynamic(() => import("@/components/core/ThemeToggler").then(mod => mod.ThemeToggler), { ssr: false });
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state"
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7

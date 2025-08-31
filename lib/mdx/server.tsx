@@ -6,9 +6,9 @@ import "katex/dist/katex.min.css";
 
 import { MDXRemote } from "next-mdx-remote/rsc";
 import components from "@/components/mdx";
-import { rehypePlugins, remarkPlugins } from "@/lib/mdx";
+import { rehypePlugins, remarkPlugins } from "@/lib/mdx/utils";
 
-export function MDXLoader({ source }: { source?: string }) {
+export function MdxLoader({ source }: { source?: string }) {
   return (
     !!source && (
       <MDXRemote

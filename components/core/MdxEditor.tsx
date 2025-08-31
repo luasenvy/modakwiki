@@ -6,56 +6,58 @@ import "@/styles/highlight-code-titles.css";
 
 import "katex/dist/katex.min.css";
 
+import {
+  closestCenter,
+  DndContext,
+  DragEndEvent,
+  MouseSensor,
+  TouchSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { zodResolver } from "@hookform/resolvers/zod";
 import debounce from "lodash.debounce";
-import { AlignLeft } from "lucide-react";
+import { AlignLeft, GripVertical } from "lucide-react";
 import { useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-import Markdown from "react-markdown";
 import { toast } from "sonner";
 import { Container } from "@/components/core/Container";
 import { TOCProvider, TOCScrollArea } from "@/components/fumadocs/toc";
 import TocClerk from "@/components/fumadocs/toc-clerk";
-import mdxComponents from "@/components/mdx";
+import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/react";
-import { getSelectedLine, getToc, rehypePlugins, remarkPlugins } from "@/lib/mdx/utils";
+import { MdxLoader } from "@/lib/mdx/react";
+import { getHunks, getToc } from "@/lib/mdx/utils";
 import { DocumentForm, documentForm } from "@/lib/schema/document";
 import { cn } from "@/lib/utils";
 
-interface EditorProps {
+interface MdxEditorProps {
   lng: Language;
 }
 
-export function Editor({ lng: lngParam }: EditorProps) {
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const previewRef = useRef<HTMLDivElement>(null);
-
+export default function MdxEditor({ lng: lngParam }: MdxEditorProps) {
   const { t } = useTranslation(lngParam);
-  const prevValueRef = useRef<string>(null);
-  const currValueRef = useRef<string>(null);
-  const [lineChange, setLineChange] = useState<number>(0);
 
-  const syncMarkdownPreview = debounce(() => {
-    if (!textareaRef.current) return;
+  const [hunk, setHunk] = useState<string>("");
+  const [lines, setLines] = useState<string[]>([]);
+  const [selectedLine, setSelectedLine] = useState<number>(-1);
+  const lineRef = useRef<HTMLTextAreaElement>(null);
 
-    currValueRef.current = getSelectedLine(textareaRef.current);
-    if (prevValueRef.current !== currValueRef.current) {
-      prevValueRef.current = currValueRef.current;
-      setLineChange((prev) => prev + 1);
-    }
-  }, 130);
-
-  const handleKeyUpMarkdown = syncMarkdownPreview;
-  const handleClickMarkdown = handleKeyUpMarkdown;
-
-  const handleBlurMarkdown = debounce((e: React.FocusEvent<HTMLTextAreaElement>) => {
-    currValueRef.current = e.target.value || null;
-    if (prevValueRef.current !== currValueRef.current) setLineChange((prev) => prev + 1);
-  }, 130);
+  const sensors = useSensors(
+    useSensor(MouseSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 6 } }),
+  );
 
   const form = useForm<DocumentForm>({
     resolver: zodResolver(documentForm),
@@ -77,7 +79,56 @@ export function Editor({ lng: lngParam }: EditorProps) {
     console.info(201);
   };
 
-  const toc = useMemo(() => getToc(currValueRef.current || ""), [lineChange]);
+  const handleChangeHunk = debounce((e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setHunk(e.target.value);
+  }, 120);
+
+  const handleKeyDownHunk = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if ("Enter" === e.key && !e.shiftKey) {
+      handleChangeHunk.cancel();
+      e.preventDefault();
+
+      setLines(getHunks(e.currentTarget.value.trim()));
+      setHunk("");
+      lineRef.current!.value = "";
+    }
+  };
+
+  const handleChangeSelectedLine = debounce((e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setLines((prev) => prev.toSpliced(selectedLine, 1, e.target.value.trim()));
+  }, 120);
+
+  const handleKeyDownSelectedLine = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if ("Enter" === e.key && !e.shiftKey) {
+      handleChangeSelectedLine.cancel();
+      e.preventDefault();
+
+      setLines(lines.toSpliced(selectedLine, 1, e.currentTarget.value.trim()));
+      setSelectedLine(-1);
+    }
+  };
+
+  const handleDragEnd = (e: DragEndEvent) => {
+    const { active, over } = e;
+
+    if (!over) return;
+
+    if (active.id !== over.id) {
+      // parse indices from ids like `line-0`, `line-1`
+      const parseIndex = (id: unknown) => {
+        const n = Number(String(id).split("-").pop());
+        return Number.isFinite(n) ? n : -1;
+      };
+
+      const oldIndex = parseIndex(active.id);
+      const newIndex = parseIndex(over.id);
+
+      if (oldIndex >= 0 && newIndex >= 0 && oldIndex !== newIndex)
+        setLines((prev) => arrayMove(prev, oldIndex, newIndex));
+    }
+  };
+
+  const toc = useMemo(() => getToc(lines.join("\n\n")), [lines]);
 
   return (
     <Form {...form}>
@@ -85,12 +136,11 @@ export function Editor({ lng: lngParam }: EditorProps) {
         <TOCProvider toc={toc} single={false}>
           <Container>
             <article
-              ref={previewRef}
               className={cn(
                 "relative w-full max-w-full lg:max-w-3xl xl:w-[calc(100%_-_286px)] xl:max-w-4xl",
                 "h-fit pt-8 pb-24",
                 "prose dark:prose-invert",
-                "pr-2 pl-4",
+                "pr-2 pb-2 pl-4",
                 "break-keep",
                 // Sub
                 "[&_sub]:text-muted-foreground",
@@ -158,34 +208,18 @@ export function Editor({ lng: lngParam }: EditorProps) {
                 "prose-a:[&[data-footnote-ref]]:after:content-[']']",
               )}
             >
-              {currValueRef.current ? (
-                <Markdown
-                  components={mdxComponents}
-                  remarkPlugins={remarkPlugins}
-                  rehypePlugins={rehypePlugins}
-                >
-                  {currValueRef.current}
-                </Markdown>
-              ) : currValueRef.current === null ? (
-                <p className="text-muted-foreground">{t("Please input text")}</p>
-              ) : (
-                <p className="text-muted-foreground">{t("Empty Line")}</p>
-              )}
-            </article>
-
-            <div className="sticky top-0 flex h-[calc(100dvh_-_var(--spacing)_*_12)] w-[286px] flex-col space-y-2 pt-8 pr-4 pl-2">
               <FormField
                 control={form.control}
                 name="title"
-                render={({ field: { onBlur, onChange, value, ...field } }) => (
+                render={({ field: { value, ...field } }) => (
                   <FormItem>
                     <FormControl>
                       <Input
+                        {...field}
+                        className="rounded-none"
                         placeholder={t("Please input title")}
                         defaultValue={value}
-                        onBlur={onChange}
                         required
-                        {...field}
                       />
                     </FormControl>
                     <FormMessage />
@@ -193,28 +227,70 @@ export function Editor({ lng: lngParam }: EditorProps) {
                 )}
               />
 
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
+              >
+                <SortableContext
+                  items={lines.map((_, i) => `line-${i}`)}
+                  strategy={verticalListSortingStrategy}
+                  disabled={selectedLine > -1}
+                >
+                  {lines.map((line, i) => (
+                    <SortableItem
+                      className={cn("hover:bg-accent", {
+                        group: selectedLine < 0,
+                        "my-8 border border-primary bg-accent p-2": selectedLine === i,
+                        "cursor-pointer": selectedLine !== i,
+                      })}
+                      id={`line-${i}`}
+                      key={`line-${i}`}
+                      onClick={(e) => {
+                        if (selectedLine !== i) return setSelectedLine(i);
+                        e.preventDefault();
+                        e.stopPropagation();
+                      }}
+                    >
+                      <MdxLoader>{line}</MdxLoader>
+                      {selectedLine === i && (
+                        <Textarea
+                          name="prev"
+                          className="mt-2 h-28 resize-none rounded-none"
+                          placeholder={t("Please input text here")}
+                          defaultValue={lines[selectedLine]}
+                          onChange={handleChangeSelectedLine}
+                          onKeyDown={handleKeyDownSelectedLine}
+                        />
+                      )}
+                    </SortableItem>
+                  ))}
+                </SortableContext>
+              </DndContext>
+
+              <div className="bg-accent">
+                <MdxLoader>{hunk}</MdxLoader>
+              </div>
+
+              <Textarea
+                ref={lineRef}
+                name="hunk"
+                className="mt-2 h-28 resize-none rounded-none"
+                placeholder={t("Writing a paragraph...")}
+                onFocus={() => setSelectedLine(-1)}
+                onChange={handleChangeHunk}
+                onKeyDown={handleKeyDownHunk}
+              />
+            </article>
+
+            <div className="sticky top-0 flex h-[calc(100dvh_-_var(--spacing)_*_12)] w-[286px] flex-col space-y-2">
               <FormField
                 control={form.control}
                 name="content"
-                render={({ field: { ref, onBlur, onChange, value, ...field } }) => (
-                  <FormItem>
+                render={({ field: { value, ...field } }) => (
+                  <FormItem className="hidden">
                     <FormControl>
-                      <Textarea
-                        ref={(el) => {
-                          textareaRef.current = el;
-                          ref(el);
-                        }}
-                        className="h-64 resize-none"
-                        placeholder={t("Please input text here")}
-                        defaultValue={value}
-                        onKeyUp={handleKeyUpMarkdown}
-                        onClick={handleClickMarkdown}
-                        onBlur={(e) => {
-                          handleBlurMarkdown(e);
-                          onChange(e);
-                        }}
-                        {...field}
-                      />
+                      <Textarea defaultValue={value} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -223,7 +299,7 @@ export function Editor({ lng: lngParam }: EditorProps) {
 
               <nav
                 id="nav-toc"
-                className="flex h-[calc(100dvh_-(_var(--spacing)_*_(12_+_64_+_9_+_4_+_8)))] shrink-0 flex-col pt-8 [mask-image:linear-gradient(to_bottom,transparent,white_16px,white_calc(100%-16px),transparent)]"
+                className="flex h-[calc(100dvh_-(_var(--spacing)_*_(12_+_9_+_1)))] shrink-0 flex-col pt-8 pr-4 pl-2 [mask-image:linear-gradient(to_bottom,transparent,white_16px,white_calc(100%-16px),transparent)]"
               >
                 <div className="mb-2 flex items-center gap-2">
                   <AlignLeft className="size-4" />
@@ -239,5 +315,37 @@ export function Editor({ lng: lngParam }: EditorProps) {
         </TOCProvider>
       </form>
     </Form>
+  );
+}
+
+interface SortableProps extends React.ComponentProps<"div"> {
+  id: string;
+}
+
+function SortableItem({ children, className, ...props }: SortableProps) {
+  const { attributes, listeners, setNodeRef, transform, transition, isSorting } = useSortable({
+    id: props.id,
+  });
+
+  return (
+    <div
+      ref={setNodeRef}
+      className={cn(className, "flex items-center")}
+      style={{
+        transform: CSS.Transform.toString(transform),
+        transition: isSorting ? transition : undefined,
+      }}
+      {...props}
+    >
+      <div
+        className="hidden size-8 shrink-0 cursor-grab px-2 group-hover:flex"
+        {...attributes}
+        {...listeners}
+      >
+        <GripVertical className="m-auto size-5" />
+      </div>
+
+      <div className="w-[calc(100%_-_(var(--spacing)_*_8))] grow">{children}</div>
+    </div>
   );
 }

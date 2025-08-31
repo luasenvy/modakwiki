@@ -1,4 +1,4 @@
-import { Editor } from "@/components/core/Editor";
+import MdxEditor from "@/components/core/MdxEditor";
 import { Language } from "@/lib/i18n/config";
 
 export default async function WritePage(ctx: PageProps<"/[lng]/editor/write">) {
@@ -6,7 +6,7 @@ export default async function WritePage(ctx: PageProps<"/[lng]/editor/write">) {
 
   return (
     <>
-      <Editor lng={lngParam} />
+      <MdxEditor lng={lngParam} />
     </>
   );
 }
