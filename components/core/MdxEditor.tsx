@@ -364,7 +364,10 @@ export default function MdxEditor({ lng: lngParam }: MdxEditorProps) {
                           className="!bg-transparent hover:!text-red-600 text-red-500"
                           type="button"
                           title={t("Remove Paragraph")}
-                          onClick={() => setLines((prev) => prev.filter((_, index) => index !== i))}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setLines((prev) => prev.filter((_, index) => index !== i));
+                          }}
                         >
                           <Trash className="size-4" />
                         </Button>
