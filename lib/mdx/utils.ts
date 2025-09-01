@@ -182,7 +182,26 @@ export function getHunks(content: string) {
         indicator += 1;
       } else {
         endOfHunk += 2;
-        lines.push(content.substring(indicator, endOfHunk).trim());
+        let hunk = content.substring(indicator, endOfHunk).trim();
+
+        const footnoteIndicators = hunk.match(/\[\^[^\]]+\]/g);
+        if (footnoteIndicators) {
+          hunk += "\n";
+          for (const footnoteIdentify of footnoteIndicators) {
+            const footnoteIndicator = content.search(
+              new RegExp(`\n${footnoteIdentify.replace(/(\[|\]|\^)/g, "\\$1")}:[^\n$]+`),
+            );
+
+            if (footnoteIndicator < 0) continue;
+
+            let endOfFootnote = content.indexOf("\n", footnoteIndicator + 1);
+            if (endOfFootnote < 0) endOfFootnote = content.length;
+
+            hunk += content.substring(footnoteIndicator, endOfFootnote);
+          }
+        }
+
+        lines.push(hunk);
         indicator = endOfHunk;
       }
     }
