@@ -179,11 +179,18 @@ export function getHunks(content: string) {
       let endOfHunk = content.indexOf("\n\n", indicator + 2);
 
       if (endOfHunk < 0) {
-        indicator += 1;
+        // End of Document
+        endOfHunk = content.length;
+
+        lines.push(content.substring(indicator, endOfHunk).trim());
+        indicator = endOfHunk;
       } else {
+        // Paragraph
         endOfHunk += 2;
         let hunk = content.substring(indicator, endOfHunk).trim();
 
+        // If paragraph has footnotes
+        // Find footnote in Document and Append to paragraph
         const footnoteIndicators = hunk.match(/\[\^[^\]]+\]/g);
         if (footnoteIndicators) {
           hunk += "\n";
@@ -195,9 +202,13 @@ export function getHunks(content: string) {
             if (footnoteIndicator < 0) continue;
 
             let endOfFootnote = content.indexOf("\n", footnoteIndicator + 1);
+            console.info(footnoteIdentify, footnoteIndicator, endOfFootnote);
             if (endOfFootnote < 0) endOfFootnote = content.length;
 
             hunk += content.substring(footnoteIndicator, endOfFootnote);
+
+            // No more need footnote on content
+            content = content.substring(0, footnoteIndicator) + content.substring(endOfFootnote);
           }
         }
 
