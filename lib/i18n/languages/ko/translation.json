@@ -26,5 +26,6 @@
   "Cancel Edit": "편집 취소",
   "Remove Paragraph": "문단 삭제",
   "Drag to change order": "드래그하여 순서 변경",
-  "Please input title first": "제목을 먼저 입력해주세요"
+  "Please input title first": "제목을 먼저 입력해주세요",
+  "Copy to clipboard": "클립보드 복사"
 }

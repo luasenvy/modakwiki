@@ -26,10 +26,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import debounce from "lodash.debounce";
 import {
   AlignLeft,
+  Check,
   CircleAlert,
+  Copy,
   GripVertical,
   MessageSquareHeart,
+  MoveUp,
   PencilOff,
+  Save,
   ScrollText,
   Trash,
 } from "lucide-react";
@@ -69,6 +73,7 @@ export default function MdxEditor({ lng: lngParam }: MdxEditorProps) {
   const { t } = useTranslation(lngParam);
 
   const [hunk, setHunk] = useState<string>("");
+  const [isCopied, setIsCopied] = useState<boolean>(false);
   const [lines, setLines] = useState<string[]>([]);
   const [selectedLine, setSelectedLine] = useState<number>(-1);
   const lineRef = useRef<HTMLTextAreaElement>(null);
@@ -156,6 +161,12 @@ export default function MdxEditor({ lng: lngParam }: MdxEditorProps) {
     console.info(201);
   });
 
+  const handleClickCopy = () => {
+    navigator.clipboard.writeText(lines.join("\n\n")).then(() => {
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 3000);
+    });
+  };
   useEffect(() => {
     form.setValue("content", lines.join("\n\n"));
   }, [lines]);
@@ -367,12 +378,6 @@ export default function MdxEditor({ lng: lngParam }: MdxEditorProps) {
                 onChange={handleChangeHunk}
                 onKeyDown={handleKeyDownHunk}
               />
-
-              <div className="fixed right-2 bottom-2 flex">
-                <Button type="submit" className="ml-auto rounded-none" disabled={canSave}>
-                  {t("Save Document")}
-                </Button>
-              </div>
             </article>
 
             <nav
@@ -409,7 +414,7 @@ export default function MdxEditor({ lng: lngParam }: MdxEditorProps) {
           )}
         />
 
-        <Banner className="absolute right-0 bottom-0 left-0">
+        <Banner className="absolute top-0 right-0 left-0">
           <BannerIcon icon={CircleAlert} />
           <BannerTitle>작성요령을 꼭 읽어주세요. 🥳</BannerTitle>
           <BannerAction size="sm" asChild>
@@ -417,6 +422,35 @@ export default function MdxEditor({ lng: lngParam }: MdxEditorProps) {
           </BannerAction>
           <BannerClose />
         </Banner>
+
+        <div
+          className={cn(
+            "bg-background opacity-40 transition-opacity duration-200 ease-in-out hover:opacity-100",
+            "-translate-x-1/2 fixed inset-x-1/2 bottom-2 flex w-fit items-center justify-center gap-1 rounded-lg border px-4 py-1 shadow",
+          )}
+        >
+          <Button
+            type="submit"
+            variant="ghost"
+            className="!text-muted-foreground hover:!text-foreground size-6"
+            size="icon"
+            title={t("Save Document")}
+            disabled={!canSave}
+          >
+            <Save className="size-3.5" />
+          </Button>
+          <Button
+            type="submit"
+            variant="ghost"
+            className="!text-muted-foreground hover:!text-foreground size-6"
+            size="icon"
+            title={t("Copy to clipboard")}
+            onClick={handleClickCopy}
+            disabled={!lines.length}
+          >
+            {isCopied ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
+          </Button>
+        </div>
       </form>
     </Form>
   );
