@@ -77,6 +77,7 @@ export default function MdxEditor({ lng: lngParam }: MdxEditorProps) {
   const [lines, setLines] = useState<string[]>([]);
   const [selectedLine, setSelectedLine] = useState<number>(-1);
   const lineRef = useRef<HTMLTextAreaElement>(null);
+  const prevSelectedLineContent = useRef<string>("");
 
   const sensors = useSensors(
     useSensor(MouseSensor, { activationConstraint: { distance: 8 } }),
@@ -315,7 +316,10 @@ export default function MdxEditor({ lng: lngParam }: MdxEditorProps) {
                       id={`line-${i}`}
                       key={`line-${i}`}
                       onClick={(e) => {
-                        if (selectedLine !== i) return setSelectedLine(i);
+                        if (selectedLine !== i) {
+                          prevSelectedLineContent.current = lines[i];
+                          return setSelectedLine(i);
+                        }
                         e.preventDefault();
                         e.stopPropagation();
                       }}
@@ -340,7 +344,15 @@ export default function MdxEditor({ lng: lngParam }: MdxEditorProps) {
                             type="button"
                             title={t("Cancel Edit")}
                             className="!bg-transparent !text-orange-500 hover:!text-orange-600"
-                            onClick={() => setSelectedLine(-1)}
+                            onClick={() => {
+                              // return prev
+                              setLines(
+                                Array.from(
+                                  lines.toSpliced(selectedLine, 1, prevSelectedLineContent.current),
+                                ),
+                              );
+                              setSelectedLine(-1);
+                            }}
                           >
                             <PencilOff className="size-4" />
                           </Button>
@@ -425,7 +437,7 @@ export default function MdxEditor({ lng: lngParam }: MdxEditorProps) {
 
         <div
           className={cn(
-            "bg-background opacity-40 transition-opacity duration-200 ease-in-out hover:opacity-100",
+            "bg-background opacity-60 transition-opacity duration-200 ease-in-out hover:opacity-100",
             "-translate-x-1/2 fixed inset-x-1/2 bottom-2 flex w-fit items-center justify-center gap-1 rounded-lg border px-4 py-1 shadow",
           )}
         >
