@@ -140,9 +140,9 @@ export default function MdxEditor({ lng: lngParam }: MdxEditorProps) {
             <article
               className={cn(
                 "relative w-full max-w-full lg:max-w-3xl xl:w-[calc(100%_-_286px)] xl:max-w-4xl",
-                "h-fit pt-8 pb-24",
+                "h-fit",
                 "prose dark:prose-invert",
-                "pr-2 pb-2 pl-4",
+                "pt-8 pr-2 pb-24 pl-4 max-lg:pr-4",
                 "break-keep",
                 // Sub
                 "[&_sub]:text-muted-foreground",
@@ -312,41 +312,39 @@ export default function MdxEditor({ lng: lngParam }: MdxEditorProps) {
                   className="ml-auto rounded-none"
                   disabled={!lines.length || !title.length}
                 >
-                  {t("Save")}
+                  {t("Save Document")}
                 </Button>
               </div>
             </article>
 
-            <div className="sticky top-0 flex h-[calc(100dvh_-_var(--spacing)_*_12)] w-[286px] flex-col space-y-2">
-              <FormField
-                control={form.control}
-                name="content"
-                render={({ field: { value, ...field } }) => (
-                  <FormItem className="hidden">
-                    <FormControl>
-                      <Textarea defaultValue={value} {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+            <nav
+              id="nav-toc"
+              className="sticky top-0 flex h-[calc(100dvh_-_var(--spacing)_*_12)] w-[286px] shrink-0 flex-col space-y-2 pt-8 pr-4 pl-2 [mask-image:linear-gradient(to_bottom,transparent,white_16px,white_calc(100%-16px),transparent)] max-xl:hidden"
+            >
+              <div className="mb-2 flex items-center gap-2">
+                <AlignLeft className="size-4" />
+                <p className="m-0 text-muted-foreground text-sm">목차</p>
+              </div>
 
-              <nav
-                id="nav-toc"
-                className="flex h-[calc(100dvh_-(_var(--spacing)_*_(12_+_9_+_1)))] shrink-0 flex-col pt-8 pr-4 pl-2 [mask-image:linear-gradient(to_bottom,transparent,white_16px,white_calc(100%-16px),transparent)]"
-              >
-                <div className="mb-2 flex items-center gap-2">
-                  <AlignLeft className="size-4" />
-                  <p className="m-0 text-muted-foreground text-sm">목차</p>
-                </div>
-
-                <TOCScrollArea className="overflow-auto p-0">
-                  <TocClerk />
-                </TOCScrollArea>
-              </nav>
-            </div>
+              <TOCScrollArea className="overflow-auto p-0">
+                <TocClerk />
+              </TOCScrollArea>
+            </nav>
           </Container>
         </TOCProvider>
+
+        <FormField
+          control={form.control}
+          name="content"
+          render={({ field: { value, ...field } }) => (
+            <FormItem className="hidden">
+              <FormControl>
+                <Textarea defaultValue={value} {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
       </form>
     </Form>
   );
