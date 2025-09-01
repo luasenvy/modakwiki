@@ -1,6 +1,7 @@
 import { NavUser } from "@/components/core/NavUser";
 import { SearchForm } from "@/components/core/SearchForm";
 import { SidebarNav } from "@/components/core/SidebarNav";
+import { RollingText } from "@/components/ui/shadcn-io/rolling-text";
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader } from "@/components/ui/sidebar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { site } from "@/config";
@@ -38,8 +39,21 @@ export function AppSidebar({ lng: lngParam, session, ...props }: AppSidebarProps
 
 export function SidebarFooterAddon() {
   return (
-    <Skeleton className="w-full rounded-xl border px-4 py-12 shadow-sm">
-      <p className="text-center text-muted-foreground text-sm">Advertisement</p>
-    </Skeleton>
+    <a href="mailto:luas.envy@gmail.com" target="_blank" rel="noopener noreferrer">
+      <Skeleton className="hover:animation-duration-[0s] flex w-full cursor-pointer rounded-xl border px-4 py-12 shadow-sm">
+        <RollingText
+          text="Advertisement"
+          className="mx-auto"
+          inViewOnce={false}
+          transition={{
+            duration: 0.6,
+            delay: 0.08,
+            ease: "easeOut",
+            repeat: Infinity,
+            repeatDelay: 30,
+          }}
+        />
+      </Skeleton>
+    </a>
   );
 }
