@@ -42,5 +42,9 @@
   "Drag to change order": "Drag to change order",
   "Please input title first": "Please input title first",
   "Copy to clipboard": "Copy to clipboard",
-  "Search the document": "Search the document"
+  "Search the document": "Search the document",
+  "Are you absolutely sure?": "Are you absolutely sure?",
+  "This action cannot be undone. This will erase this document changes.": "This action cannot be undone. This will erase this document changes.",
+  "Cancel": "Cancel",
+  "Yes, I'm sure": "Yes, I'm sure"
 }

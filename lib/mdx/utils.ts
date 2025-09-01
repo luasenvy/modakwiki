@@ -126,30 +126,8 @@ export function getSelectedLine(textarea: HTMLTextAreaElement): string | null {
   }
 }
 
-function getEnterIndex(value: string, indicator: number, direction: "prev" | "next") {
-  const regex = /\n{2,}|^$/;
-  while (indicator > 0 || indicator < value.length) {
-    if (direction === "prev") {
-      if (regex.test(value.substring(indicator - 2, indicator))) break;
-      indicator--;
-    } else {
-      if (regex.test(value.substring(indicator, indicator + 2))) break;
-      indicator++;
-    }
-  }
-
-  return indicator;
-}
-
-export function getSelectedHunk(textarea: HTMLTextAreaElement) {
-  const value = textarea.value;
-  const selectionStart = textarea.selectionStart;
-  const selectionEnd = textarea.selectionEnd;
-
-  const startOfHunk = getEnterIndex(textarea.value, selectionStart, "prev");
-  const endOfHunk = getEnterIndex(textarea.value, selectionEnd, "next");
-
-  return value.substring(startOfHunk, endOfHunk);
+export function getFootnotes(content: string) {
+  return content.match(/\[\^[^\]]+\]:[^\n]+/g);
 }
 
 export function getHunks(content: string) {
@@ -191,7 +169,7 @@ export function getHunks(content: string) {
 
         // If paragraph has footnotes
         // Find footnote in Document and Append to paragraph
-        const footnoteIndicators = hunk.match(/\[\^[^\]]+\]/g);
+        const footnoteIndicators = hunk.match(/\[\^[^\]]+\](?![^:])/g);
         if (footnoteIndicators) {
           hunk += "\n";
           for (const footnoteIdentify of footnoteIndicators) {

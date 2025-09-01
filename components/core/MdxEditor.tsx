@@ -35,6 +35,7 @@ import {
   PencilOff,
   Save,
   ScrollText,
+  Shredder,
   Trash,
 } from "lucide-react";
 import Link from "next/link";
@@ -44,6 +45,17 @@ import { toast } from "sonner";
 import { Container } from "@/components/core/Container";
 import { TOCProvider, TOCScrollArea } from "@/components/fumadocs/toc";
 import TocClerk from "@/components/fumadocs/toc-clerk";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -77,6 +89,7 @@ export default function MdxEditor({ lng: lngParam }: MdxEditorProps) {
   const [lines, setLines] = useState<string[]>([]);
   const [selectedLine, setSelectedLine] = useState<number>(-1);
   const lineRef = useRef<HTMLTextAreaElement>(null);
+  const titleRef = useRef<HTMLInputElement>(null);
   const prevSelectedLineContent = useRef<string>("");
 
   const sensors = useSensors(
@@ -168,9 +181,14 @@ export default function MdxEditor({ lng: lngParam }: MdxEditorProps) {
       setTimeout(() => setIsCopied(false), 3000);
     });
   };
+
   useEffect(() => {
     form.setValue("content", lines.join("\n\n"));
   }, [lines]);
+
+  useEffect(() => {
+    titleRef.current?.focus();
+  }, []);
 
   const toc = useMemo(() => getToc(content), [content]);
 
@@ -283,6 +301,7 @@ export default function MdxEditor({ lng: lngParam }: MdxEditorProps) {
                     <FormControl>
                       <Input
                         {...field}
+                        ref={titleRef}
                         className="rounded-none"
                         placeholder={t("Please input title")}
                         defaultValue={value}
@@ -473,6 +492,41 @@ export default function MdxEditor({ lng: lngParam }: MdxEditorProps) {
           >
             {isCopied ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
           </Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                type="submit"
+                variant="ghost"
+                className="!text-muted-foreground hover:!text-destructive size-6"
+                size="icon"
+                title={t("Save Document")}
+                disabled={!canSave}
+              >
+                <Shredder className="size-3.5" />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>{t("Are you absolutely sure?")}</AlertDialogTitle>
+                <AlertDialogDescription>
+                  {t("This action cannot be undone. This will erase this document changes.")}
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>{t("Cancel")}</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={() => {
+                    form.setValue("title", "");
+                    titleRef.current!.value = "";
+                    setLines([]);
+                    setTimeout(() => titleRef.current!.focus());
+                  }}
+                >
+                  {t("Yes, I'm sure")}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </form>
     </Form>
