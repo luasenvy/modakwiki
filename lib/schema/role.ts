@@ -4,8 +4,8 @@ import { user } from "@/lib/schema/user";
 export const roleEnum = {
   sysop: 99,
   admin: 30,
-  user: 1,
-  guest: 0,
+  editor: 10,
+  member: 1,
 } as const;
 
 export type RoleEnum = (typeof roleEnum)[keyof typeof roleEnum];

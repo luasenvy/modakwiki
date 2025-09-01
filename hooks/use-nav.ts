@@ -39,7 +39,7 @@ export const mainNavs: Array<NavItem> = [
   },
   {
     title: "편집자",
-    scope: roleEnum.admin,
+    scope: roleEnum.editor,
     url: "#",
     items: [
       {
@@ -61,7 +61,7 @@ export const mainNavs: Array<NavItem> = [
   },
   {
     title: "파일",
-    scope: roleEnum.admin,
+    scope: roleEnum.editor,
     url: "#",
     items: [
       {
