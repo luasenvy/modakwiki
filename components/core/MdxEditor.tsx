@@ -24,8 +24,8 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { zodResolver } from "@hookform/resolvers/zod";
 import debounce from "lodash.debounce";
-import { AlignLeft, GripVertical, Trash, X } from "lucide-react";
-import { useMemo, useRef, useState } from "react";
+import { AlignLeft, GripVertical, MessageSquareHeart, ScrollText, Trash, X } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { Container } from "@/components/core/Container";
@@ -35,11 +35,12 @@ import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Toggle } from "@/components/ui/toggle";
 import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/react";
 import { MdxLoader } from "@/lib/mdx/react";
 import { getHunks, getToc } from "@/lib/mdx/utils";
-import { DocumentForm, documentForm } from "@/lib/schema/document";
+import { DocumentForm, doctypeEnum, documentForm } from "@/lib/schema/document";
 import { cn } from "@/lib/utils";
 
 interface MdxEditorProps {
@@ -62,15 +63,18 @@ export default function MdxEditor({ lng: lngParam }: MdxEditorProps) {
   const form = useForm<DocumentForm>({
     resolver: zodResolver(documentForm),
     defaultValues: {
+      type: doctypeEnum.wkdoc,
       title: "",
       content: "",
     },
   });
 
   const title = form.watch("title");
+  const doctype = form.watch("type");
+  const content = form.watch("content");
 
   const handleSubmit = async (values: DocumentForm) => {
-    const res = await fetch("/api/doc", {
+    const res = await fetch("/api/document", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(values),
@@ -130,7 +134,11 @@ export default function MdxEditor({ lng: lngParam }: MdxEditorProps) {
     }
   };
 
-  const toc = useMemo(() => getToc(lines.join("\n\n")), [lines]);
+  useEffect(() => {
+    form.setValue("content", lines.join("\n\n"));
+  }, [lines]);
+
+  const toc = useMemo(() => getToc(content), [content]);
 
   return (
     <Form {...form}>
@@ -210,6 +218,27 @@ export default function MdxEditor({ lng: lngParam }: MdxEditorProps) {
                 "prose-a:[&[data-footnote-ref]]:after:content-[']']",
               )}
             >
+              <div className="mb-2 flex items-center gap-1">
+                <Toggle
+                  pressed={doctype === doctypeEnum.wkdoc}
+                  onPressedChange={(pressed) => pressed && form.setValue("type", doctypeEnum.wkdoc)}
+                  aria-label="Toggle wkdoc"
+                  size="sm"
+                >
+                  <ScrollText className="size-4" />
+                  {t("document")}
+                </Toggle>
+                <Toggle
+                  pressed={doctype === doctypeEnum.essay}
+                  onPressedChange={(pressed) => pressed && form.setValue("type", doctypeEnum.essay)}
+                  aria-label="Toggle essay"
+                  size="sm"
+                >
+                  <MessageSquareHeart className="size-4" />
+                  {t("essay")}
+                </Toggle>
+              </div>
+
               <FormField
                 control={form.control}
                 name="title"
@@ -336,10 +365,15 @@ export default function MdxEditor({ lng: lngParam }: MdxEditorProps) {
         <FormField
           control={form.control}
           name="content"
-          render={({ field: { value, ...field } }) => (
+          render={({ field }) => (
             <FormItem className="hidden">
               <FormControl>
-                <Textarea defaultValue={value} {...field} />
+                <Textarea
+                  value={content}
+                  name={field.name}
+                  readOnly
+                  onChange={(e) => form.setValue("content", e.currentTarget.value)}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

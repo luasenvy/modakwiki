@@ -35,6 +35,7 @@ import {
 import dynamic from "next/dynamic";
 // import { useBreadcrumb } from "@/hooks/use-breadcrumb"
 import Link from "next/link"
+import { BreadcrumbItem as BreadcrumbItemType } from "@/components/core/Breadcrumb"
 
 // Avoid SSR for the ThemeToggler component
 const ThemeToggler = dynamic(() => import("@/components/core/ThemeToggler").then(mod => mod.ThemeToggler), { ssr: false });
@@ -46,17 +47,12 @@ const SIDEBAR_WIDTH_MOBILE = "18rem"
 const SIDEBAR_WIDTH_ICON = "3rem"
 const SIDEBAR_KEYBOARD_SHORTCUT = "b"
 
-export interface BreadcrumbItem {
-  title: string;
-  href?: string;
-}
-
 type SidebarContextProps = {
   state: "expanded" | "collapsed"
   open: boolean
   setOpen: (open: boolean) => void
-  breadcrumbs: Array<BreadcrumbItem>
-  setBreadcrumbs: (breadcrumbs: Array<BreadcrumbItem>) => void
+  breadcrumbs: Array<BreadcrumbItemType>
+  setBreadcrumbs: (breadcrumbs: Array<BreadcrumbItemType>) => void
   openMobile: boolean
   setOpenMobile: (open: boolean) => void
   isMobile: boolean
@@ -109,9 +105,9 @@ function SidebarProvider({
     [setOpenProp, open]
   )
 
-  const [breadcrumbs, _setBreadcrumbs] = useState<Array<BreadcrumbItem>>([])
+  const [breadcrumbs, _setBreadcrumbs] = useState<Array<BreadcrumbItemType>>([])
   const setBreadcrumbs = useCallback(
-    (value: Array<BreadcrumbItem> | ((value: Array<BreadcrumbItem>) => Array<BreadcrumbItem>)) =>
+    (value: Array<BreadcrumbItemType> | ((value: Array<BreadcrumbItemType>) => Array<BreadcrumbItemType>)) =>
       _setBreadcrumbs(typeof value === "function" ? value(breadcrumbs) : value),
     [breadcrumbs]
   )

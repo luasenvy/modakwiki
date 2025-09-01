@@ -1,11 +1,15 @@
 "use client";
 
-import { HomeIcon } from "lucide-react";
 import { useEffect } from "react";
-import { BreadcrumbItem, useSidebar } from "@/components/ui/sidebar";
+import { useSidebar } from "@/components/ui/sidebar";
 import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/react";
 import { localePrefix } from "@/lib/url";
+
+export interface BreadcrumbItem {
+  title: string;
+  href?: string;
+}
 
 interface BreadcrumbProps {
   breadcrumbs?: Array<BreadcrumbItem>;

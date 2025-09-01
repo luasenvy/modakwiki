@@ -1,6 +1,5 @@
-import { Breadcrumb } from "@/components/core/Breadcrumb";
+import { Breadcrumb, BreadcrumbItem } from "@/components/core/Breadcrumb";
 import Hero from "@/components/pages/welcome/Hero";
-import { BreadcrumbItem } from "@/components/ui/sidebar";
 import type { Language } from "@/lib/i18n/config";
 
 export default async function WelcomePage(ctx: PageProps<"/[lng]">) {

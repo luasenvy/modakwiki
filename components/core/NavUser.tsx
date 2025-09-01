@@ -23,6 +23,7 @@ import {
 import { Session, signOut } from "@/lib/auth/react";
 import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/react";
+import { localePrefix } from "@/lib/url";
 
 interface NavUserProps {
   lng: Language;
@@ -30,7 +31,7 @@ interface NavUserProps {
 }
 
 export function NavUser({ lng: lngParam, user }: NavUserProps) {
-  const lng = lngParam ? `/${lngParam}` : "";
+  const lng = localePrefix(lngParam);
 
   const { isMobile } = useSidebar();
   const router = useRouter();

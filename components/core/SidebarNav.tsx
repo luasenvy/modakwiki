@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/sidebar";
 import { useNavItems } from "@/hooks/use-nav";
 import { Language } from "@/lib/i18n/config";
+import { localePrefix } from "@/lib/url";
 
 interface NavMenuProps {
   lng: Language;
@@ -20,7 +21,7 @@ interface NavMenuProps {
 }
 
 export function SidebarNav({ lng: lngParam, scope: userScope = 0 }: NavMenuProps) {
-  const lng = lngParam ? `/${lngParam}` : "";
+  const lng = localePrefix(lngParam);
   const pathname = usePathname();
 
   const mainNavs = useNavItems((state) => state.mainNavs);

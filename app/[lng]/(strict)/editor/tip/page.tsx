@@ -1,6 +1,12 @@
+import { Breadcrumb, BreadcrumbItem } from "@/components/core/Breadcrumb";
 import { Document } from "@/components/core/Document";
+import { Language } from "@/lib/i18n/config";
+import { localePrefix } from "@/lib/url";
 
 export default async function HowToPage(ctx: PageProps<"/[lng]/editor/tip">) {
+  const lngParam = (await ctx.params).lng as Language;
+  const lng = localePrefix(lngParam);
+
   const content = `
 ## 간결한 문서
 
@@ -126,5 +132,15 @@ export default async function HowToPage(ctx: PageProps<"/[lng]/editor/tip">) {
 [^폰노이만구조]: 위키백과 기여자, "폰 노이만 구조," 위키백과, [https://ko.wikipedia.org/w/index.php?title=%ED%8F%B0_%EB%85%B8%EC%9D%B4%EB%A7%8C_%EA%B5%AC%EC%A1%B0&oldid=40113376](https://ko.wikipedia.org/w/index.php?title=%ED%8F%B0_%EB%85%B8%EC%9D%B4%EB%A7%8C_%EA%B5%AC%EC%A1%B0&oldid=40113376) (2025년 8월 29일에 접근).
 `;
 
-  return <Document content={content.trim()} />;
+  const breadcrumbs: Array<BreadcrumbItem> = [
+    { title: "편집자" },
+    { title: "작성요령", href: `${lng}/editor/tip` },
+  ];
+
+  return (
+    <>
+      <Breadcrumb lng={lngParam} breadcrumbs={breadcrumbs} />
+      <Document content={content.trim()} />;
+    </>
+  );
 }

@@ -1,8 +1,14 @@
+import { Breadcrumb, BreadcrumbItem } from "@/components/core/Breadcrumb";
 import { Document } from "@/components/core/Document";
+import type { Language } from "@/lib/i18n/config";
+import { localePrefix } from "@/lib/url";
 
 import Logo from "@/public/logo.webp";
 
 export default async function HowToPage(ctx: PageProps<"/[lng]/what-is-this">) {
+  const lngParam = (await ctx.params).lng as Language;
+  const lng = localePrefix(lngParam);
+
   const content = `
 ## 환영합니다!
 
@@ -16,5 +22,12 @@ export default async function HowToPage(ctx: PageProps<"/[lng]/what-is-this">) {
 
 `.trim();
 
-  return <Document content={content} />;
+  const breadcrumbs: Array<BreadcrumbItem> = [{ title: "모닥위키", href: `${lng}/what-is-this` }];
+
+  return (
+    <>
+      <Breadcrumb lng={lngParam} breadcrumbs={breadcrumbs} />
+      <Document content={content} />;
+    </>
+  );
 }

@@ -1,12 +1,12 @@
-import { Breadcrumb } from "@/components/core/Breadcrumb";
+import { Breadcrumb, BreadcrumbItem } from "@/components/core/Breadcrumb";
 import { Document } from "@/components/core/Document";
-import { BreadcrumbItem } from "@/components/ui/sidebar";
 import type { Language } from "@/lib/i18n/config";
+import { localePrefix } from "@/lib/url";
 import Logo from "@/public/logo.webp";
 
 export default async function HowToPage(ctx: PageProps<"/[lng]/editor/syntax">) {
   const lngParam = (await ctx.params).lng as Language;
-  const lng = lngParam ? `/${lngParam}` : "";
+  const lng = localePrefix(lngParam);
 
   const content = `
 ## Micromark 문법
@@ -211,7 +211,10 @@ function sayHello(x: number) {
 ~~~
 `;
 
-  const breadcrumbs: Array<BreadcrumbItem> = [{ title: "위키문법", href: `${lng}/editor/syntax` }];
+  const breadcrumbs: Array<BreadcrumbItem> = [
+    { title: "편집자" },
+    { title: "위키문법", href: `${lng}/editor/syntax` },
+  ];
 
   return (
     <>

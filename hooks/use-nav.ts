@@ -1,6 +1,6 @@
 "use client";
 
-import { FilePlus2, Inbox, LucideIcon, ScrollText, SpellCheck } from "lucide-react";
+import { FilePlus2, Image, Inbox, LucideIcon, ScrollText, SpellCheck } from "lucide-react";
 import { create } from "zustand";
 import { RoleEnum, roleEnum } from "@/lib/schema/role";
 
@@ -38,7 +38,7 @@ export const mainNavs: Array<NavItem> = [
     ],
   },
   {
-    title: "에디터",
+    title: "편집자",
     scope: roleEnum.admin,
     url: "#",
     items: [
@@ -56,6 +56,18 @@ export const mainNavs: Array<NavItem> = [
         title: "새 문서",
         url: "/editor/write",
         icon: FilePlus2,
+      },
+    ],
+  },
+  {
+    title: "파일",
+    scope: roleEnum.admin,
+    url: "#",
+    items: [
+      {
+        title: "이미지",
+        url: "/file/image",
+        icon: Image,
       },
     ],
   },

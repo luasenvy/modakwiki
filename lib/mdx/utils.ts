@@ -202,7 +202,6 @@ export function getHunks(content: string) {
             if (footnoteIndicator < 0) continue;
 
             let endOfFootnote = content.indexOf("\n", footnoteIndicator + 1);
-            console.info(footnoteIdentify, footnoteIndicator, endOfFootnote);
             if (endOfFootnote < 0) endOfFootnote = content.length;
 
             hunk += content.substring(footnoteIndicator, endOfFootnote);
