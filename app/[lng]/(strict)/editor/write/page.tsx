@@ -1,5 +1,6 @@
 import { Breadcrumb, BreadcrumbItem } from "@/components/core/Breadcrumb";
 import MdxEditor from "@/components/core/MdxEditor";
+
 import { Language } from "@/lib/i18n/config";
 import { localePrefix } from "@/lib/url";
 

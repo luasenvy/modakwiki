@@ -24,7 +24,16 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { zodResolver } from "@hookform/resolvers/zod";
 import debounce from "lodash.debounce";
-import { AlignLeft, GripVertical, MessageSquareHeart, ScrollText, Trash, X } from "lucide-react";
+import {
+  AlignLeft,
+  CircleAlert,
+  GripVertical,
+  MessageSquareHeart,
+  ScrollText,
+  Trash,
+  X,
+} from "lucide-react";
+import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -34,6 +43,13 @@ import TocClerk from "@/components/fumadocs/toc-clerk";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import {
+  Banner,
+  BannerAction,
+  BannerClose,
+  BannerIcon,
+  BannerTitle,
+} from "@/components/ui/shadcn-io/banner";
 import { Textarea } from "@/components/ui/textarea";
 import { Toggle } from "@/components/ui/toggle";
 import { Language } from "@/lib/i18n/config";
@@ -41,6 +57,7 @@ import { useTranslation } from "@/lib/i18n/react";
 import { MdxLoader } from "@/lib/mdx/react";
 import { getHunks, getToc } from "@/lib/mdx/utils";
 import { DocumentForm, doctypeEnum, documentForm } from "@/lib/schema/document";
+import { localePrefix } from "@/lib/url";
 import { cn } from "@/lib/utils";
 
 interface MdxEditorProps {
@@ -48,6 +65,7 @@ interface MdxEditorProps {
 }
 
 export default function MdxEditor({ lng: lngParam }: MdxEditorProps) {
+  const lng = localePrefix(lngParam);
   const { t } = useTranslation(lngParam);
 
   const [hunk, setHunk] = useState<string>("");
@@ -143,6 +161,18 @@ export default function MdxEditor({ lng: lngParam }: MdxEditorProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)}>
+        <Banner>
+          <BannerIcon icon={CircleAlert} />
+          <BannerTitle>문서를 작성하기전에 작성요령을 먼저 읽어주세요. 🥳</BannerTitle>
+          <BannerAction asChild>
+            <Link href={`${lng}/editor/tip`}>
+              <ScrollText />
+              작성요령
+            </Link>
+          </BannerAction>
+          <BannerClose />
+        </Banner>
+
         <TOCProvider toc={toc} single={false}>
           <Container>
             <article
@@ -242,7 +272,7 @@ export default function MdxEditor({ lng: lngParam }: MdxEditorProps) {
               <FormField
                 control={form.control}
                 name="title"
-                render={({ field: { value, ...field } }) => (
+                render={({ field: { value, onChange, ...field } }) => (
                   <FormItem>
                     <FormControl>
                       <Input
@@ -250,6 +280,7 @@ export default function MdxEditor({ lng: lngParam }: MdxEditorProps) {
                         className="rounded-none"
                         placeholder={t("Please input title")}
                         defaultValue={value}
+                        onBlur={onChange}
                         required
                       />
                     </FormControl>
