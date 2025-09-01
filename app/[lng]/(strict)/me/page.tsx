@@ -1,27 +1,39 @@
 import { CheckCircle } from "lucide-react";
 import { headers } from "next/headers";
+import { Breadcrumb, BreadcrumbItem } from "@/components/core/Breadcrumb";
 import { Container } from "@/components/core/Container";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { auth } from "@/lib/auth/server";
+import { Language } from "@/lib/i18n/config";
+import { localePrefix } from "@/lib/url";
 
-export default async function () {
+export default async function MyPage(ctx: PageProps<"/[lng]/me">) {
   const { user } = (await auth.api.getSession({ headers: await headers() }))!;
 
+  const lngParam = (await ctx.params).lng as Language;
+  const lng = localePrefix(lngParam);
+
+  const breadcrumbs: Array<BreadcrumbItem> = [{ title: "내 정보", href: `${lng}/me` }];
+
   return (
-    <Container className="lg:max-w-3xl xl:max-w-4xl">
-      <div className="flex space-x-2">
-        <Avatar className="h-8 w-8 rounded-full">
-          {user.image && <AvatarImage src={user.image} alt={user.name} />}
-          <AvatarFallback className="rounded-full">{user.name.substring(0, 2)}</AvatarFallback>
-        </Avatar>
-        <div>
-          <p className="text-sm">
-            {user.name}
-            {user.emailVerified && <CheckCircle className="ml-1 inline size-3 text-green-600" />}
-          </p>
-          <p className="text-xs">{user.email}</p>
+    <>
+      <Breadcrumb lng={lngParam} breadcrumbs={breadcrumbs} />
+
+      <Container className="lg:max-w-3xl xl:max-w-4xl">
+        <div className="flex space-x-2">
+          <Avatar className="h-8 w-8 rounded-full">
+            {user.image && <AvatarImage src={user.image} alt={user.name} />}
+            <AvatarFallback className="rounded-full">{user.name.substring(0, 2)}</AvatarFallback>
+          </Avatar>
+          <div>
+            <p className="text-sm">
+              {user.name}
+              {user.emailVerified && <CheckCircle className="ml-1 inline size-3 text-green-600" />}
+            </p>
+            <p className="text-xs">{user.email}</p>
+          </div>
         </div>
-      </div>
-    </Container>
+      </Container>
+    </>
   );
 }

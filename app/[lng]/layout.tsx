@@ -4,7 +4,7 @@ import { dir } from "i18next";
 
 import type { Metadata } from "next";
 import { Icons } from "next/dist/lib/metadata/types/metadata-types";
-import { Nanum_Gothic_Coding } from "next/font/google";
+import { Nanum_Gothic_Coding, Ubuntu_Mono } from "next/font/google";
 import localFont from "next/font/local";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "sonner";
@@ -16,6 +16,13 @@ const pretendard = localFont({
   display: "swap",
   weight: "45 920",
   variable: "--font-pretendard",
+});
+
+const ubuntuMono = Ubuntu_Mono({
+  weight: ["400", "700"],
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-ubuntu-mono",
 });
 
 const nanumGothicCoding = Nanum_Gothic_Coding({
@@ -42,7 +49,7 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[ln
     <html
       lang={lng}
       dir={dir(lng)}
-      className={nanumGothicCoding.variable}
+      className={`${nanumGothicCoding.variable} ${ubuntuMono.variable}`}
       data-scroll-behavior="smooth"
       suppressHydrationWarning
     >

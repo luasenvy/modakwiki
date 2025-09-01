@@ -29,9 +29,9 @@ import {
   CircleAlert,
   GripVertical,
   MessageSquareHeart,
+  PencilOff,
   ScrollText,
   Trash,
-  X,
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -91,21 +91,9 @@ export default function MdxEditor({ lng: lngParam }: MdxEditorProps) {
   const doctype = form.watch("type");
   const content = form.watch("content");
 
-  const handleSubmit = async (values: DocumentForm) => {
-    const res = await fetch("/api/document", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(values),
-    });
-
-    if (!res.ok) return toast.error(await res.text());
-
-    console.info(201);
-  };
-
   const handleChangeHunk = debounce((e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setHunk(e.target.value);
-  }, 120);
+  }, 110);
 
   const handleKeyDownHunk = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if ("Enter" === e.key && !e.shiftKey) {
@@ -120,7 +108,7 @@ export default function MdxEditor({ lng: lngParam }: MdxEditorProps) {
 
   const handleChangeSelectedLine = debounce((e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setLines((prev) => prev.toSpliced(selectedLine, 1, e.target.value.trim()));
-  }, 120);
+  }, 110);
 
   const handleKeyDownSelectedLine = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if ("Enter" === e.key && !e.shiftKey) {
@@ -152,27 +140,33 @@ export default function MdxEditor({ lng: lngParam }: MdxEditorProps) {
     }
   };
 
+  const handleChangeTitle = debounce((e: React.ChangeEvent<HTMLInputElement>) => {
+    form.setValue("title", e.target.value);
+  }, 110);
+
+  const handleSubmit = form.handleSubmit(async (values: DocumentForm) => {
+    const res = await fetch("/api/document", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(values),
+    });
+
+    if (!res.ok) return toast.error(await res.text());
+
+    console.info(201);
+  });
+
   useEffect(() => {
     form.setValue("content", lines.join("\n\n"));
   }, [lines]);
 
   const toc = useMemo(() => getToc(content), [content]);
 
+  const canSave = useMemo(() => Boolean(lines.length) && Boolean(title.length), [lines, title]);
+
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)}>
-        <Banner>
-          <BannerIcon icon={CircleAlert} />
-          <BannerTitle>문서를 작성하기전에 작성요령을 먼저 읽어주세요. 🥳</BannerTitle>
-          <BannerAction asChild>
-            <Link href={`${lng}/editor/tip`}>
-              <ScrollText />
-              작성요령
-            </Link>
-          </BannerAction>
-          <BannerClose />
-        </Banner>
-
+      <form onSubmit={handleSubmit}>
         <TOCProvider toc={toc} single={false}>
           <Container>
             <article
@@ -280,7 +274,7 @@ export default function MdxEditor({ lng: lngParam }: MdxEditorProps) {
                         className="rounded-none"
                         placeholder={t("Please input title")}
                         defaultValue={value}
-                        onBlur={onChange}
+                        onChange={handleChangeTitle}
                         required
                       />
                     </FormControl>
@@ -301,6 +295,7 @@ export default function MdxEditor({ lng: lngParam }: MdxEditorProps) {
                 >
                   {lines.map((line, i) => (
                     <SortableItem
+                      lng={lngParam}
                       className={cn("group/line hover:bg-accent", {
                         group: selectedLine < 0,
                         "my-8 border border-primary bg-accent p-2": selectedLine === i,
@@ -318,7 +313,7 @@ export default function MdxEditor({ lng: lngParam }: MdxEditorProps) {
                       {selectedLine === i && (
                         <Textarea
                           name="prev"
-                          className="mt-2 h-28 resize-none rounded-none"
+                          className="mt-2 h-fit max-h-56 min-h-28 resize-none rounded-none font-mono"
                           placeholder={t("Please input text here")}
                           defaultValue={lines[selectedLine]}
                           onChange={handleChangeSelectedLine}
@@ -326,25 +321,29 @@ export default function MdxEditor({ lng: lngParam }: MdxEditorProps) {
                         />
                       )}
 
-                      <div className="absolute top-0 right-0 hidden group-hover/line:flex">
+                      <div className="absolute top-0 right-0 hidden bg-background shadow-sm group-hover/line:flex">
                         {selectedLine === i && (
                           <Button
                             variant="ghost"
                             size="icon"
                             type="button"
+                            title={t("Cancel Edit")}
+                            className="!bg-transparent !text-orange-500 hover:!text-orange-600"
                             onClick={() => setSelectedLine(-1)}
                           >
-                            <X className="size-4" />
+                            <PencilOff className="size-4" />
                           </Button>
                         )}
 
                         <Button
                           variant="ghost"
                           size="icon"
+                          className="!bg-transparent hover:!text-red-600 text-red-500"
                           type="button"
+                          title={t("Remove Paragraph")}
                           onClick={() => setLines((prev) => prev.filter((_, index) => index !== i))}
                         >
-                          <Trash className="size-4 text-destructive" />
+                          <Trash className="size-4" />
                         </Button>
                       </div>
                     </SortableItem>
@@ -356,22 +355,21 @@ export default function MdxEditor({ lng: lngParam }: MdxEditorProps) {
                 <MdxLoader>{hunk}</MdxLoader>
               </div>
 
-              <div className="flex flex-col space-y-2">
-                <Textarea
-                  ref={lineRef}
-                  name="hunk"
-                  className="mt-2 h-28 resize-none rounded-none"
-                  placeholder={t("Writing a paragraph...")}
-                  onFocus={() => setSelectedLine(-1)}
-                  onChange={handleChangeHunk}
-                  onKeyDown={handleKeyDownHunk}
-                />
+              <Textarea
+                ref={lineRef}
+                name="hunk"
+                className="mt-2 h-fit max-h-56 min-h-28 resize-none rounded-none font-mono"
+                placeholder={
+                  !title.length ? t("Please input title first") : t("Writing a paragraph...")
+                }
+                disabled={!title.length}
+                onFocus={() => setSelectedLine(-1)}
+                onChange={handleChangeHunk}
+                onKeyDown={handleKeyDownHunk}
+              />
 
-                <Button
-                  type="submit"
-                  className="ml-auto rounded-none"
-                  disabled={!lines.length || !title.length}
-                >
+              <div className="fixed right-2 bottom-2 flex">
+                <Button type="submit" className="ml-auto rounded-none" disabled={canSave}>
                   {t("Save Document")}
                 </Button>
               </div>
@@ -410,19 +408,31 @@ export default function MdxEditor({ lng: lngParam }: MdxEditorProps) {
             </FormItem>
           )}
         />
+
+        <Banner className="absolute right-0 bottom-0 left-0">
+          <BannerIcon icon={CircleAlert} />
+          <BannerTitle>작성요령을 꼭 읽어주세요. 🥳</BannerTitle>
+          <BannerAction size="sm" asChild>
+            <Link href={`${lng}/editor/tip`}>작성요령</Link>
+          </BannerAction>
+          <BannerClose />
+        </Banner>
       </form>
     </Form>
   );
 }
 
 interface SortableProps extends React.ComponentProps<"div"> {
+  lng: Language;
   id: string;
 }
 
-function SortableItem({ children, className, ...props }: SortableProps) {
+function SortableItem({ lng: lngParam, children, className, ...props }: SortableProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isSorting } = useSortable({
     id: props.id,
   });
+
+  const { t } = useTranslation(lngParam);
 
   return (
     <div
@@ -436,6 +446,7 @@ function SortableItem({ children, className, ...props }: SortableProps) {
     >
       <div
         className="hidden size-8 shrink-0 cursor-grab px-2 group-hover:flex"
+        title={t("Drag to change order")}
         {...attributes}
         {...listeners}
       >

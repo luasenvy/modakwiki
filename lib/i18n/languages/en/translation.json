@@ -36,5 +36,9 @@
   "Writing a paragraph...": "Writing a paragraph...",
   "Save Document": "Save Document",
   "document": "document",
-  "essay": "essay"
+  "essay": "essay",
+  "Cancel Edit": "Cancel Edit",
+  "Remove Paragraph": "Remove Paragraph",
+  "Drag to change order": "Drag to change order",
+  "Please input title first": "Please input title first"
 }

@@ -8,6 +8,10 @@ export default async function HowToPage(ctx: PageProps<"/[lng]/editor/tip">) {
   const lng = localePrefix(lngParam);
 
   const content = `
+## 문서의 유형
+
+모닥위키에서는 \`위키문서\`와 \`에세이\` 두가지 형태의 문서를 작성할 수 있습니다. 위키문서는 사견을 배제하고 사실에 대해 작성하도록 노력하는 것이 좋습니다. 에세이 형태의 문서는 블로그 포스팅과 같아 자유롭게 자신의 의견을 작성할 수 있습니다.
+
 ## 간결한 문서
 
 > 문서는 최대한 간결하게 유지합니다.

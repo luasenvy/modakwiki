@@ -22,5 +22,9 @@
   "Writing a paragraph...": "문단 작성...",
   "Save Document": "문서 저장",
   "document": "문서",
-  "essay": "에세이"
+  "essay": "에세이",
+  "Cancel Edit": "편집 취소",
+  "Remove Paragraph": "문단 삭제",
+  "Drag to change order": "드래그하여 순서 변경",
+  "Please input title first": "제목을 먼저 입력해주세요"
 }
