@@ -426,13 +426,21 @@ export default function MdxEditor({ lng: lngParam }: MdxEditorProps) {
           )}
         />
 
-        <Banner className="absolute top-0 right-0 left-0">
+        <Banner
+          className="absolute top-0 right-0 left-0"
+          style={
+            {
+              "--primary": "var(--color-orange-400)",
+              "--primary-foreground": "var(--color-white)",
+            } as React.CSSProperties
+          }
+        >
           <BannerIcon icon={CircleAlert} />
           <BannerTitle>작성요령을 꼭 읽어주세요. 🥳</BannerTitle>
           <BannerAction size="sm" asChild>
             <Link href={`${lng}/editor/tip`}>작성요령</Link>
           </BannerAction>
-          <BannerClose />
+          <BannerClose type="button" />
         </Banner>
 
         <div
