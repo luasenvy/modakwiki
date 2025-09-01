@@ -126,10 +126,6 @@ export function getSelectedLine(textarea: HTMLTextAreaElement): string | null {
   }
 }
 
-export function getFootnotes(content: string) {
-  return content.match(/\[\^[^\]]+\]:[^\n]+/g);
-}
-
 export function getHunks(content: string) {
   const lines = [];
 
