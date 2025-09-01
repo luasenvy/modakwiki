@@ -24,7 +24,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { zodResolver } from "@hookform/resolvers/zod";
 import debounce from "lodash.debounce";
-import { AlignLeft, GripVertical } from "lucide-react";
+import { AlignLeft, GripVertical, Trash, X } from "lucide-react";
 import { useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -67,6 +67,8 @@ export default function MdxEditor({ lng: lngParam }: MdxEditorProps) {
     },
   });
 
+  const title = form.watch("title");
+
   const handleSubmit = async (values: DocumentForm) => {
     const res = await fetch("/api/doc", {
       method: "POST",
@@ -88,7 +90,7 @@ export default function MdxEditor({ lng: lngParam }: MdxEditorProps) {
       handleChangeHunk.cancel();
       e.preventDefault();
 
-      setLines(getHunks(e.currentTarget.value.trim()));
+      setLines(lines.concat(getHunks(e.currentTarget.value.trim())));
       setHunk("");
       lineRef.current!.value = "";
     }
@@ -239,7 +241,7 @@ export default function MdxEditor({ lng: lngParam }: MdxEditorProps) {
                 >
                   {lines.map((line, i) => (
                     <SortableItem
-                      className={cn("hover:bg-accent", {
+                      className={cn("group/line hover:bg-accent", {
                         group: selectedLine < 0,
                         "my-8 border border-primary bg-accent p-2": selectedLine === i,
                         "cursor-pointer": selectedLine !== i,
@@ -263,6 +265,28 @@ export default function MdxEditor({ lng: lngParam }: MdxEditorProps) {
                           onKeyDown={handleKeyDownSelectedLine}
                         />
                       )}
+
+                      <div className="absolute top-0 right-0 hidden group-hover/line:flex">
+                        {selectedLine === i && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            type="button"
+                            onClick={() => setSelectedLine(-1)}
+                          >
+                            <X className="size-4" />
+                          </Button>
+                        )}
+
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          type="button"
+                          onClick={() => setLines((prev) => prev.filter((_, index) => index !== i))}
+                        >
+                          <Trash className="size-4 text-destructive" />
+                        </Button>
+                      </div>
                     </SortableItem>
                   ))}
                 </SortableContext>
@@ -272,15 +296,25 @@ export default function MdxEditor({ lng: lngParam }: MdxEditorProps) {
                 <MdxLoader>{hunk}</MdxLoader>
               </div>
 
-              <Textarea
-                ref={lineRef}
-                name="hunk"
-                className="mt-2 h-28 resize-none rounded-none"
-                placeholder={t("Writing a paragraph...")}
-                onFocus={() => setSelectedLine(-1)}
-                onChange={handleChangeHunk}
-                onKeyDown={handleKeyDownHunk}
-              />
+              <div className="flex flex-col space-y-2">
+                <Textarea
+                  ref={lineRef}
+                  name="hunk"
+                  className="mt-2 h-28 resize-none rounded-none"
+                  placeholder={t("Writing a paragraph...")}
+                  onFocus={() => setSelectedLine(-1)}
+                  onChange={handleChangeHunk}
+                  onKeyDown={handleKeyDownHunk}
+                />
+
+                <Button
+                  type="submit"
+                  className="ml-auto rounded-none"
+                  disabled={!lines.length || !title.length}
+                >
+                  {t("Save")}
+                </Button>
+              </div>
             </article>
 
             <div className="sticky top-0 flex h-[calc(100dvh_-_var(--spacing)_*_12)] w-[286px] flex-col space-y-2">
@@ -330,7 +364,7 @@ function SortableItem({ children, className, ...props }: SortableProps) {
   return (
     <div
       ref={setNodeRef}
-      className={cn(className, "flex items-center")}
+      className={cn(className, "relative flex items-center")}
       style={{
         transform: CSS.Transform.toString(transform),
         transition: isSorting ? transition : undefined,
