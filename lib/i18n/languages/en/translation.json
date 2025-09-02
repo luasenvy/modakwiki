@@ -57,5 +57,8 @@
   "Create has been successful.": "Create has been successful.",
   "Update has been successful.": "Update has been successful.",
   "Delete has been successful.": "Delete has been successful.",
-  "Show Document": "Show Document"
+  "Show Document": "Show Document",
+  "Update failed because there were no changes.": "Update failed because there were no changes.",
+  "Document History": "Document History",
+  "Cannot be change after document created.": "Cannot be change after document created."
 }

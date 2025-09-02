@@ -43,5 +43,8 @@
   "Create has been successful.": "생성 되었습니다.",
   "Update has been successful.": "갱신 되었습니다.",
   "Delete has been successful.": "삭제 되었습니다.",
-  "Show Document": "문서 보기"
+  "Show Document": "문서 보기",
+  "Update failed because there were no changes.": "변경사항이 없어 갱신에 실패하였습니다.",
+  "Document History": "문서 역사",
+  "Cannot be change after document created.": "문서 생성 후 변경할 수 없습니다."
 }

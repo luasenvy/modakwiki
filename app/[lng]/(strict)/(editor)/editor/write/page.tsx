@@ -43,8 +43,9 @@ export default async function WritePage(ctx: PageProps<"/[lng]/editor/write">) {
       `SELECT id, title, content, email
          FROM document
         WHERE id = $1
-          AND email = $2`,
-      [id, session?.user.email],
+          AND email = $2
+          AND deleted IS NULL`,
+      [id, session.user.email],
     );
 
     if (!doc) return notFound();
@@ -57,7 +58,7 @@ export default async function WritePage(ctx: PageProps<"/[lng]/editor/write">) {
     return (
       <>
         <Breadcrumb lng={lngParam} breadcrumbs={breadcrumbs} />
-        <MdxEditor lng={lngParam} doc={doc} deletable={session?.user.email === doc.email} />
+        <MdxEditor lng={lngParam} doc={doc} deletable={session.user.email === doc.email} />
       </>
     );
   } finally {

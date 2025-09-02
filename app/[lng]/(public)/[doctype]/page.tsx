@@ -24,7 +24,8 @@ export default async function WikiDocPage(ctx: PageProps<"/[lng]/[doctype]">) {
       `SELECT id, title, content, email
          FROM document
         WHERE id = $1
-          AND type = $2`,
+          AND type = $2
+          AND deleted IS NULL`,
       [id, doctype],
     );
 

@@ -187,14 +187,14 @@ export default function MdxEditor({ lng: lngParam, doc, deletable }: MdxEditorPr
 
   const handleSubmit = form.handleSubmit(async (values: DocumentForm) => {
     const options = {
-      method: values.id ? "PUT" : "POST",
+      method: values.id ? "PATCH" : "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(values),
     };
 
     const res = await fetch("/api/document", options);
 
-    if (!res.ok) return toast.error(await res.text());
+    if (!res.ok) return toast.error(statusMessage({ t, status: res.status, options }));
 
     const { id } = await res.json();
     toast.success(statusMessage({ t, status: res.status, options }), {
@@ -219,10 +219,12 @@ export default function MdxEditor({ lng: lngParam, doc, deletable }: MdxEditorPr
   const handleClickDelete = async () => {
     if (!doc?.id) return;
 
-    const res = await fetch(`/api/document/${doc.id}`, { method: "DELETE" });
+    const options = { method: "DELETE" };
+    const res = await fetch(`/api/document?${new URLSearchParams({ id: doc.id })}`, options);
 
-    if (!res.ok) return toast.error(await res.text());
+    if (!res.ok) return toast.error(statusMessage({ t, status: res.status, options }));
 
+    toast.success(statusMessage({ t, status: res.status, options }));
     router.push(`${lng}/me/documents`);
   };
 
