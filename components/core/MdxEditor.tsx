@@ -21,7 +21,7 @@ import {
   useSortable,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import debounce from "lodash.debounce";
 import {
@@ -29,6 +29,7 @@ import {
   Check,
   CircleAlert,
   Copy,
+  Eraser,
   GripVertical,
   MessageSquareHeart,
   Pencil,
@@ -39,6 +40,7 @@ import {
   Trash,
 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -72,22 +74,32 @@ import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/react";
 import { MdxLoader } from "@/lib/mdx/react";
 import { clear as clearMarkdown, getHunks, getToc, trailingFootnotes } from "@/lib/mdx/utils";
-import { DocumentForm, doctypeEnum, documentForm } from "@/lib/schema/document";
+import {
+  DocumentForm,
+  Document as DocumentType,
+  doctypeEnum,
+  documentForm,
+} from "@/lib/schema/document";
 import { localePrefix } from "@/lib/url";
 import { cn } from "@/lib/utils";
 
 interface MdxEditorProps {
   lng: Language;
+  doc?: DocumentType;
+  deletable?: boolean;
 }
 
-export default function MdxEditor({ lng: lngParam }: MdxEditorProps) {
+export default function MdxEditor({ lng: lngParam, doc, deletable }: MdxEditorProps) {
+  const router = useRouter();
+
   const lng = localePrefix(lngParam);
   const { t } = useTranslation(lngParam);
 
   const [hunk, setHunk] = useState<string>("");
   const [isCopied, setIsCopied] = useState<boolean>(false);
-  const [lines, setLines] = useState<string[]>([]);
+  const [lines, setLines] = useState<string[]>(getHunks(doc?.content || ""));
   const [selectedLine, setSelectedLine] = useState<number>(-1);
+
   const lineRef = useRef<HTMLTextAreaElement>(null);
   const titleRef = useRef<HTMLInputElement>(null);
   const prevSelectedLineContent = useRef<string>("");
@@ -100,9 +112,10 @@ export default function MdxEditor({ lng: lngParam }: MdxEditorProps) {
   const form = useForm<DocumentForm>({
     resolver: zodResolver(documentForm),
     defaultValues: {
-      type: doctypeEnum.wkdoc,
-      title: "",
-      content: "",
+      id: doc?.id,
+      type: doc?.type || doctypeEnum.wkdoc,
+      title: doc?.title || "",
+      content: doc?.content || "",
     },
   });
 
@@ -165,7 +178,7 @@ export default function MdxEditor({ lng: lngParam }: MdxEditorProps) {
 
   const handleSubmit = form.handleSubmit(async (values: DocumentForm) => {
     const res = await fetch("/api/document", {
-      method: "POST",
+      method: values.id ? "PUT" : "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(values),
     });
@@ -180,6 +193,16 @@ export default function MdxEditor({ lng: lngParam }: MdxEditorProps) {
       setIsCopied(true);
       setTimeout(() => setIsCopied(false), 3000);
     });
+  };
+
+  const handleClickDelete = async () => {
+    if (!doc?.id) return;
+
+    const res = await fetch(`/api/document/${doc.id}`, { method: "DELETE" });
+
+    if (!res.ok) return toast.error(await res.text());
+
+    router.push(`${lng}/me/documents`);
   };
 
   useEffect(() => {
@@ -504,12 +527,12 @@ export default function MdxEditor({ lng: lngParam }: MdxEditorProps) {
               <Button
                 type="button"
                 variant="ghost"
-                className="!text-muted-foreground hover:!text-destructive size-6"
+                className="!text-orange-500/80 hover:!text-orange-500 size-6"
                 size="icon"
-                title={t("Save Document")}
+                title={t("Erase Changes")}
                 disabled={!canSave}
               >
-                <Shredder className="size-3.5" />
+                <Eraser className="size-3.5" />
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
@@ -523,7 +546,7 @@ export default function MdxEditor({ lng: lngParam }: MdxEditorProps) {
                 <AlertDialogCancel>{t("Cancel")}</AlertDialogCancel>
                 <AlertDialogAction
                   onClick={() => {
-                    setLines([]);
+                    setLines(getHunks(doc?.content || ""));
                     setTimeout(() => lineRef.current!.focus());
                   }}
                 >
@@ -532,6 +555,36 @@ export default function MdxEditor({ lng: lngParam }: MdxEditorProps) {
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
+
+          {deletable && (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  className="!text-destructive/80 hover:!text-destructive size-6"
+                  size="icon"
+                  title={t("Delete Document")}
+                >
+                  <Shredder className="size-3.5" />
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>{t("Are you absolutely sure?")}</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    {t("This action cannot be undone. This will delete document permanently.")}
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>{t("Cancel")}</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleClickDelete}>
+                    {t("Yes, I'm sure")}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
         </div>
       </form>
     </Form>
@@ -561,12 +614,12 @@ function SortableItem({ lng: lngParam, children, className, ...props }: Sortable
       {...props}
     >
       <div
-        className="hidden size-8 shrink-0 cursor-grab px-2 group-hover:flex"
+        className="mr-2 mb-auto hidden size-10 shrink-0 cursor-grab bg-blue-500/50 px-2 hover:bg-blue-500/60 active:bg-blue-500 group-hover:flex"
         title={t("Drag to change order")}
         {...attributes}
         {...listeners}
       >
-        <GripVertical className="m-auto size-5" />
+        <GripVertical className="m-auto size-4" />
       </div>
 
       <div className="w-[calc(100%_-_(var(--spacing)_*_8))] grow">{children}</div>

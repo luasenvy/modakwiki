@@ -1,6 +1,7 @@
 import { Breadcrumb, BreadcrumbItem } from "@/components/core/Breadcrumb";
 import { Document } from "@/components/core/Document";
 import type { Language } from "@/lib/i18n/config";
+import { Document as DocumentType } from "@/lib/schema/document";
 import { localePrefix } from "@/lib/url";
 import Logo from "@/public/logo.webp";
 
@@ -219,7 +220,7 @@ function sayHello(x: number) {
   return (
     <>
       <Breadcrumb lng={lngParam} breadcrumbs={breadcrumbs} />
-      <Document content={content.trim()} />
+      <Document lng={lngParam} content={content.trim()} />
     </>
   );
 }

@@ -1,17 +1,33 @@
-import { AlignLeft } from "lucide-react";
+import { AlignLeft, Pencil } from "lucide-react";
+import Link from "next/link";
+import { CopyButton } from "@/components/core/button/CopyButton";
 import { Container } from "@/components/core/Container";
 import { TOCProvider, TOCScrollArea } from "@/components/fumadocs/toc";
 import TocClerk from "@/components/fumadocs/toc-clerk";
+import { Button } from "@/components/ui/button";
+import { Session } from "@/lib/auth/server";
+import { Language } from "@/lib/i18n/config";
+import { useTranslation } from "@/lib/i18n/next";
 import { MdxLoader } from "@/lib/mdx/server";
 import { getToc } from "@/lib/mdx/utils";
+import { Document as DocumentType } from "@/lib/schema/document";
+import { localePrefix } from "@/lib/url";
 import { cn } from "@/lib/utils";
 
 interface DocumentProps {
-  content: string;
+  lng: Language;
+  doc?: DocumentType;
+  content?: string;
+  session?: Session | null;
 }
 
-export async function Document({ content }: DocumentProps) {
+export async function Document({ lng: lngParam, doc, content = "", session }: DocumentProps) {
+  content = doc?.content ?? content;
+
   const toc = getToc(content);
+  const lng = localePrefix(lngParam);
+
+  const { t } = await useTranslation(lngParam);
 
   return (
     <TOCProvider toc={toc} single={false}>
@@ -102,9 +118,33 @@ export async function Document({ content }: DocumentProps) {
           </div>
 
           <TOCScrollArea className="overflow-auto p-0">
-            <TocClerk />
+            <TocClerk lng={lngParam} />
           </TOCScrollArea>
         </nav>
+
+        <div
+          className={cn(
+            "bg-background opacity-60 transition-opacity duration-200 ease-in-out hover:opacity-100",
+            "-translate-x-1/2 fixed inset-x-1/2 bottom-2 flex w-fit items-center justify-center gap-1 rounded-lg border px-4 py-1 shadow",
+          )}
+        >
+          <CopyButton lng={lngParam} content={content} />
+
+          {doc?.email && session?.user.email === doc.email && (
+            <Button
+              type="button"
+              variant="ghost"
+              className="!text-muted-foreground hover:!text-foreground size-6"
+              size="icon"
+              title={t("Edit Document")}
+              asChild
+            >
+              <Link href={`${lng}/editor/write?${new URLSearchParams({ id: doc.id })}`}>
+                <Pencil className="size-3.5" />
+              </Link>
+            </Button>
+          )}
+        </div>
       </Container>
     </TOCProvider>
   );

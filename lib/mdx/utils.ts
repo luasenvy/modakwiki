@@ -207,3 +207,55 @@ export function trailingFootnotes(content: string) {
 export function clear(content: string) {
   return content.replace(/\n{3,}/g, "\n\n").trim();
 }
+
+export function humanReadable(content: string) {
+  // remove footnotes
+  content = content.replace(/\[\^[^\]]+](:[^\n|$]+)?/g, "");
+
+  // remove sub
+  content = content.replace(/~([^\n]+)~/g, "$1");
+
+  // remove sup
+  content = content.replace(/\^([^\n]+)\^/g, "$1");
+
+  // remove blockquotes
+  content = content.replace(/(^|\n)> /g, " ");
+
+  // remove headings
+  content = content.replace(/^#[^\n]+/gm, "");
+
+  // remove horizontal
+  content = content.replace(/^(\*|-|\+){3,}(\n|$)/gm, "");
+
+  // remove list
+  content = content.replace(/^(\*|-|\+)[^\n]+/g, "");
+
+  // unwrap links
+  content = content.replace(/\[([^\]]+)]\([^)]+\)/g, "$1");
+
+  // remove blocks
+  const blocktypes = ["```", "~~~", "$$"];
+  let indicator;
+  for (const blocktype of blocktypes) {
+    while ((indicator = content.indexOf(blocktype)) >= 0) {
+      content = content.substring(
+        indicator,
+        content.indexOf(blocktype, indicator + blocktype.length),
+      );
+    }
+  }
+
+  // remove tables
+  while ((indicator = content.search(/(^|\n)\|/)) >= 0) {
+    const endOfTable = content.indexOf("|\n\n", indicator + 1);
+
+    if (endOfTable < 0) break;
+
+    content = content.substring(0, indicator) + content.substring(endOfTable + 1);
+  }
+
+  // remove whitespaces
+  content = content.replace(/\s{2,}|\n/g, " ").trim();
+
+  return content;
+}

@@ -76,7 +76,7 @@ export const mainNavs: Array<NavItem> = [
 export const subNavs: Array<NavItem> = [
   {
     title: "문서함",
-    url: "/me/docs",
+    url: "/me/documents",
     icon: Inbox,
   },
 ];

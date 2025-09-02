@@ -48,5 +48,9 @@
   "Cancel": "Cancel",
   "Yes, I'm sure": "Yes, I'm sure",
   "No Contents": "No Contents",
-  "Edit": "Edit"
+  "Edit": "Edit",
+  "Edit Document": "Edit Document",
+  "Erase Changes": "Erase Changes",
+  "Delete Document": "Delete Document",
+  "This action cannot be undone. This will delete document permanently.": "This action cannot be undone. This will delete document permanently."
 }

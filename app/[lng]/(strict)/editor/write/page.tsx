@@ -1,23 +1,66 @@
+import { headers } from "next/headers";
+import { notFound, redirect } from "next/navigation";
 import { Breadcrumb, BreadcrumbItem } from "@/components/core/Breadcrumb";
 import MdxEditor from "@/components/core/MdxEditor";
-
+import { auth } from "@/lib/auth/server";
+import { pool } from "@/lib/db";
 import { Language } from "@/lib/i18n/config";
+import { Document } from "@/lib/schema/document";
 import { localePrefix } from "@/lib/url";
 
 export default async function WritePage(ctx: PageProps<"/[lng]/editor/write">) {
-  const lngParam = (await ctx.params).lng as Language;
+  const params = await ctx.params;
 
+  const lngParam = params.lng as Language;
   const lng = localePrefix(lngParam);
 
-  const breadcrumbs: Array<BreadcrumbItem> = [
-    { title: "편집자" },
-    { title: "새 문서", href: `${lng}/editor/write` },
-  ];
+  const id = (await ctx.searchParams).id as string;
 
-  return (
-    <>
-      <Breadcrumb lng={lngParam} breadcrumbs={breadcrumbs} />
-      <MdxEditor lng={lngParam} />
-    </>
-  );
+  // 신규 문서 생성
+  if (!id) {
+    const breadcrumbs: Array<BreadcrumbItem> = [
+      { title: "편집자" },
+      { title: "새 문서", href: `${lng}/editor/write` },
+    ];
+
+    return (
+      <>
+        <Breadcrumb lng={lngParam} breadcrumbs={breadcrumbs} />
+        <MdxEditor lng={lngParam} />
+      </>
+    );
+  }
+
+  // 기존 문서 편집
+  const client = await pool.connect();
+  try {
+    const session = await auth.api.getSession({ headers: await headers() });
+    if (!session) return redirect(`${lng}/signin`);
+
+    const {
+      rows: [doc],
+    } = await client.query<Document>(
+      `SELECT id, title, content, email
+         FROM document
+        WHERE id = $1
+          AND email = $2`,
+      [id, session?.user.email],
+    );
+
+    if (!doc) return notFound();
+
+    const breadcrumbs: Array<BreadcrumbItem> = [
+      { title: "편집자" },
+      { title: doc.title, href: `${lng}/editor/write?id=${id}` },
+    ];
+
+    return (
+      <>
+        <Breadcrumb lng={lngParam} breadcrumbs={breadcrumbs} />
+        <MdxEditor lng={lngParam} doc={doc} deletable={session?.user.email === doc.email} />
+      </>
+    );
+  } finally {
+    client.release();
+  }
 }

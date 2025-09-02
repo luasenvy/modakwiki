@@ -173,7 +173,7 @@ export function Editor({ lng: lngParam }: EditorProps) {
               )}
             </article>
 
-            <div className="sticky top-0 flex h-[calc(100dvh_-_var(--spacing)_*_12)] w-[286px] flex-col space-y-2 pt-8 pr-4 pl-2">
+            <div className="flex h-[calc(100dvh_-_var(--spacing)_*_12)] w-[286px] flex-col space-y-2 pt-8 pr-4 pl-2">
               <FormField
                 control={form.control}
                 name="title"
@@ -231,7 +231,7 @@ export function Editor({ lng: lngParam }: EditorProps) {
                 </div>
 
                 <TOCScrollArea className="overflow-auto p-0">
-                  <TocClerk />
+                  <TocClerk lng={lngParam} />
                 </TOCScrollArea>
               </nav>
             </div>
