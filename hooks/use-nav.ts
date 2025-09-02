@@ -29,7 +29,7 @@ export const mainNavs: Array<NavItem> = [
     items: [
       {
         title: "임의문서",
-        url: "#",
+        url: "/w/random",
       },
       {
         title: "변경내역",
