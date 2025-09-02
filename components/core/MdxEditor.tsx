@@ -555,7 +555,7 @@ function SortableItem({ lng: lngParam, children, className, ...props }: Sortable
       ref={setNodeRef}
       className={cn(className, "relative flex items-center")}
       style={{
-        transform: CSS.Transform.toString(transform),
+        transform: transform ? `translate(${transform.x}px, ${transform.y}px)` : undefined,
         transition: isSorting ? transition : undefined,
       }}
       {...props}

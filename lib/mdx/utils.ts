@@ -205,5 +205,5 @@ export function trailingFootnotes(content: string) {
 }
 
 export function clear(content: string) {
-  return content.replace(/\n{3,}/g, "\n\n");
+  return content.replace(/\n{3,}/g, "\n\n").trim();
 }
