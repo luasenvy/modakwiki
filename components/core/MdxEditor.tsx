@@ -44,6 +44,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+
 import { Container } from "@/components/core/Container";
 import { TOCProvider, TOCScrollArea } from "@/components/fumadocs/toc";
 import TocClerk from "@/components/fumadocs/toc-clerk";
@@ -59,7 +60,14 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import {
   Banner,
@@ -70,6 +78,7 @@ import {
 } from "@/components/ui/shadcn-io/banner";
 import { Textarea } from "@/components/ui/textarea";
 import { Toggle } from "@/components/ui/toggle";
+import { statusMessage } from "@/lib/fetch/react";
 import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/react";
 import { MdxLoader } from "@/lib/mdx/react";
@@ -177,15 +186,27 @@ export default function MdxEditor({ lng: lngParam, doc, deletable }: MdxEditorPr
   }, 110);
 
   const handleSubmit = form.handleSubmit(async (values: DocumentForm) => {
-    const res = await fetch("/api/document", {
+    const options = {
       method: values.id ? "PUT" : "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(values),
-    });
+    };
+
+    const res = await fetch("/api/document", options);
 
     if (!res.ok) return toast.error(await res.text());
 
-    console.info(201);
+    const { id } = await res.json();
+    toast.success(statusMessage({ t, status: res.status, options }), {
+      description: values.title,
+      action: {
+        label: t("Show Document"),
+        onClick: () => router.push(`${lng}/w?${new URLSearchParams({ id })}`),
+      },
+      classNames: {
+        description: "!text-foreground/80",
+      },
+    });
   });
 
   const handleClickCopy = () => {
@@ -329,9 +350,13 @@ export default function MdxEditor({ lng: lngParam, doc, deletable }: MdxEditorPr
                         placeholder={t("Please input title")}
                         defaultValue={value}
                         onChange={handleChangeTitle}
+                        readOnly={Boolean(doc?.id)}
                         required
                       />
                     </FormControl>
+                    <FormDescription className="!m-0 text-orange-500">
+                      {t("Cannot be change after document created.")}
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}

@@ -1,8 +1,7 @@
 import { betterAuth } from "better-auth";
-import { createAuthMiddleware } from "better-auth/plugins";
 import { betterAuth as authConfig } from "@/config";
 import { pool as database } from "@/lib/db";
-import { roleEnum } from "@/lib/schema/role";
+import { scopeEnum } from "@/lib/schema/user";
 
 export const auth = betterAuth({
   database,
@@ -13,7 +12,7 @@ export const auth = betterAuth({
           return {
             data: {
               ...user,
-              scope: roleEnum.member,
+              scope: scopeEnum.associate,
             },
           };
         },

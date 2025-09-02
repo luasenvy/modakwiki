@@ -56,7 +56,6 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[ln
       <body className={pretendard.className}>
         <ThemeProvider defaultTheme="light" enableSystem disableTransitionOnChange>
           {children}
-          <Toaster />
         </ThemeProvider>
       </body>
     </html>

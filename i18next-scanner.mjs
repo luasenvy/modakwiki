@@ -20,12 +20,13 @@ const parser = new Parser({
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
+const libs = join(__dirname, "lib");
 const components = join(__dirname, "components");
 const apps = join(__dirname, "app");
 const destination = join(__dirname, "lib/i18n/languages");
 if (!existsSync(destination)) mkdirSync(destination, { recursive: true });
 
-const entries = [components, apps];
+const entries = [libs, components, apps];
 
 entries.forEach((entry) => {
   readdirSync(entry, { recursive: true })

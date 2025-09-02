@@ -36,6 +36,9 @@ import dynamic from "next/dynamic";
 // import { useBreadcrumb } from "@/hooks/use-breadcrumb"
 import Link from "next/link"
 import { BreadcrumbItem as BreadcrumbItemType } from "@/components/core/Breadcrumb"
+import { Toaster } from "@/components/ui/sonner"
+import { useTheme } from "next-themes"
+import { ToasterProps } from "sonner"
 
 // Avoid SSR for the ThemeToggler component
 const ThemeToggler = dynamic(() => import("@/components/core/ThemeToggler").then(mod => mod.ThemeToggler), { ssr: false });
@@ -332,6 +335,7 @@ function SidebarRail({ className, ...props }: React.ComponentProps<"button">) {
 
 function SidebarInset({ className, children, ...props }: React.ComponentProps<"main">) {
   const { state, breadcrumbs, isMobile } = useSidebar()
+  const { theme } = useTheme();
 
   return (
     <main
@@ -378,6 +382,8 @@ function SidebarInset({ className, children, ...props }: React.ComponentProps<"m
       </header>
 
       {children}
+
+      <Toaster theme={theme as ToasterProps["theme"]}/>
     </main>
   )
 }

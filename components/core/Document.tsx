@@ -1,4 +1,4 @@
-import { AlignLeft, Pencil } from "lucide-react";
+import { AlignLeft, FileClock, Pencil } from "lucide-react";
 import Link from "next/link";
 import { CopyButton } from "@/components/core/button/CopyButton";
 import { Container } from "@/components/core/Container";
@@ -11,6 +11,7 @@ import { useTranslation } from "@/lib/i18n/next";
 import { MdxLoader } from "@/lib/mdx/server";
 import { getToc } from "@/lib/mdx/utils";
 import { Document as DocumentType } from "@/lib/schema/document";
+import { scopeEnum } from "@/lib/schema/user";
 import { localePrefix } from "@/lib/url";
 import { cn } from "@/lib/utils";
 
@@ -122,29 +123,51 @@ export async function Document({ lng: lngParam, doc, content = "", session }: Do
           </TOCScrollArea>
         </nav>
 
-        <div
-          className={cn(
-            "bg-background opacity-60 transition-opacity duration-200 ease-in-out hover:opacity-100",
-            "-translate-x-1/2 fixed inset-x-1/2 bottom-2 flex w-fit items-center justify-center gap-1 rounded-lg border px-4 py-1 shadow",
-          )}
-        >
-          <CopyButton lng={lngParam} content={content} />
+        {(session || doc) && (
+          <div
+            className={cn(
+              "bg-background opacity-60 transition-opacity duration-200 ease-in-out hover:opacity-100",
+              "-translate-x-1/2 fixed inset-x-1/2 bottom-2 flex w-fit items-center justify-center gap-1 rounded-lg border px-4 py-1 shadow",
+            )}
+          >
+            {doc && (
+              <Button
+                type="button"
+                variant="ghost"
+                className="!text-muted-foreground hover:!text-foreground size-6"
+                size="icon"
+                title={t("Document History")}
+                asChild
+              >
+                <Link href={`${lng}/w/history?${new URLSearchParams({ id: doc.id })}`}>
+                  <FileClock className="size-3.5" />
+                </Link>
+              </Button>
+            )}
 
-          {doc?.email && session?.user.email === doc.email && (
-            <Button
-              type="button"
-              variant="ghost"
-              className="!text-muted-foreground hover:!text-foreground size-6"
-              size="icon"
-              title={t("Edit Document")}
-              asChild
-            >
-              <Link href={`${lng}/editor/write?${new URLSearchParams({ id: doc.id })}`}>
-                <Pencil className="size-3.5" />
-              </Link>
-            </Button>
-          )}
-        </div>
+            {session && (
+              <>
+                {session.user.scope >= scopeEnum.editor && (
+                  <CopyButton lng={lngParam} content={content} />
+                )}
+                {doc?.email && session.user.email === doc.email && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    className="!text-muted-foreground hover:!text-foreground size-6"
+                    size="icon"
+                    title={t("Edit Document")}
+                    asChild
+                  >
+                    <Link href={`${lng}/editor/write?${new URLSearchParams({ id: doc.id })}`}>
+                      <Pencil className="size-3.5" />
+                    </Link>
+                  </Button>
+                )}
+              </>
+            )}
+          </div>
+        )}
       </Container>
     </TOCProvider>
   );

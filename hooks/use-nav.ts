@@ -2,12 +2,12 @@
 
 import { FilePlus2, Image, Inbox, LucideIcon, ScrollText, SpellCheck } from "lucide-react";
 import { create } from "zustand";
-import { RoleEnum, roleEnum } from "@/lib/schema/role";
+import { ScopeEnum, scopeEnum } from "@/lib/schema/user";
 
 export interface NavItem {
   title: string;
   url: string;
-  scope?: RoleEnum;
+  scope?: ScopeEnum;
   items?: Array<NavItem>;
   icon?: LucideIcon;
 }
@@ -39,7 +39,7 @@ export const mainNavs: Array<NavItem> = [
   },
   {
     title: "편집자",
-    scope: roleEnum.editor,
+    scope: scopeEnum.editor,
     url: "#",
     items: [
       {
@@ -61,7 +61,7 @@ export const mainNavs: Array<NavItem> = [
   },
   {
     title: "파일",
-    scope: roleEnum.editor,
+    scope: scopeEnum.editor,
     url: "#",
     items: [
       {
