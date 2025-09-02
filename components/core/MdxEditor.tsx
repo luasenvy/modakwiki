@@ -176,14 +176,14 @@ export default function MdxEditor({ lng: lngParam }: MdxEditorProps) {
   });
 
   const handleClickCopy = () => {
-    navigator.clipboard.writeText(clearMarkdown(trailingFootnotes(lines.join("\n\n")))).then(() => {
+    navigator.clipboard.writeText(content).then(() => {
       setIsCopied(true);
       setTimeout(() => setIsCopied(false), 3000);
     });
   };
 
   useEffect(() => {
-    form.setValue("content", lines.join("\n\n"));
+    form.setValue("content", clearMarkdown(trailingFootnotes(lines.join("\n\n"))));
   }, [lines]);
 
   useEffect(() => {
