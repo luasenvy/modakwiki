@@ -165,10 +165,11 @@ export function getHunks(content: string) {
 
         // If paragraph has footnotes
         // Find footnote in Document and Append to paragraph
-        const footnoteIndicators = hunk.match(/\[\^[^\]]+\](?![^:])/g);
-        if (footnoteIndicators) {
+        const footnoteIdentifiers = hunk.match(/\[\^[^\]]+](?=[^:]|\s|$)/g);
+
+        if (footnoteIdentifiers) {
           hunk += "\n";
-          for (const footnoteIdentify of footnoteIndicators) {
+          for (const footnoteIdentify of footnoteIdentifiers) {
             const footnoteIndicator = content.search(
               new RegExp(`\n${footnoteIdentify.replace(/(\[|\]|\^)/g, "\\$1")}:[^\n$]+`),
             );
@@ -192,4 +193,17 @@ export function getHunks(content: string) {
   }
 
   return lines;
+}
+
+export function trailingFootnotes(content: string) {
+  const regex = /\[\^[^\]]+]:[^\n|$]+/g;
+  const footnotes = content.match(regex);
+
+  if (footnotes) return content.replace(regex, "").concat(`\n\n${footnotes.join("\n")}`);
+
+  return content;
+}
+
+export function clear(content: string) {
+  return content.replace(/\n{3,}/g, "\n\n");
 }

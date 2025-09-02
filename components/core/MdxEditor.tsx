@@ -31,7 +31,6 @@ import {
   Copy,
   GripVertical,
   MessageSquareHeart,
-  MoveUp,
   PencilOff,
   Save,
   ScrollText,
@@ -71,7 +70,7 @@ import { Toggle } from "@/components/ui/toggle";
 import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/react";
 import { MdxLoader } from "@/lib/mdx/react";
-import { getHunks, getToc } from "@/lib/mdx/utils";
+import { clear as clearMarkdown, getHunks, getToc, trailingFootnotes } from "@/lib/mdx/utils";
 import { DocumentForm, doctypeEnum, documentForm } from "@/lib/schema/document";
 import { localePrefix } from "@/lib/url";
 import { cn } from "@/lib/utils";
@@ -176,7 +175,7 @@ export default function MdxEditor({ lng: lngParam }: MdxEditorProps) {
   });
 
   const handleClickCopy = () => {
-    navigator.clipboard.writeText(lines.join("\n\n")).then(() => {
+    navigator.clipboard.writeText(clearMarkdown(trailingFootnotes(lines.join("\n\n")))).then(() => {
       setIsCopied(true);
       setTimeout(() => setIsCopied(false), 3000);
     });
@@ -424,7 +423,7 @@ export default function MdxEditor({ lng: lngParam }: MdxEditorProps) {
               </div>
 
               <TOCScrollArea className="overflow-auto p-0">
-                <TocClerk />
+                <TocClerk lng={lngParam} />
               </TOCScrollArea>
             </nav>
           </Container>
@@ -482,7 +481,7 @@ export default function MdxEditor({ lng: lngParam }: MdxEditorProps) {
             <Save className="size-3.5" />
           </Button>
           <Button
-            type="submit"
+            type="button"
             variant="ghost"
             className="!text-muted-foreground hover:!text-foreground size-6"
             size="icon"
@@ -495,7 +494,7 @@ export default function MdxEditor({ lng: lngParam }: MdxEditorProps) {
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button
-                type="submit"
+                type="button"
                 variant="ghost"
                 className="!text-muted-foreground hover:!text-destructive size-6"
                 size="icon"
@@ -516,10 +515,8 @@ export default function MdxEditor({ lng: lngParam }: MdxEditorProps) {
                 <AlertDialogCancel>{t("Cancel")}</AlertDialogCancel>
                 <AlertDialogAction
                   onClick={() => {
-                    form.setValue("title", "");
-                    titleRef.current!.value = "";
                     setLines([]);
-                    setTimeout(() => titleRef.current!.focus());
+                    setTimeout(() => lineRef.current!.focus());
                   }}
                 >
                   {t("Yes, I'm sure")}

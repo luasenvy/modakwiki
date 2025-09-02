@@ -5,9 +5,20 @@ import { mergeRefs } from "fumadocs-ui/utils/merge-refs";
 import { type ComponentProps, useEffect, useRef, useState } from "react";
 import { useTOCItems } from "@/components/fumadocs/toc";
 import { TocThumb } from "@/components/fumadocs/toc-thumb";
+import { Language } from "@/lib/i18n/config";
+import { useTranslation } from "@/lib/i18n/react";
 import { cn } from "@/lib/utils";
 
-export default function ClerkTOCItems({ ref, className, ...props }: ComponentProps<"div">) {
+export interface ClerkTOCItemsProps extends ComponentProps<"div"> {
+  lng: Language;
+}
+
+export default function ClerkTOCItems({
+  ref,
+  lng: lngParam,
+  className,
+  ...props
+}: ClerkTOCItemsProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const items = useTOCItems();
 
@@ -16,6 +27,8 @@ export default function ClerkTOCItems({ ref, className, ...props }: ComponentPro
     width: number;
     height: number;
   }>();
+
+  const { t } = useTranslation(lngParam);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -62,7 +75,9 @@ export default function ClerkTOCItems({ ref, className, ...props }: ComponentPro
 
   if (items.length === 0)
     return (
-      <div className="rounded-lg border bg-card p-3 text-muted-foreground text-xs">No Contents</div>
+      <div className="rounded-lg border bg-card p-3 text-muted-foreground text-xs">
+        {t("No Contents")}
+      </div>
     );
 
   return (
