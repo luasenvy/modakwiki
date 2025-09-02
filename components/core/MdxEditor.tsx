@@ -31,6 +31,7 @@ import {
   Copy,
   GripVertical,
   MessageSquareHeart,
+  Pencil,
   PencilOff,
   Save,
   ScrollText,
@@ -329,18 +330,9 @@ export default function MdxEditor({ lng: lngParam }: MdxEditorProps) {
                       className={cn("group/line hover:bg-accent", {
                         group: selectedLine < 0,
                         "my-8 border border-primary bg-accent p-2": selectedLine === i,
-                        "cursor-pointer": selectedLine !== i,
                       })}
                       id={`line-${i}`}
                       key={`line-${i}`}
-                      onClick={(e) => {
-                        if (selectedLine !== i) {
-                          prevSelectedLineContent.current = lines[i];
-                          return setSelectedLine(i);
-                        }
-                        e.preventDefault();
-                        e.stopPropagation();
-                      }}
                     >
                       <MdxLoader>{line}</MdxLoader>
                       {selectedLine === i && (
@@ -355,7 +347,7 @@ export default function MdxEditor({ lng: lngParam }: MdxEditorProps) {
                       )}
 
                       <div className="absolute top-0 right-0 hidden bg-background shadow-sm group-hover/line:flex">
-                        {selectedLine === i && (
+                        {selectedLine === i ? (
                           <Button
                             variant="ghost"
                             size="icon"
@@ -373,6 +365,22 @@ export default function MdxEditor({ lng: lngParam }: MdxEditorProps) {
                             }}
                           >
                             <PencilOff className="size-4" />
+                          </Button>
+                        ) : (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            type="button"
+                            title={t("Edit")}
+                            className="!bg-transparent !text-orange-500 hover:!text-orange-600"
+                            onClick={() => {
+                              if (selectedLine !== i) {
+                                prevSelectedLineContent.current = lines[i];
+                                return setSelectedLine(i);
+                              }
+                            }}
+                          >
+                            <Pencil className="size-4" />
                           </Button>
                         )}
 
