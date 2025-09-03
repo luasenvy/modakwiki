@@ -46,7 +46,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { Container } from "@/components/core/Container";
+import { Viewport } from "@/components/core/Container";
 import { TOCProvider, TOCScrollArea } from "@/components/fumadocs/toc";
 import TocClerk from "@/components/fumadocs/toc-clerk";
 import {
@@ -203,9 +203,6 @@ export default function MdxEditor({ lng: lngParam, doc, deletable }: MdxEditorPr
         label: t("Show Document"),
         onClick: () => router.push(`${lng}/w?${new URLSearchParams({ id })}`),
       },
-      classNames: {
-        description: "!text-foreground/80",
-      },
     });
   });
 
@@ -243,7 +240,7 @@ export default function MdxEditor({ lng: lngParam, doc, deletable }: MdxEditorPr
     <Form {...form}>
       <form onSubmit={handleSubmit}>
         <TOCProvider toc={toc} single={false}>
-          <Container>
+          <Viewport>
             <article
               className={cn(
                 "relative w-full max-w-full lg:max-w-3xl xl:w-[calc(100%_-_286px)] xl:max-w-4xl",
@@ -500,7 +497,7 @@ export default function MdxEditor({ lng: lngParam, doc, deletable }: MdxEditorPr
                 }}
               />
             </nav>
-          </Container>
+          </Viewport>
         </TOCProvider>
 
         <FormField

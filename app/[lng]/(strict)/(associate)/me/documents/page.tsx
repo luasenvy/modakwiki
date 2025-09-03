@@ -1,5 +1,5 @@
 import { Breadcrumb, BreadcrumbItem } from "@/components/core/Breadcrumb";
-import { Container } from "@/components/core/Container";
+import { Viewport } from "@/components/core/Container";
 import { Language } from "@/lib/i18n/config";
 import { localePrefix } from "@/lib/url";
 
@@ -15,9 +15,9 @@ export default async function MyDocsPage(ctx: PageProps<"/[lng]/me/documents">) 
   return (
     <>
       <Breadcrumb lng={lngParam} breadcrumbs={breadcrumbs} />
-      <Container className="lg:max-w-3xl xl:max-w-4xl">
+      <Viewport className="lg:max-w-3xl xl:max-w-4xl">
         <p>Docs</p>
-      </Container>
+      </Viewport>
     </>
   );
 }

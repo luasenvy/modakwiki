@@ -1,6 +1,22 @@
+import { Component, createElement, FunctionComponent } from "react";
 import { cn } from "@/lib/utils";
 
-export function Container({ className, ...props }: React.ComponentPropsWithRef<"div">) {
+type AllowedComponent = "div" | "article";
+
+const defaultContainerComponent = "div" as const;
+
+export function Container<T extends AllowedComponent = typeof defaultContainerComponent>({
+  as,
+  className,
+  ...props
+}: React.ComponentProps<T> & { as?: T }) {
+  return createElement(as ?? defaultContainerComponent, {
+    className: cn("pt-8 pb-24", className),
+    ...props,
+  });
+}
+
+export function Viewport({ className, ...props }: React.ComponentPropsWithRef<"div">) {
   return (
     <div
       className={cn(

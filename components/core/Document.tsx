@@ -2,7 +2,7 @@ import { TFunction } from "i18next";
 import { AlignLeft, FileClock, Pencil } from "lucide-react";
 import Link from "next/link";
 import { CopyButton } from "@/components/core/button/CopyButton";
-import { Container } from "@/components/core/Container";
+import { Container, Viewport } from "@/components/core/Container";
 import { TOCProvider, TOCScrollArea } from "@/components/fumadocs/toc";
 import TocClerk from "@/components/fumadocs/toc-clerk";
 import { Button } from "@/components/ui/button";
@@ -32,8 +32,9 @@ export async function Document({ lng: lngParam, doc, content = "", session }: Do
 
   return (
     <TOCProvider toc={toc} single={false}>
-      <Container>
-        <article
+      <Viewport>
+        <Container
+          as="article"
           className={cn(
             "relative w-full max-w-full lg:max-w-3xl xl:w-[calc(100%_-_286px)] xl:max-w-4xl",
             "h-fit",
@@ -107,7 +108,7 @@ export async function Document({ lng: lngParam, doc, content = "", session }: Do
           )}
         >
           <MdxLoader source={content} />
-        </article>
+        </Container>
 
         <nav
           id="nav-toc"
@@ -140,7 +141,7 @@ export async function Document({ lng: lngParam, doc, content = "", session }: Do
             />
           )}
         </nav>
-      </Container>
+      </Viewport>
     </TOCProvider>
   );
 }

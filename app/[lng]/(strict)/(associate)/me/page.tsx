@@ -1,7 +1,7 @@
 import { CheckCircle } from "lucide-react";
 import { headers } from "next/headers";
 import { Breadcrumb, BreadcrumbItem } from "@/components/core/Breadcrumb";
-import { Container } from "@/components/core/Container";
+import { Viewport } from "@/components/core/Container";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { auth } from "@/lib/auth/server";
 import { Language } from "@/lib/i18n/config";
@@ -19,7 +19,7 @@ export default async function MyPage(ctx: PageProps<"/[lng]/me">) {
     <>
       <Breadcrumb lng={lngParam} breadcrumbs={breadcrumbs} />
 
-      <Container className="lg:max-w-3xl xl:max-w-4xl">
+      <Viewport className="lg:max-w-3xl xl:max-w-4xl">
         <div className="flex space-x-2">
           <Avatar className="h-8 w-8 rounded-full">
             {user.image && <AvatarImage src={user.image} alt={user.name} />}
@@ -33,7 +33,7 @@ export default async function MyPage(ctx: PageProps<"/[lng]/me">) {
             <p className="text-xs">{user.email}</p>
           </div>
         </div>
-      </Container>
+      </Viewport>
     </>
   );
 }

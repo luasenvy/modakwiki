@@ -1,7 +1,7 @@
 import { Info } from "lucide-react";
 import Link from "next/link";
 import { Advertisement } from "@/components/core/button/Advertisement";
-import { Container } from "@/components/core/Container";
+import { Viewport } from "@/components/core/Container";
 import { pool } from "@/lib/db";
 import { Language } from "@/lib/i18n/config";
 import { Document } from "@/lib/schema/document";
@@ -24,7 +24,7 @@ export default async function SearchPage(ctx: PageProps<"/[lng]/search">) {
     );
 
     return (
-      <Container>
+      <Viewport>
         <div
           className={cn(
             "relative w-full max-w-full lg:max-w-3xl xl:w-[calc(100%_-_286px)] xl:max-w-4xl",
@@ -61,7 +61,7 @@ export default async function SearchPage(ctx: PageProps<"/[lng]/search">) {
 
           <Advertisement className="py-6" />
         </div>
-      </Container>
+      </Viewport>
     );
   } finally {
     client.release();

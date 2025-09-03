@@ -16,6 +16,9 @@ export const document = z.object({
   type: z.enum(doctypeEnum),
   email: z.string().min(1),
   license: z.enum(licenseEnum).optional(),
+  created: z.number(),
+  updated: z.number(),
+  deleted: z.number().optional(),
 });
 
 export type Document = z.infer<typeof document>;
