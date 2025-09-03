@@ -51,6 +51,10 @@
   "Update failed due to a conflict.": "Update failed due to a conflict.",
   "Clear Document": "문서 비우기",
   "This action cannot be undone. Removes all content from the document you are currently editing.": "이 작업은 실행 후 되돌릴 수 없습니다. 현재 편집중인 문서의 모든 내용을 제거합니다.",
+  "모닥위키": "모닥위키",
+  "모닥모닥 모닥위키": "모닥모닥 모닥위키",
   "Privacy Policy": "개인정보처리방침",
-  "Terms of Service": "서비스 약관"
+  "Terms of Service": "서비스 약관",
+  "Welcome back": "👋 다시 만나서 반가워요!",
+  "Login with": "간편 로그인"
 }

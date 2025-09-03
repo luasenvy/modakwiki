@@ -65,6 +65,10 @@
   "Update failed due to a conflict.": "Update failed due to a conflict.",
   "Clear Document": "Clear Document",
   "This action cannot be undone. Removes all content from the document you are currently editing.": "This action cannot be undone. Removes all content from the document you are currently editing.",
+  "모닥위키": "Modakwiki",
+  "모닥모닥 모닥위키": "Modakmodak Modakwiki",
   "Privacy Policy": "Privacy Policy",
-  "Terms of Service": "Terms of Service"
+  "Terms of Service": "Terms of Service",
+  "Welcome back": "Welcome back",
+  "Login with": "Login with"
 }
