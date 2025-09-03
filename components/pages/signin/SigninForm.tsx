@@ -1,8 +1,7 @@
 "use client";
 
-import { SiGithub, SiGoogle } from "@icons-pack/react-simple-icons";
+import { SiGoogle } from "@icons-pack/react-simple-icons";
 import { createAuthClient } from "better-auth/client";
-import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -29,12 +28,6 @@ export function SigninForm({ lng: lngParam, referer, turnstileSiteKey }: SigninF
     if (error) return toast.error(error.message);
   };
 
-  const handleClickGithubSignin = async () => {
-    const { error } = await authClient.signIn.social({ provider: "github" });
-
-    if (error) return toast.error(error.message);
-  };
-
   return (
     <div className="flex flex-col gap-6">
       <Card>
@@ -51,14 +44,6 @@ export function SigninForm({ lng: lngParam, referer, turnstileSiteKey }: SigninF
               onClick={handleClickGoogleSignin}
             >
               <SiGoogle />
-            </Button>
-            <Button
-              variant="outline"
-              size="icon"
-              className="rounded-full"
-              onClick={handleClickGithubSignin}
-            >
-              <SiGithub />
             </Button>
           </div>
         </CardContent>

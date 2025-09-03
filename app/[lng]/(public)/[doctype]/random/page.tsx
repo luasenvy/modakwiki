@@ -1,4 +1,4 @@
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { pool } from "@/lib/db";
 import { Language } from "@/lib/i18n/config";
 import { Doctype, Document as DocumentType } from "@/lib/schema/document";
@@ -23,6 +23,8 @@ export default async function WikiDocPage(ctx: PageProps<"/[lng]/[doctype]/rando
         LIMIT 1`,
       [doctype],
     );
+
+    if (!doc) return notFound();
 
     return redirect(`${lng}/${doctype}?${new URLSearchParams({ id: doc.id })}`);
   } finally {
