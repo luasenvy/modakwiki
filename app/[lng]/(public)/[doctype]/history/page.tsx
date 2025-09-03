@@ -42,7 +42,8 @@ export default async function HistoryPage(ctx: PageProps<"/[lng]/[doctype]/histo
       [id, doctype],
     );
 
-    const numberFormat = new Intl.DateTimeFormat(lngParam);
+    const dateFormater = new Intl.DateTimeFormat(lngParam);
+    const numberFormat = new Intl.NumberFormat(lngParam);
 
     return (
       <Viewport className="!justify-start flex-col items-center">
@@ -54,36 +55,52 @@ export default async function HistoryPage(ctx: PageProps<"/[lng]/[doctype]/histo
         >
           <h2>{title}</h2>
 
-          <div className="space-y-1">
-            {rows.map(({ added, removed, name, email, created }, i) => (
-              <div
-                key={`history-${i}`}
-                className="flex py-1 hover:bg-accent/80 max-sm:flex-col sm:items-center"
-              >
-                <p className="!my-0 font-semibold">
-                  <Link
-                    href={`${lng}/${doctype}/diff?${new URLSearchParams({ id, created: String(created) })}`}
-                    className="text-blue-500 no-underline hover:underline"
-                  >
-                    변경점 | +{added} | -{removed}
-                  </Link>
-                </p>
+          <div>
+            {rows.map(({ added, removed, name, email, created }, i) => {
+              const isChanged = added + removed > 0;
 
-                <div className="ml-auto flex gap-1 max-sm:flex-col sm:items-center">
-                  <p className="!my-0">
-                    <a
-                      href={`mailto:${email}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
+              return (
+                <div
+                  key={`history-${i}`}
+                  className="flex py-0.5 hover:bg-accent/80 max-sm:flex-col sm:items-center"
+                >
+                  <p className="!my-0 font-semibold">
+                    <Link
+                      href={
+                        isChanged
+                          ? `${lng}/${doctype}/diff?${new URLSearchParams({ id, created: String(created) })}`
+                          : `${lng}/${doctype}?${new URLSearchParams({ id, created: String(created) })}`
+                      }
                       className="text-blue-500 no-underline hover:underline"
                     >
-                      {name}
-                    </a>
+                      {isChanged ? (
+                        <>
+                          변경점 |{" "}
+                          <span className="text-green-600">+{numberFormat.format(added)}</span> |{" "}
+                          <span className="text-red-600">-{numberFormat.format(removed)}</span>
+                        </>
+                      ) : (
+                        "문서 생성됨"
+                      )}
+                    </Link>
                   </p>
-                  <p className="!my-0">{numberFormat.format(created)}</p>
+
+                  <div className="ml-auto flex gap-1 max-sm:flex-col sm:items-center">
+                    <p className="!my-0">
+                      <a
+                        href={`mailto:${email}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-500 no-underline hover:underline"
+                      >
+                        {name}
+                      </a>
+                    </p>
+                    <p className="!my-0">{dateFormater.format(created)}</p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </Container>
       </Viewport>

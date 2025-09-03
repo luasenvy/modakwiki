@@ -9,6 +9,7 @@ import LanguageDockerfile from "highlight.js/lib/languages/dockerfile";
 import LanguageJava from "highlight.js/lib/languages/java";
 import LanguageJavascript from "highlight.js/lib/languages/javascript";
 import LanguageJson from "highlight.js/lib/languages/json";
+import LanguageMarkdown from "highlight.js/lib/languages/markdown";
 import LanguagePlaintext from "highlight.js/lib/languages/plaintext";
 import LanguageSql from "highlight.js/lib/languages/sql";
 import LanguageTypescript from "highlight.js/lib/languages/typescript";
@@ -52,6 +53,7 @@ export const rehypePlugins = [
         typescript: LanguageTypescript,
         xml: LanguageXml,
         diff: LanguageDiff,
+        markdown: LanguageMarkdown,
         env() {
           return {
             contains: [

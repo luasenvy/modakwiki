@@ -1,11 +1,5 @@
 "use client";
 
-import "highlight.js/styles/vs2015.min.css";
-import "@/styles/highlight-code-lines.css";
-import "@/styles/highlight-code-titles.css";
-
-import "katex/dist/katex.min.css";
-
 import {
   closestCenter,
   DndContext,

@@ -1,7 +1,7 @@
 import { Children } from "react";
 import { Components } from "react-markdown";
 import { AutoLink } from "@/components/mdx/AutoLink";
-import { ImageZoom } from "@/components/ui/shadcn-io/image-zoom";
+// import { ImageZoom } from "@/components/ui/shadcn-io/image-zoom";
 import { cn } from "@/lib/utils";
 
 export default {

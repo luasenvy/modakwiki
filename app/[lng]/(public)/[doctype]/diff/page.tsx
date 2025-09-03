@@ -1,17 +1,15 @@
-import { diffChars } from "diff";
-import Link from "next/link";
 import { Container, Viewport } from "@/components/core/Container";
 import { DiffViewer } from "@/components/core/DiffViewer";
+import { Separator } from "@/components/ui/separator";
 import { pool } from "@/lib/db";
 import { Language } from "@/lib/i18n/config";
 import { Doctype, Document as DocumentType } from "@/lib/schema/document";
 import { History as DocumentHistory } from "@/lib/schema/history";
-import { localePrefix } from "@/lib/url";
 import { cn } from "@/lib/utils";
 
 export default async function DiffPage(ctx: PageProps<"/[lng]/[doctype]/history">) {
   const params = await ctx.params;
-  // const lngParam = params.lng as Language;
+  const lngParam = params.lng as Language;
   const doctype = params.doctype as Doctype;
 
   // const lng = localePrefix(lngParam);
@@ -45,19 +43,38 @@ export default async function DiffPage(ctx: PageProps<"/[lng]/[doctype]/history"
       [id, doctype, created],
     );
 
-    const [curr, prev] = rows.map(({ content }) => content);
+    const [curr, prev] = rows;
+
+    const dateFormater = new Intl.DateTimeFormat(lngParam, {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hourCycle: "h23",
+      hour: "2-digit",
+      minute: "numeric",
+      second: "numeric",
+    });
 
     return (
       <Viewport className="!justify-start flex-col items-center">
         <Container
+          as="article"
           className={cn(
             "relative w-full max-w-full px-4 lg:max-w-[calc(var(--container-3xl)_+_286px)] xl:max-w-[calc(var(--container-4xl)_+_286px)]",
             "prose dark:prose-invert max-w-none",
+            "prose-pre:max-h-[calc(100dvh_-_var(--spacing)_*_80)]",
           )}
         >
-          <h2>{title}</h2>
+          <h2>
+            변경점 비교: {title} <sub>( {dateFormater.format(curr.created)} )</sub>
+          </h2>
+          <div className="mt-6 flex flex-col items-end">
+            <p className="!m-0 font-mono text-muted-foreground text-sm">
+              변경전: {dateFormater.format(prev.created)}
+            </p>
+          </div>
 
-          <DiffViewer curr={curr} prev={prev} />
+          <DiffViewer curr={curr.content} prev={prev.content} />
         </Container>
       </Viewport>
     );

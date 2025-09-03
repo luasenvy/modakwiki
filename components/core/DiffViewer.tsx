@@ -1,7 +1,8 @@
 "use client";
 
 import { diffChars } from "diff";
-import { useEffect, useMemo, useRef } from "react";
+import { useMemo } from "react";
+import { MdxLoader } from "@/lib/mdx/react";
 
 interface DiffViewerProps {
   curr: string;
@@ -9,20 +10,19 @@ interface DiffViewerProps {
 }
 
 export function DiffViewer({ curr, prev }: DiffViewerProps) {
+  const diffs = useMemo(() => diffChars(prev, curr), [curr, prev]);
+
   return (
-    <div>
-      <pre>
-        {diffChars(curr, prev).map(({ added, removed, value }, i) => (
-          <span key={`diff-${i}`} style={{ color: added ? "green" : removed ? "red" : "grey" }}>
-            {value}
-            {/* {added
-              ? value.replace(/(^|\n)/g, "$1+ ")
-              : removed
-                ? value.replace(/(^|\n)/g, "$1- ")
-                : value} */}
-          </span>
-        ))}
-      </pre>
-    </div>
+    <MdxLoader>
+      {`~~~diff\n${diffs
+        .map(({ added, removed, value }, i) =>
+          added
+            ? `+ ${value.replace(/(\n)/g, "$1+ ")}`
+            : removed
+              ? `- ${value.replace(/(\n)/g, "$1- ")}`
+              : value,
+        )
+        .join("\n")}\n~~~`}
+    </MdxLoader>
   );
 }
