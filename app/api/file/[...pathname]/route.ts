@@ -10,8 +10,7 @@ export async function GET(req: NextRequest, ctx: RouteContext<"/api/file/[...pat
   const { pathname } = await ctx.params;
   const q = req.nextUrl.searchParams.get("q");
 
-  if (pathname.length <= 0 || pathname.includes("_photobook_"))
-    return new Response("Not Found", { status: 404 });
+  if (!pathname.length) return new Response("Not Found", { status: 404 });
 
   if (q) pathname.push(pathname.pop()!.concat(`-${q}`));
 
@@ -23,8 +22,6 @@ export async function GET(req: NextRequest, ctx: RouteContext<"/api/file/[...pat
   const ftype = await fileTypeFromBuffer(chunk);
 
   return new ReadableStreamResponse(createReadStream(filepath), {
-    headers: {
-      "Content-Type": ftype?.mime || "application/octet-stream",
-    },
+    headers: { "Content-Type": ftype?.mime || "application/octet-stream" },
   });
 }

@@ -1,4 +1,4 @@
-import { License, licenseEnum, licenseNameEnum } from "@/lib/schema/license";
+import { License, licenseEnum, licenseNameEnum } from "@/lib/license";
 
 interface CopyProtectionProps {
   url: string;
