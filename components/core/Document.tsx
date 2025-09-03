@@ -1,3 +1,4 @@
+import { TFunction } from "i18next";
 import { AlignLeft, FileClock, Pencil } from "lucide-react";
 import Link from "next/link";
 import { CopyButton } from "@/components/core/button/CopyButton";
@@ -26,7 +27,6 @@ export async function Document({ lng: lngParam, doc, content = "", session }: Do
   content = doc?.content ?? content;
 
   const toc = getToc(content);
-  const lng = localePrefix(lngParam);
 
   const { t } = await useTranslation(lngParam);
 
@@ -118,57 +118,87 @@ export async function Document({ lng: lngParam, doc, content = "", session }: Do
             <p className="m-0 text-muted-foreground text-sm">목차</p>
           </div>
 
-          <TOCScrollArea className="overflow-auto p-0">
+          <TOCScrollArea className="mb-2 overflow-auto p-0">
             <TocClerk lng={lngParam} />
           </TOCScrollArea>
+
+          {(session || doc) && (
+            <Remocon
+              lng={lngParam}
+              t={t}
+              doc={doc}
+              content={content}
+              editable={
+                Boolean(doc) &&
+                Boolean(session) &&
+                session!.user.scope >= scopeEnum.editor &&
+                session!.user.email === doc!.email
+              }
+              copiable={
+                Boolean(content) && Boolean(session) && session!.user.scope >= scopeEnum.associate
+              }
+            />
+          )}
         </nav>
-
-        {(session || doc) && (
-          <div
-            className={cn(
-              "bg-background opacity-60 transition-opacity duration-200 ease-in-out hover:opacity-100",
-              "-translate-x-1/2 fixed inset-x-1/2 bottom-2 flex w-fit items-center justify-center gap-1 rounded-lg border px-4 py-1 shadow",
-            )}
-          >
-            {doc && (
-              <Button
-                type="button"
-                variant="ghost"
-                className="!text-muted-foreground hover:!text-foreground size-6"
-                size="icon"
-                title={t("Document History")}
-                asChild
-              >
-                <Link href={`${lng}/w/history?${new URLSearchParams({ id: doc.id })}`}>
-                  <FileClock className="size-3.5" />
-                </Link>
-              </Button>
-            )}
-
-            {session && (
-              <>
-                {session.user.scope >= scopeEnum.editor && (
-                  <CopyButton lng={lngParam} content={content} />
-                )}
-                {doc?.email && session.user.email === doc.email && (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    className="!text-muted-foreground hover:!text-foreground size-6"
-                    size="icon"
-                    title={t("Edit Document")}
-                    asChild
-                  >
-                    <Link href={`${lng}/editor/write?${new URLSearchParams({ id: doc.id })}`}>
-                      <Pencil className="size-3.5" />
-                    </Link>
-                  </Button>
-                )}
-              </>
-            )}
-          </div>
-        )}
       </Container>
     </TOCProvider>
+  );
+}
+
+interface RemoconProps extends React.HTMLAttributes<HTMLDivElement> {
+  lng: Language;
+  t: TFunction;
+  content?: string;
+  editable?: boolean;
+  copiable?: boolean;
+  doc?: DocumentType;
+}
+
+function Remocon({ lng: lngParam, t, editable, copiable, doc, content, className }: RemoconProps) {
+  const lng = localePrefix(lngParam);
+
+  return (
+    <div
+      className={cn(
+        "mt-auto mb-4 flex items-center justify-around rounded-lg border bg-background px-4 py-1",
+        className,
+      )}
+    >
+      <div className="flex items-center gap-1">
+        {doc && (
+          <Button
+            type="button"
+            variant="ghost"
+            className="!text-muted-foreground hover:!text-foreground size-6"
+            size="icon"
+            title={t("Document History")}
+            asChild
+          >
+            <Link href={`${lng}/w/history?${new URLSearchParams({ id: doc.id })}`}>
+              <FileClock className="size-3.5" />
+            </Link>
+          </Button>
+        )}
+      </div>
+
+      <div className="flex items-center gap-1">
+        {copiable && <CopyButton lng={lngParam} content={content!} />}
+
+        {editable && (
+          <Button
+            type="button"
+            variant="ghost"
+            className="!text-muted-foreground hover:!text-foreground size-6"
+            size="icon"
+            title={t("Edit Document")}
+            asChild
+          >
+            <Link href={`${lng}/editor/write?${new URLSearchParams({ id: doc!.id })}`}>
+              <Pencil className="size-3.5" />
+            </Link>
+          </Button>
+        )}
+      </div>
+    </div>
   );
 }

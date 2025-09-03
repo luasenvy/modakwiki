@@ -23,14 +23,16 @@ import {
 } from "@dnd-kit/sortable";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { TFunction } from "i18next";
 import debounce from "lodash.debounce";
 import {
   AlignLeft,
+  BrushCleaning,
   Check,
   CircleAlert,
   Copy,
-  Eraser,
   GripVertical,
+  History,
   MessageSquareHeart,
   Pencil,
   PencilOff,
@@ -44,7 +46,6 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-
 import { Container } from "@/components/core/Container";
 import { TOCProvider, TOCScrollArea } from "@/components/fumadocs/toc";
 import TocClerk from "@/components/fumadocs/toc-clerk";
@@ -105,7 +106,6 @@ export default function MdxEditor({ lng: lngParam, doc, deletable }: MdxEditorPr
   const { t } = useTranslation(lngParam);
 
   const [hunk, setHunk] = useState<string>("");
-  const [isCopied, setIsCopied] = useState<boolean>(false);
   const [lines, setLines] = useState<string[]>(getHunks(doc?.content || ""));
   const [selectedLine, setSelectedLine] = useState<number>(-1);
 
@@ -209,14 +209,7 @@ export default function MdxEditor({ lng: lngParam, doc, deletable }: MdxEditorPr
     });
   });
 
-  const handleClickCopy = () => {
-    navigator.clipboard.writeText(content).then(() => {
-      setIsCopied(true);
-      setTimeout(() => setIsCopied(false), 3000);
-    });
-  };
-
-  const handleClickDelete = async () => {
+  const handleDelete = async () => {
     if (!doc?.id) return;
 
     const options = { method: "DELETE" };
@@ -226,6 +219,12 @@ export default function MdxEditor({ lng: lngParam, doc, deletable }: MdxEditorPr
 
     toast.success(statusMessage({ t, status: res.status, options }));
     router.push(`${lng}/me/documents`);
+  };
+
+  const handleClear = () => {
+    setLines([]);
+    setHunk("");
+    lineRef.current!.value = "";
   };
 
   useEffect(() => {
@@ -480,9 +479,26 @@ export default function MdxEditor({ lng: lngParam, doc, deletable }: MdxEditorPr
                 <p className="m-0 text-muted-foreground text-sm">목차</p>
               </div>
 
-              <TOCScrollArea className="overflow-auto p-0">
+              <TOCScrollArea className="mb-2 overflow-auto p-0">
                 <TocClerk lng={lngParam} />
               </TOCScrollArea>
+
+              <Remocon
+                t={t}
+                copyText={content}
+                copiable={Boolean(lines.length)}
+                deletable={deletable}
+                resetable={content !== (doc?.content || "")}
+                savable={canSave}
+                clearable={Boolean(lines.length)}
+                onSave={handleSubmit}
+                onDelete={handleDelete}
+                onClear={handleClear}
+                onUndoAll={() => {
+                  setLines(getHunks(doc?.content || ""));
+                  setTimeout(() => lineRef.current!.focus());
+                }}
+              />
             </nav>
           </Container>
         </TOCProvider>
@@ -521,98 +537,6 @@ export default function MdxEditor({ lng: lngParam, doc, deletable }: MdxEditorPr
           </BannerAction>
           <BannerClose type="button" />
         </Banner>
-
-        <div
-          className={cn(
-            "bg-background opacity-60 transition-opacity duration-200 ease-in-out hover:opacity-100",
-            "-translate-x-1/2 fixed inset-x-1/2 bottom-2 flex w-fit items-center justify-center gap-1 rounded-lg border px-4 py-1 shadow",
-          )}
-        >
-          <Button
-            type="submit"
-            variant="ghost"
-            className="!text-muted-foreground hover:!text-foreground size-6"
-            size="icon"
-            title={t("Save Document")}
-            disabled={!canSave}
-          >
-            <Save className="size-3.5" />
-          </Button>
-          <Button
-            type="button"
-            variant="ghost"
-            className="!text-muted-foreground hover:!text-foreground size-6"
-            size="icon"
-            title={t("Copy to clipboard")}
-            onClick={handleClickCopy}
-            disabled={!lines.length}
-          >
-            {isCopied ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
-          </Button>
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button
-                type="button"
-                variant="ghost"
-                className="!text-orange-500/80 hover:!text-orange-500 size-6"
-                size="icon"
-                title={t("Erase Changes")}
-                disabled={!canSave}
-              >
-                <Eraser className="size-3.5" />
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>{t("Are you absolutely sure?")}</AlertDialogTitle>
-                <AlertDialogDescription>
-                  {t("This action cannot be undone. This will erase this document changes.")}
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>{t("Cancel")}</AlertDialogCancel>
-                <AlertDialogAction
-                  onClick={() => {
-                    setLines(getHunks(doc?.content || ""));
-                    setTimeout(() => lineRef.current!.focus());
-                  }}
-                >
-                  {t("Yes, I'm sure")}
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-
-          {deletable && (
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  className="!text-destructive/80 hover:!text-destructive size-6"
-                  size="icon"
-                  title={t("Delete Document")}
-                >
-                  <Shredder className="size-3.5" />
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>{t("Are you absolutely sure?")}</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    {t("This action cannot be undone. This will delete document permanently.")}
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>{t("Cancel")}</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleClickDelete}>
-                    {t("Yes, I'm sure")}
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          )}
-        </div>
       </form>
     </Form>
   );
@@ -650,6 +574,169 @@ function SortableItem({ lng: lngParam, children, className, ...props }: Sortable
       </div>
 
       <div className="w-[calc(100%_-_(var(--spacing)_*_8))] grow">{children}</div>
+    </div>
+  );
+}
+
+interface RemoconProps extends React.ComponentProps<"div"> {
+  t: TFunction;
+  savable?: boolean;
+  copiable?: boolean;
+  resetable?: boolean;
+  clearable?: boolean;
+  deletable?: boolean;
+  copyText?: string;
+  onSave?: () => void;
+  onClear?: () => void;
+  onUndoAll?: () => void;
+  onDelete?: () => void;
+}
+
+function Remocon({
+  t,
+  savable,
+  copiable,
+  resetable,
+  clearable,
+  deletable,
+  className,
+  copyText,
+  onSave: handleSave,
+  onClear: handleClear,
+  onUndoAll: handleUndoAll,
+  onDelete: handleDelete,
+}: RemoconProps) {
+  const [isCopied, setIsCopied] = useState<boolean>(false);
+
+  const handleClickCopy = () => {
+    navigator.clipboard.writeText(copyText || "").then(() => {
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 3000);
+    });
+  };
+
+  return (
+    <div
+      className={cn(
+        "mt-auto mb-4 flex items-center justify-around rounded-lg border bg-background px-4 py-1",
+        className,
+      )}
+    >
+      <div className="flex items-center gap-1">
+        <Button
+          type="button"
+          variant="ghost"
+          className="!text-muted-foreground hover:!text-foreground size-6"
+          size="icon"
+          title={t("Save Document")}
+          onClick={handleSave}
+          disabled={!savable}
+        >
+          <Save className="size-3.5" />
+        </Button>
+
+        <Button
+          type="button"
+          variant="ghost"
+          className="!text-muted-foreground hover:!text-foreground size-6"
+          size="icon"
+          title={t("Copy to clipboard")}
+          onClick={handleClickCopy}
+          disabled={!copiable}
+        >
+          {isCopied ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
+        </Button>
+      </div>
+
+      <div className="flex items-center gap-1">
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button
+              type="button"
+              variant="ghost"
+              className="!text-orange-500/80 hover:!text-orange-500 size-6"
+              size="icon"
+              title={t("Clear Document")}
+              disabled={!clearable}
+            >
+              <BrushCleaning className="size-3.5" />
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>{t("Are you absolutely sure?")}</AlertDialogTitle>
+              <AlertDialogDescription>
+                {t(
+                  "This action cannot be undone. Removes all content from the document you are currently editing.",
+                )}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>{t("Cancel")}</AlertDialogCancel>
+              <AlertDialogAction onClick={handleClear}>{t("Yes, I'm sure")}</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button
+              type="button"
+              variant="ghost"
+              className="!text-orange-500/80 hover:!text-orange-500 size-6"
+              size="icon"
+              title={t("Erase Changes")}
+              disabled={!resetable}
+            >
+              <History className="size-3.5" />
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>{t("Are you absolutely sure?")}</AlertDialogTitle>
+              <AlertDialogDescription>
+                {t(
+                  "This action cannot be undone. Discard all changes and return to initial state.",
+                )}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>{t("Cancel")}</AlertDialogCancel>
+              <AlertDialogAction onClick={handleUndoAll}>{t("Yes, I'm sure")}</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </div>
+
+      {deletable && (
+        <div className="flex items-center gap-1">
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                type="button"
+                variant="ghost"
+                className="!text-destructive/80 hover:!text-destructive size-6"
+                size="icon"
+                title={t("Delete Document")}
+              >
+                <Shredder className="size-3.5" />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>{t("Are you absolutely sure?")}</AlertDialogTitle>
+                <AlertDialogDescription>
+                  {t("This action cannot be undone. This will delete document permanently.")}
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>{t("Cancel")}</AlertDialogCancel>
+                <AlertDialogAction onClick={handleDelete}>{t("Yes, I'm sure")}</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
+      )}
     </div>
   );
 }
