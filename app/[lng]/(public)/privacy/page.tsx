@@ -1,11 +1,13 @@
 import { Breadcrumb, BreadcrumbItem } from "@/components/core/Breadcrumb";
 import { Document } from "@/components/core/Document";
 import type { Language } from "@/lib/i18n/config";
+import { useTranslation } from "@/lib/i18n/next";
 import { localePrefix } from "@/lib/url";
 
-export default async function HowToPage(ctx: PageProps<"/[lng]/what-is-this">) {
+export default async function HowToPage(ctx: PageProps<"/[lng]/privacy">) {
   const lngParam = (await ctx.params).lng as Language;
   const lng = localePrefix(lngParam);
+  const { t } = await useTranslation(lngParam);
 
   const content = `
 ## 모닥위키 개인정보 처리방침
@@ -29,6 +31,7 @@ export default async function HowToPage(ctx: PageProps<"/[lng]/what-is-this">) {
 서비스 이용에 대한 분석, 인구통계학적 분석 및 서비스 개선을 목적으로 개인정보를 처리합니다.
 
 ### 서비스 개발
+
 기존 서비스와 별개의 신규 서비스 개발 목적으로 개인정보를 처리합니다.
 
 ## 처리하는 개인정보 항목
@@ -41,15 +44,51 @@ export default async function HowToPage(ctx: PageProps<"/[lng]/what-is-this">) {
 - 구글 로그인 수집·이용 항목: 사용자 ID, 이메일, 프로필 사진, 이름
 - 깃헙 로그인 수집·이용 항목: 사용자 ID, 이메일, 프로필 사진, 이름
 
+## 개인정보의 처리 및 보유 기간
+
+모닥위키는 법령에 따른 개인정보 보유·이용 기간 또는 정보주체로부터 개인정보를 수집 시에 동의받은 개인정보 보유·이용 기간 내에서 개인정보를 처리·보유합니다.
+
+### 홈페이지 회원 가입 및 관리
+
+보유 기간: 회원 탈퇴 시 까지
+
+단, 다음의 사유에 해당하는 경우에는 해당 사유 종료 시까지
+- 관계 법령 위반에 따른 수사·조사 등이 진행 중인 경우에는 해당 수사·조사 종료 시까지
+- 홈페이지 이용에 따른 채권·채무관계 잔존 시에는 해당 채권·채무관계 정산 시까지
+
+### 재화 또는 서비스 제공2
+
+|     내용     |    보유기간    | 개인정보 항목 |
+|--------------|:--------------:|---------------|
+| 계약 또는 청약철회, 대금결제, 재화 등의 공급기록 | 5년 | 구매자정보(고객번호, 성명, 휴대전화번호, 이메일주소), 상품 구매/취소/교환/환불정보, 수령인정보(성명, 주소, 휴대전화번호), 결제정보(결제수단, 결제금액, 결제일시, 결제승인번호), 송장번호 |
+| 소비자 불만 또는 분쟁처리에 관한 기록 | 3년 | 고객번호, 성명, 전화번호, 이메일주소, 상담기록(상담내용, 상담일시, 음성녹취기록 포함), 불만 또는 분쟁처리 결과 |
+
+### 통신사실확인자료 보관
+
+「통신비밀보호법」 제15조의2제2항에 따른 통신사실확인자료 보관
+- 컴퓨터통신, 인터넷 로그기록자료, 접속지 추적자료 : 3개월
+
+## 개인정보의 파기 절차 및 방법
+
+- 모닥위키는 개인정보 보유기간의 경과, 처리목적 달성 등 개인정보가 불필요하게 되었을 때에는 지체없이 해당 개인정보를 파기합니다.
+- 정보주체로부터 동의받은 개인정보 보유기간이 경과하거나 처리목적이 달성되었음에도 불구하고 다른 법령에 따라 개인정보를 계속 보존하여야 하는 경우에는, 해당 개인정보를 별도의 데이터베이스(DB)로 옮기거나 보관장소를 달리하여 보존합니다.
+  - 다른 법령에 따라 보존하는 개인정보의 항목과 보존 근거는 ‘5. 개인정보의 처리 및 보유 기간’ 항목에서 확인 가능
+
+### 파기절차
+
+- 모닥위키는 파기 사유가 발생한 개인정보를 선정하고, 모닥위키는 개인정보 보호 책임자의 승인을 받아 개인정보를 파기합니다.
+- 모닥위키는 전자적 파일 형태로 기록·저장된 개인정보는 기록을 재생할 수 없도록 파기하며, 종이 문서에 기록·저장된 개인정보는 분쇄기로 분쇄하거나 소각하여 파기합니다. 
 
 `.trim();
 
-  const breadcrumbs: Array<BreadcrumbItem> = [{ title: "모닥위키", href: `${lng}/what-is-this` }];
+  const breadcrumbs: Array<BreadcrumbItem> = [
+    { title: t("Privacy Policy"), href: `${lng}/privacy` },
+  ];
 
   return (
     <>
       <Breadcrumb lng={lngParam} breadcrumbs={breadcrumbs} />
-      <Document lng={lngParam} content={content.trim()} />;
+      <Document lng={lngParam} content={content.trim()} />
     </>
   );
 }
