@@ -3,6 +3,7 @@
 import { SiGoogle } from "@icons-pack/react-simple-icons";
 import { createAuthClient } from "better-auth/client";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,6 +15,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { isDev } from "@/config";
 import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/react";
 
@@ -25,6 +27,8 @@ interface SigninFormProps {
 const authClient = createAuthClient();
 
 export function SigninForm({ lng: lngParam, referer }: SigninFormProps) {
+  if (!isDev) return notFound();
+
   const { t } = useTranslation(lngParam);
 
   const handleClickGoogleSignin = async () => {

@@ -1,15 +1,12 @@
-import Link from "next/link";
 import { Advertisement } from "@/components/core/button/Advertisement";
 import { NavUser } from "@/components/core/NavUser";
 import { SearchForm } from "@/components/core/SearchForm";
 import { SidebarNav } from "@/components/core/SidebarNav";
 
-import { Separator } from "@/components/ui/separator";
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader } from "@/components/ui/sidebar";
 import { site } from "@/config";
 import { Session } from "@/lib/auth/server";
 import { Language } from "@/lib/i18n/config";
-import { useTranslation } from "@/lib/i18n/next";
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
   lng: Language;

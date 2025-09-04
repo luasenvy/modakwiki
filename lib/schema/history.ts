@@ -1,5 +1,4 @@
 import z from "zod";
-import { licenseEnum } from "@/lib/license";
 import { document } from "@/lib/schema/document";
 
 export const history = document

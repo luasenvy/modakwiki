@@ -1,9 +1,9 @@
+import { notFound } from "next/navigation";
 import { Container, Viewport } from "@/components/core/Container";
 import { DiffViewer } from "@/components/core/DiffViewer";
-import { Separator } from "@/components/ui/separator";
 import { pool } from "@/lib/db";
 import { Language } from "@/lib/i18n/config";
-import { Doctype, Document as DocumentType } from "@/lib/schema/document";
+import { Doctype, Document as DocumentType, getTablesByDoctype } from "@/lib/schema/document";
 import { History as DocumentHistory } from "@/lib/schema/history";
 import { cn } from "@/lib/utils";
 
@@ -19,28 +19,32 @@ export default async function DiffPage(ctx: PageProps<"/[lng]/[doctype]/history"
 
   const client = await pool.connect();
   try {
+    const { table, history } = getTablesByDoctype(doctype);
+    if (!table) return notFound();
+
     const {
       rows: [{ title }],
     } = await client.query<DocumentType>(
       `SELECT title
-         FROM document
+         FROM ${table}
         WHERE id = $1
-          AND type = $2`,
-      [id, doctype],
+          AND deleted IS NULL`,
+      [id],
     );
+
+    if (!title) return notFound();
 
     const { rows } = await client.query<DocumentHistory>(
       `SELECT h.content
             , u.name
             , h.created
-         FROM history h
+         FROM ${history} h
          JOIN "user" u ON u.email = h.email
         WHERE h.id = $1
-          AND h.type = $2
-          AND h.created <= $3
+          AND h.created <= $2
      ORDER BY h.created DESC
       LIMIT 2`,
-      [id, doctype, created],
+      [id, created],
     );
 
     const [curr, prev] = rows;

@@ -79,6 +79,7 @@ import { useTranslation } from "@/lib/i18n/react";
 import { MdxLoader } from "@/lib/mdx/react";
 import { clear as clearMarkdown, getHunks, getToc, trailingFootnotes } from "@/lib/mdx/utils";
 import {
+  Doctype,
   DocumentForm,
   Document as DocumentType,
   doctypeEnum,
@@ -90,10 +91,16 @@ import { cn } from "@/lib/utils";
 interface MdxEditorProps {
   lng: Language;
   doc?: DocumentType;
+  doctype?: Doctype;
   deletable?: boolean;
 }
 
-export default function MdxEditor({ lng: lngParam, doc, deletable }: MdxEditorProps) {
+export default function MdxEditor({
+  lng: lngParam,
+  doc,
+  doctype: defaultDoctype,
+  deletable,
+}: MdxEditorProps) {
   const router = useRouter();
 
   const lng = localePrefix(lngParam);
@@ -116,7 +123,7 @@ export default function MdxEditor({ lng: lngParam, doc, deletable }: MdxEditorPr
     resolver: zodResolver(documentForm),
     defaultValues: {
       id: doc?.id,
-      type: doc?.type || doctypeEnum.wkdoc,
+      type: defaultDoctype || doctypeEnum.document,
       title: doc?.title || "",
       content: doc?.content || "",
     },
@@ -195,7 +202,7 @@ export default function MdxEditor({ lng: lngParam, doc, deletable }: MdxEditorPr
       description: values.title,
       action: {
         label: t("Show Document"),
-        onClick: () => router.push(`${lng}/w?${new URLSearchParams({ id })}`),
+        onClick: () => router.push(`${lng}/${values.type}?${new URLSearchParams({ id })}`),
       },
     });
   });
@@ -204,7 +211,10 @@ export default function MdxEditor({ lng: lngParam, doc, deletable }: MdxEditorPr
     if (!doc?.id) return;
 
     const options = { method: "DELETE" };
-    const res = await fetch(`/api/document?${new URLSearchParams({ id: doc.id })}`, options);
+    const res = await fetch(
+      `/api/document?${new URLSearchParams({ id: doc.id, type: doctype })}`,
+      options,
+    );
 
     if (!res.ok) return toast.error(statusMessage({ t, status: res.status, options }));
 
@@ -310,8 +320,10 @@ export default function MdxEditor({ lng: lngParam, doc, deletable }: MdxEditorPr
             >
               <div className="mb-2 flex items-center gap-1">
                 <Toggle
-                  pressed={doctype === doctypeEnum.wkdoc}
-                  onPressedChange={(pressed) => pressed && form.setValue("type", doctypeEnum.wkdoc)}
+                  pressed={doctype === doctypeEnum.document}
+                  onPressedChange={(pressed) =>
+                    pressed && form.setValue("type", doctypeEnum.document)
+                  }
                   aria-label="Toggle wkdoc"
                   size="sm"
                 >

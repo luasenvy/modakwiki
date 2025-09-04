@@ -5,7 +5,7 @@ import MdxEditor from "@/components/core/MdxEditor";
 import { auth } from "@/lib/auth/server";
 import { pool } from "@/lib/db";
 import { Language } from "@/lib/i18n/config";
-import { Document } from "@/lib/schema/document";
+import { Doctype, Document, getTablesByDoctype } from "@/lib/schema/document";
 import { localePrefix } from "@/lib/url";
 
 export default async function WritePage(ctx: PageProps<"/[lng]/editor/write">) {
@@ -14,7 +14,8 @@ export default async function WritePage(ctx: PageProps<"/[lng]/editor/write">) {
   const lngParam = params.lng as Language;
   const lng = localePrefix(lngParam);
 
-  const id = (await ctx.searchParams).id as string;
+  const searchParams = await ctx.searchParams;
+  const id = searchParams.id as string;
 
   // 신규 문서 생성
   if (!id) {
@@ -37,11 +38,15 @@ export default async function WritePage(ctx: PageProps<"/[lng]/editor/write">) {
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session) return redirect(`${lng}/signin`);
 
+    const doctype = searchParams.type as Doctype;
+    const { table } = getTablesByDoctype(doctype);
+    if (!table) return notFound();
+
     const {
       rows: [doc],
     } = await client.query<Document>(
       `SELECT id, title, content, email
-         FROM document
+         FROM ${table}
         WHERE id = $1
           AND email = $2
           AND deleted IS NULL`,
@@ -52,13 +57,21 @@ export default async function WritePage(ctx: PageProps<"/[lng]/editor/write">) {
 
     const breadcrumbs: Array<BreadcrumbItem> = [
       { title: "편집자" },
-      { title: doc.title, href: `${lng}/editor/write?id=${id}` },
+      {
+        title: doc.title,
+        href: `${lng}/editor/write?${new URLSearchParams({ id, type: doctype })}`,
+      },
     ];
 
     return (
       <>
         <Breadcrumb lng={lngParam} breadcrumbs={breadcrumbs} />
-        <MdxEditor lng={lngParam} doc={doc} deletable={session.user.email === doc.email} />
+        <MdxEditor
+          lng={lngParam}
+          doc={doc}
+          doctype={doctype}
+          deletable={session.user.email === doc.email}
+        />
       </>
     );
   } finally {

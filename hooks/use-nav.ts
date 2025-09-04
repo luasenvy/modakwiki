@@ -31,10 +31,6 @@ export const mainNavs: Array<NavItem> = [
         title: "임의문서",
         url: "/w/random",
       },
-      {
-        title: "변경내역",
-        url: "#",
-      },
     ],
   },
   {
@@ -78,6 +74,7 @@ export const subNavs: Array<NavItem> = [
     title: "문서함",
     url: "/me/documents",
     icon: Inbox,
+    scope: scopeEnum.editor,
   },
 ];
 

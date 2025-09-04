@@ -4,7 +4,7 @@ import { Document } from "@/components/core/Document";
 import { auth } from "@/lib/auth/server";
 import { pool } from "@/lib/db";
 import { Language } from "@/lib/i18n/config";
-import { Doctype, Document as DocumentType } from "@/lib/schema/document";
+import { Doctype, Document as DocumentType, getTablesByDoctype } from "@/lib/schema/document";
 
 export default async function WikiDocPage(ctx: PageProps<"/[lng]/[doctype]">) {
   const params = await ctx.params;
@@ -20,6 +20,9 @@ export default async function WikiDocPage(ctx: PageProps<"/[lng]/[doctype]">) {
 
   const client = await pool.connect();
   try {
+    const { table, history } = getTablesByDoctype(doctype);
+    if (!table) return notFound();
+
     let doc;
     if (created) {
       const {
@@ -29,14 +32,13 @@ export default async function WikiDocPage(ctx: PageProps<"/[lng]/[doctype]">) {
               , d.title
               , h.content
               , h.email
-         FROM history h
-         JOIN document d
+         FROM ${history} h
+         JOIN ${table} d
            ON d.id = h.id
         WHERE h.id = $1
-          AND h.type = $2
-          AND h.created = $3
+          AND h.created = $2
           AND d.deleted IS NULL`,
-        [id, doctype, created],
+        [id, created],
       );
       doc = _doc;
     } else {
@@ -44,18 +46,17 @@ export default async function WikiDocPage(ctx: PageProps<"/[lng]/[doctype]">) {
         rows: [_doc],
       } = await client.query<DocumentType>(
         `SELECT id, title, content, email
-           FROM document
+           FROM ${table}
           WHERE id = $1
-            AND type = $2
             AND deleted IS NULL`,
-        [id, doctype],
+        [id],
       );
       doc = _doc;
     }
 
     const session = await auth.api.getSession({ headers: await headers() });
 
-    return <Document lng={lngParam} doc={doc} session={session} />;
+    return <Document lng={lngParam} doc={doc} doctype={doctype} session={session} />;
   } finally {
     client.release();
   }

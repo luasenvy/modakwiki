@@ -1,8 +1,9 @@
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { Container, Viewport } from "@/components/core/Container";
 import { pool } from "@/lib/db";
 import { Language } from "@/lib/i18n/config";
-import { Doctype, Document as DocumentType } from "@/lib/schema/document";
+import { Doctype, Document as DocumentType, getTablesByDoctype } from "@/lib/schema/document";
 import { History as DocumentHistory } from "@/lib/schema/history";
 import { localePrefix } from "@/lib/url";
 import { cn } from "@/lib/utils";
@@ -18,15 +19,20 @@ export default async function HistoryPage(ctx: PageProps<"/[lng]/[doctype]/histo
 
   const client = await pool.connect();
   try {
+    const { table, history } = getTablesByDoctype(doctype);
+    if (!table) return notFound();
+
     const {
-      rows: [{ title }],
+      rows: [doc],
     } = await client.query<DocumentType>(
       `SELECT title
-         FROM document
+         FROM ${table}
         WHERE id = $1
-          AND type = $2`,
-      [id, doctype],
+          AND deleted IS NULL`,
+      [id],
     );
+
+    if (!doc) return notFound();
 
     const { rows } = await client.query<DocumentHistory & { name: string }>(
       `SELECT h.added
@@ -34,12 +40,11 @@ export default async function HistoryPage(ctx: PageProps<"/[lng]/[doctype]/histo
             , u.name
             , h.removed
             , h.created
-         FROM history h
+         FROM ${history} h
          JOIN "user" u ON u.email = h.email
         WHERE h.id = $1
-          AND h.type = $2
      ORDER BY h.created DESC`,
-      [id, doctype],
+      [id],
     );
 
     const dateFormater = new Intl.DateTimeFormat(lngParam);
@@ -53,7 +58,7 @@ export default async function HistoryPage(ctx: PageProps<"/[lng]/[doctype]/histo
             "prose dark:prose-invert max-w-none",
           )}
         >
-          <h2>{title}</h2>
+          <h2>{doc.title}</h2>
 
           <div>
             {rows.map(({ added, removed, name, email, created }, i) => {

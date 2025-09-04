@@ -4,7 +4,7 @@ import { Advertisement } from "@/components/core/button/Advertisement";
 import { Viewport } from "@/components/core/Container";
 import { pool } from "@/lib/db";
 import { Language } from "@/lib/i18n/config";
-import { Document } from "@/lib/schema/document";
+import { Doctype, Document, doctypeEnum, getTablesByDoctype } from "@/lib/schema/document";
 import { localePrefix } from "@/lib/url";
 import { cn } from "@/lib/utils";
 
@@ -15,9 +15,34 @@ export default async function SearchPage(ctx: PageProps<"/[lng]/search">) {
 
   const client = await pool.connect();
   try {
-    const { rows, rowCount } = await client.query<Document>(
-      `SELECT id, title, type, preview
+    const {
+      rows: [{ count }],
+    } = await client.query<{ count: number }>(
+      `SELECT SUM(total_count) AS count
+         FROM (
+             SELECT COUNT(*) AS total_count
+               FROM document
+              WHERE deleted IS NULL AND (title like $1 OR content like $1)
+             
+             UNION ALL
+ 
+             SELECT COUNT(*) AS total_count
+               FROM essay
+              WHERE deleted IS NULL AND (title like $1 OR content like $1)
+         )`,
+      [`%${term}%`],
+    );
+
+    const { rows } = await client.query<Document & { type: Doctype }>(
+      `SELECT id, title, preview, '${doctypeEnum.document}' AS type
          FROM document
+        WHERE deleted IS NULL
+          AND (title like $1 OR content like $1)
+       
+       UNION ALL
+
+       SELECT id, title, preview, '${doctypeEnum.essay}' AS type
+         FROM essay
         WHERE deleted IS NULL
           AND (title like $1 OR content like $1)`,
       [`%${term}%`],
@@ -56,7 +81,7 @@ export default async function SearchPage(ctx: PageProps<"/[lng]/search">) {
           </div>
 
           <div className="relative ms-px min-h-0 overflow-auto py-3 text-sm [scrollbar-width:none]">
-            총 {rowCount}개 문서가 검색되었습니다.
+            총 {count}개 문서가 검색되었습니다.
           </div>
 
           <Advertisement className="py-6" />

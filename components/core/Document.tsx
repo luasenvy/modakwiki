@@ -11,19 +11,26 @@ import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/next";
 import { MdxLoader } from "@/lib/mdx/server";
 import { getToc } from "@/lib/mdx/utils";
-import { Document as DocumentType } from "@/lib/schema/document";
+import { Doctype, Document as DocumentType } from "@/lib/schema/document";
 import { scopeEnum } from "@/lib/schema/user";
 import { localePrefix } from "@/lib/url";
 import { cn } from "@/lib/utils";
 
 interface DocumentProps {
   lng: Language;
+  doctype?: Doctype;
   doc?: DocumentType;
   content?: string;
   session?: Session | null;
 }
 
-export async function Document({ lng: lngParam, doc, content = "", session }: DocumentProps) {
+export async function Document({
+  lng: lngParam,
+  doc,
+  doctype,
+  content = "",
+  session,
+}: DocumentProps) {
   content = doc?.content ?? content;
 
   const toc = getToc(content);
@@ -128,6 +135,7 @@ export async function Document({ lng: lngParam, doc, content = "", session }: Do
               lng={lngParam}
               t={t}
               doc={doc}
+              doctype={doctype}
               content={content}
               editable={
                 Boolean(doc) &&
@@ -149,13 +157,23 @@ export async function Document({ lng: lngParam, doc, content = "", session }: Do
 interface RemoconProps extends React.HTMLAttributes<HTMLDivElement> {
   lng: Language;
   t: TFunction;
+  doctype?: Doctype;
   content?: string;
   editable?: boolean;
   copiable?: boolean;
   doc?: DocumentType;
 }
 
-function Remocon({ lng: lngParam, t, editable, copiable, doc, content, className }: RemoconProps) {
+function Remocon({
+  lng: lngParam,
+  t,
+  editable,
+  copiable,
+  doc,
+  doctype,
+  content,
+  className,
+}: RemoconProps) {
   const lng = localePrefix(lngParam);
 
   return (
@@ -166,7 +184,7 @@ function Remocon({ lng: lngParam, t, editable, copiable, doc, content, className
       )}
     >
       <div className="flex items-center gap-1">
-        {doc && (
+        {doc && doctype && (
           <Button
             type="button"
             variant="ghost"
@@ -175,7 +193,7 @@ function Remocon({ lng: lngParam, t, editable, copiable, doc, content, className
             title={t("Document History")}
             asChild
           >
-            <Link href={`${lng}/w/history?${new URLSearchParams({ id: doc.id })}`}>
+            <Link href={`${lng}/${doctype}/history?${new URLSearchParams({ id: doc.id })}`}>
               <FileClock className="size-3.5" />
             </Link>
           </Button>
@@ -194,7 +212,9 @@ function Remocon({ lng: lngParam, t, editable, copiable, doc, content, className
             title={t("Edit Document")}
             asChild
           >
-            <Link href={`${lng}/editor/write?${new URLSearchParams({ id: doc!.id })}`}>
+            <Link
+              href={`${lng}/editor/write?${new URLSearchParams({ id: doc!.id, type: doctype as string })}`}
+            >
               <Pencil className="size-3.5" />
             </Link>
           </Button>

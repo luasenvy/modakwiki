@@ -4,7 +4,12 @@ import { NextRequest } from "next/server";
 import { auth } from "@/lib/auth/server";
 import { pool } from "@/lib/db";
 import { clear as clearMarkdown, humanReadable } from "@/lib/mdx/utils";
-import { DocumentForm, Document as DocumentType } from "@/lib/schema/document";
+import {
+  Doctype,
+  DocumentForm,
+  Document as DocumentType,
+  getTablesByDoctype,
+} from "@/lib/schema/document";
 import { scopeEnum } from "@/lib/schema/user";
 
 export async function POST(req: NextRequest) {
@@ -51,11 +56,14 @@ export async function PATCH(req: NextRequest) {
 
   const client = await pool.connect();
   try {
-    const { id, type, content }: DocumentForm = await req.json();
+    const { id, type, content }: DocumentForm & { type: Doctype } = await req.json();
+
+    const { table } = getTablesByDoctype(type);
+    if (!table) return new Response("Bad Request", { status: 400 });
 
     const {
       rows: [prev],
-    } = await client.query<DocumentType>(`SELECT type, content FROM document WHERE id = $1`, [id]);
+    } = await client.query<DocumentType>(`SELECT content FROM ${table} WHERE id = $1`, [id]);
 
     const { added, removed } = diffChars(prev.content, content).reduce(
       (acc, { added, removed, count }) => {
@@ -69,7 +77,7 @@ export async function PATCH(req: NextRequest) {
     if (!added && !removed) return new Response(null, { status: 409 });
 
     await client.query(
-      `UPDATE document
+      `UPDATE ${table}
           SET content = $1
             , type = $2
             , preview = $3
@@ -79,7 +87,7 @@ export async function PATCH(req: NextRequest) {
     );
 
     await client.query(
-      `INSERT INTO history (id, content, type, email, added, removed)
+      `INSERT INTO ${history} (id, content, type, email, added, removed)
                     VALUES ($1, $2, $3, $4, $5, $6)`,
       [id, content, type, session.user.email, added, removed],
     );
@@ -98,10 +106,15 @@ export async function DELETE(req: NextRequest, ctx: RouteContext<"/api/document"
   const id = req.nextUrl.searchParams.get("id");
   if (!id) return new Response(null, { status: 404 });
 
+  const doctype = req.nextUrl.searchParams.get("type") as Doctype;
+
+  const { table } = getTablesByDoctype(doctype);
+  if (!table) return new Response("Bad Request", { status: 400 });
+
   const client = await pool.connect();
   try {
     const { rowCount } = await client.query(
-      `UPDATE document
+      `UPDATE ${table}
           SET deleted = extract(epoch FROM current_timestamp) * 1000
         WHERE id = $1
           AND email = $2`,
