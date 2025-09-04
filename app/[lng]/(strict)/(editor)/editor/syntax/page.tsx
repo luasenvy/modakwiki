@@ -219,7 +219,7 @@ function sayHello(x: number) {
   return (
     <>
       <Breadcrumb lng={lngParam} breadcrumbs={breadcrumbs} />
-      <Document lng={lngParam} content={content.trim()} />
+      <Document lng={lngParam} title="위키문법" content={content.trim()} />
     </>
   );
 }

@@ -366,6 +366,8 @@ export default function MdxEditor({
                 )}
               />
 
+              {title && <h1 className="mt-8">{title}</h1>}
+
               <DndContext
                 sensors={sensors}
                 collisionDetection={closestCenter}
