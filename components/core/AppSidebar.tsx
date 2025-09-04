@@ -4,7 +4,7 @@ import { SearchForm } from "@/components/core/SearchForm";
 import { SidebarNav } from "@/components/core/SidebarNav";
 
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader } from "@/components/ui/sidebar";
-import { site } from "@/config";
+import { isDev, site } from "@/config";
 import { Session } from "@/lib/auth/server";
 import { Language } from "@/lib/i18n/config";
 
@@ -19,7 +19,7 @@ export async function AppSidebar({ lng: lngParam, session, ...props }: AppSideba
   return (
     <Sidebar {...props}>
       <SidebarHeader>
-        <NavUser lng={lngParam} sitename={site.name} session={session} />
+        <NavUser lng={lngParam} sitename={site.name} session={session} dev={isDev} />
         <SearchForm lng={lngParam} />
       </SidebarHeader>
       <SidebarContent>

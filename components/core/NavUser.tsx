@@ -29,9 +29,10 @@ interface NavUserProps {
   lng: Language;
   sitename: string;
   session: Session | null;
+  dev?: boolean;
 }
 
-export function NavUser({ lng: lngParam, sitename, session }: NavUserProps) {
+export function NavUser({ lng: lngParam, sitename, session, dev }: NavUserProps) {
   const lng = localePrefix(lngParam);
 
   const { isMobile } = useSidebar();
@@ -111,11 +112,17 @@ export function NavUser({ lng: lngParam, sitename, session }: NavUserProps) {
           </DropdownMenu>
         ) : (
           <SidebarMenuButton size="lg" asChild>
-            <Link href={`${lng}/`}>
-              <Image src={Logo} alt={t(sitename)} className="size-[32px]" />
-              {t(sitename)}
-              {/* {t("Sign In")} */}
-            </Link>
+            {dev ? (
+              <Link href={`${lng}/signin`}>
+                <LogIn />
+                {t("Sign In")}
+              </Link>
+            ) : (
+              <Link href={`${lng}/`}>
+                <Image src={Logo} alt={t(sitename)} className="size-[32px]" />
+                {t(sitename)}
+              </Link>
+            )}
           </SidebarMenuButton>
         )}
       </SidebarMenuItem>

@@ -23,7 +23,7 @@ export default async function WikiDocPage(ctx: PageProps<"/[lng]/[doctype]/rando
     const {
       rows: [doc],
     } = await client.query<DocumentType>(
-      `SELECT id, title, content, email
+      `SELECT id
          FROM ${table}
   TABLESAMPLE SYSTEM (100)
         LIMIT 1`,
@@ -31,20 +31,15 @@ export default async function WikiDocPage(ctx: PageProps<"/[lng]/[doctype]/rando
 
     if (!doc) {
       const { t } = await useTranslation(lngParam);
-      const content = `
-## ${t("No documents found")}
+      const content = isDev ? `[${t("Please register the first document!")}](${lng}/signin)` : "";
 
-${isDev && `[${t("Please register the first document!")}](${lng}/signin)`}
-      `;
-
-      const breadcrumbs: Array<BreadcrumbItem> = [
-        { title: "문서함이 비어있습니다", href: `${lng}/w/random` },
-      ];
+      const title = t("There is no any document.");
+      const breadcrumbs: Array<BreadcrumbItem> = [{ title, href: `${lng}/w/random` }];
 
       return (
         <>
           <Breadcrumb lng={lngParam} breadcrumbs={breadcrumbs} />
-          <Document lng={lngParam} content={content.trim()} />
+          <Document lng={lngParam} title={title} content={content.trim()} />
         </>
       );
     }

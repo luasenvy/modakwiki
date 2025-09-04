@@ -62,15 +62,25 @@ export function SigninForm({ lng: lngParam, referer }: SigninFormProps) {
         <CardFooter className="flex-col border-t">
           <p className="mb-4 text-muted-foreground">사용 전 검토하세요</p>
           <div className="flex items-center justify-center">
-            <Link href="/privacy" className="text-blue-500 text-xs hover:underline">
+            <a
+              href="/privacy"
+              className="text-blue-500 text-xs hover:underline"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               {t("Privacy Policy")}
-            </Link>
+            </a>
 
             <Separator orientation="vertical" className="mx-2 w-px" />
 
-            <Link href="/terms" className="text-blue-500 text-xs hover:underline">
+            <a
+              href="/terms"
+              className="text-blue-500 text-xs hover:underline"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               {t("Terms of Service")}
-            </Link>
+            </a>
           </div>
         </CardFooter>
       </Card>

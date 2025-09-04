@@ -58,5 +58,8 @@
   "Welcome back": "👋 다시 만나서 반가워요!",
   "Login with": "간편 로그인",
   "No documents found": "등록된 문서가 없습니다.",
-  "Please register the first document!": "첫 문서를 등록해보세요!"
+  "Please register the first document!": "첫 문서를 등록해보세요!",
+  "wiki document": "위키문서",
+  "wiki post": "위키기고",
+  "There is no any document.": "문서함이 비어있습니다."
 }

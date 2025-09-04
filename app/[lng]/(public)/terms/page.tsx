@@ -10,18 +10,19 @@ export default async function HowToPage(ctx: PageProps<"/[lng]/privacy">) {
   const { t } = await useTranslation(lngParam);
 
   const content = `
-## 서비스 약관
+## 개요
+
+모닥위키 서비스 약관
 
 `.trim();
 
-  const breadcrumbs: Array<BreadcrumbItem> = [
-    { title: t("Terms of Service"), href: `${lng}/terms` },
-  ];
+  const title = t("Terms of Service");
+  const breadcrumbs: Array<BreadcrumbItem> = [{ title, href: `${lng}/terms` }];
 
   return (
     <>
       <Breadcrumb lng={lngParam} breadcrumbs={breadcrumbs} />
-      <Document lng={lngParam} content={content.trim()} />
+      <Document lng={lngParam} title={title} content={content.trim()} />
     </>
   );
 }
