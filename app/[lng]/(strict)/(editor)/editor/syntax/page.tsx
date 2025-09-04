@@ -2,7 +2,7 @@ import { Breadcrumb, BreadcrumbItem } from "@/components/core/Breadcrumb";
 import { Document } from "@/components/core/Document";
 import type { Language } from "@/lib/i18n/config";
 import { localePrefix } from "@/lib/url";
-import Logo from "@/public/logo.webp";
+import Logo from "@/public/brand/logo.webp";
 
 export default async function HowToPage(ctx: PageProps<"/[lng]/editor/syntax">) {
   const lngParam = (await ctx.params).lng as Language;

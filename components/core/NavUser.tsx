@@ -1,16 +1,15 @@
 "use client";
 
-import { ChevronsUpDown, LogOut, NotebookPen, User } from "lucide-react";
+import { ChevronsUpDown, LogIn, LogOut, User } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -24,13 +23,15 @@ import { Session, signOut } from "@/lib/auth/react";
 import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/react";
 import { localePrefix } from "@/lib/url";
+import Logo from "@/public/brand/32x32.webp";
 
 interface NavUserProps {
   lng: Language;
-  user?: Session["user"];
+  sitename: string;
+  session: Session | null;
 }
 
-export function NavUser({ lng: lngParam, user }: NavUserProps) {
+export function NavUser({ lng: lngParam, sitename, session }: NavUserProps) {
   const lng = localePrefix(lngParam);
 
   const { isMobile } = useSidebar();
@@ -38,47 +39,50 @@ export function NavUser({ lng: lngParam, user }: NavUserProps) {
 
   const { t } = useTranslation(lngParam);
 
-  return user ? (
+  return (
     <SidebarMenu>
       <SidebarMenuItem>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <SidebarMenuButton
-              size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+        {session ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <SidebarMenuButton
+                size="lg"
+                className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              >
+                <Avatar className="h-8 w-8 rounded-full">
+                  {session.user.image && (
+                    <AvatarImage src={session.user.image} alt={session.user.name} />
+                  )}
+                  <AvatarFallback className="rounded-full">
+                    {session.user.name.substring(0, 2)}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="grid flex-1 text-left text-sm leading-tight">
+                  <span className="truncate font-medium">{session.user.name}</span>
+                  <span className="truncate text-xs">{session.user.email}</span>
+                </div>
+                <ChevronsUpDown className="ml-auto size-4" />
+              </SidebarMenuButton>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
+              side={isMobile ? "bottom" : "right"}
+              align="start"
+              sideOffset={4}
             >
-              <Avatar className="h-8 w-8 rounded-full">
-                {user.image && <AvatarImage src={user.image} alt={user.name} />}
-                <AvatarFallback className="rounded-full">
-                  {user.name.substring(0, 2)}
-                </AvatarFallback>
-              </Avatar>
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{user.name}</span>
-                <span className="truncate text-xs">{user.email}</span>
-              </div>
-              <ChevronsUpDown className="ml-auto size-4" />
-            </SidebarMenuButton>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
-            side={isMobile ? "bottom" : "right"}
-            align="start"
-            sideOffset={4}
-          >
-            {/* <DropdownMenuLabel className="p-0 font-normal">
+              {/* <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
-                  {user.image && <AvatarImage src={user.image} alt={user.name} />}
+                  {session.user.image && <AvatarImage src={session.user.image} alt={session.user.name} />}
                   <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">{user.name}</span>
-                  <span className="truncate text-xs">{user.email}</span>
+                  <span className="truncate font-medium">{session.user.name}</span>
+                  <span className="truncate text-xs">{session.user.email}</span>
                 </div>
               </div>
             </DropdownMenuLabel> */}
-            {/* <DropdownMenuSeparator />
+              {/* <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem>
                 <Sparkles />
@@ -86,30 +90,35 @@ export function NavUser({ lng: lngParam, user }: NavUserProps) {
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator /> */}
-            <DropdownMenuGroup>
-              <DropdownMenuItem asChild>
-                <Link href={`${lng}/me`}>
-                  <User /> {t("My Account")}
-                </Link>
+              <DropdownMenuGroup>
+                <DropdownMenuItem asChild>
+                  <Link href={`${lng}/me`}>
+                    <User /> {t("My Account")}
+                  </Link>
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onSelect={async () => {
+                  await signOut();
+                  router.refresh();
+                }}
+              >
+                <LogOut />
+                {t("Log out")}
               </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onSelect={async () => {
-                await signOut();
-                router.refresh();
-              }}
-            >
-              <LogOut />
-              {t("Log out")}
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : (
+          <SidebarMenuButton size="lg" asChild>
+            <Link href={`${lng}/`}>
+              <Image src={Logo} alt={t(sitename)} className="size-[32px]" />
+              {t(sitename)}
+              {/* {t("Sign In")} */}
+            </Link>
+          </SidebarMenuButton>
+        )}
       </SidebarMenuItem>
     </SidebarMenu>
-  ) : (
-    <Button variant="default" size="lg" className="w-full" asChild>
-      <Link href={`${lng}/signin`}>{t("Sign In")}</Link>
-    </Button>
   );
 }

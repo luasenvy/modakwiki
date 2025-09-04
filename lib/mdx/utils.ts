@@ -22,10 +22,10 @@ import rehypeKatex from "rehype-katex";
 import remarkFlexibleCodeTitles from "remark-flexible-code-titles";
 import remarkHeadingId from "remark-heading-id";
 import remarkSuperSub from "remark-supersub";
-import remarkGfmFootnote from "@/lib/remark-gfm-footnote";
-import remarkGfmTable from "@/lib/remark-gfm-table";
-import remarkGfmTask from "@/lib/remark-gfm-task";
-import remarkKatex from "@/lib/remark-katex";
+import remarkGfmFootnote from "@/lib/mdx/remark/remark-gfm-footnote";
+import remarkGfmTable from "@/lib/mdx/remark/remark-gfm-table";
+import remarkGfmTask from "@/lib/mdx/remark/remark-gfm-task";
+import remarkKatex from "@/lib/mdx/remark/remark-katex";
 
 export const remarkPlugins = [
   remarkSuperSub,

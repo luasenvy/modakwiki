@@ -33,7 +33,7 @@ export function SearchForm({ lng: lngParam, ...props }: SearchFormProps) {
 
   return (
     <form onSubmit={handleSubmit} {...props}>
-      <SidebarGroup className="py-0">
+      <SidebarGroup>
         <SidebarGroupContent className="relative">
           <Label htmlFor="search" className="sr-only">
             Search
