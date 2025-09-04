@@ -1,7 +1,8 @@
-import { Children } from "react";
+import { Children, JSX } from "react";
 import { Components } from "react-markdown";
 import { Alert } from "@/components/mdx/Alert";
 import { AutoLink } from "@/components/mdx/AutoLink";
+import { Youtube } from "@/components/mdx/Youtube";
 // import { ImageZoom } from "@/components/ui/shadcn-io/image-zoom";
 import { cn } from "@/lib/utils";
 
@@ -43,20 +44,6 @@ export default {
       </div>
     );
   },
-  // Render Banner when a div has component="banner"
-  div: ({ children, ...props }: React.ComponentProps<"div">) => {
-    const { component, level, ...domProps } = props as React.ComponentProps<"div"> & {
-      component?: string;
-      level?: number;
-    };
-
-    if (component === "banner")
-      return (
-        <Alert level={Number(level)} {...domProps}>
-          {children}
-        </Alert>
-      );
-
-    return <div {...domProps}>{children}</div>;
-  },
-} satisfies Components;
+  Alert,
+  Youtube,
+} satisfies Components & Record<string, JSX.ElementType>;

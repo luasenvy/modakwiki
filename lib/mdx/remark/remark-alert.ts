@@ -13,11 +13,8 @@ export default function remarkBanner(this: Processor) {
       const [levels] = first.value.match(/^!+/)!;
       parent!.children.splice(index!, 1, {
         type: "mdxJsxFlowElement",
-        name: "div",
-        attributes: [
-          { type: "mdxJsxAttribute", name: "component", value: "banner" },
-          { type: "mdxJsxAttribute", name: "level", value: levels.length.toString() },
-        ],
+        name: "Alert",
+        attributes: [{ type: "mdxJsxAttribute", name: "level", value: levels.length.toString() }],
         children: node.children.reduce(
           (acc, child) => {
             if (child.type === "text") {

@@ -19,28 +19,28 @@ export async function POST(req: NextRequest) {
 
   const client = await pool.connect();
   try {
-    const { type, title, content }: DocumentForm = await req.json();
+    const { type: doctype, title, content }: DocumentForm = await req.json();
 
+    const { table, history } = getTablesByDoctype(doctype);
     const {
       rows: [{ id }],
     } = await client.query(
-      `INSERT INTO document (id, title, content, email, type, preview)
-                     VALUES ($1, $2, $3, $4, $5, $6)
+      `INSERT INTO ${table} (id, title, content, email, preview)
+                     VALUES ($1, $2, $3, $4, $5)
                RETURNING id`,
       [
         kebabcase(title),
         title,
         content,
         session.user.email,
-        type,
         clearMarkdown(humanReadable(content).substring(0, 150)),
       ],
     );
 
     await client.query(
-      `INSERT INTO history (id, content, type, email)
-                    VALUES ($1, $2, $3, $4)`,
-      [id, content, type, session.user.email],
+      `INSERT INTO ${history} (id, content, email)
+                       VALUES ($1, $2, $3)`,
+      [id, content, session.user.email],
     );
 
     return Response.json({ id }, { status: 201 });
@@ -79,17 +79,16 @@ export async function PATCH(req: NextRequest) {
     await client.query(
       `UPDATE ${table}
           SET content = $1
-            , type = $2
-            , preview = $3
+            , preview = $2
             , updated = extract(epoch FROM current_timestamp) * 1000
-        WHERE id = $4`,
-      [content, type, clearMarkdown(humanReadable(content).substring(0, 150)), id],
+        WHERE id = $3`,
+      [content, clearMarkdown(humanReadable(content).substring(0, 150)), id],
     );
 
     await client.query(
-      `INSERT INTO ${history} (id, content, type, email, added, removed)
-                    VALUES ($1, $2, $3, $4, $5, $6)`,
-      [id, content, type, session.user.email, added, removed],
+      `INSERT INTO ${history} (id, content, email, added, removed)
+                    VALUES ($1, $2, $3, $4, $5)`,
+      [id, content, session.user.email, added, removed],
     );
 
     return Response.json({ id }, { status: 200 });

@@ -5,13 +5,13 @@ import { AlertDescription, AlertTitle, Alert as ShadcnAlert } from "@/components
 import { cn } from "@/lib/utils";
 
 interface BannerProps extends React.ComponentProps<typeof ShadcnAlert> {
-  level?: number;
+  level?: string;
 }
 
 const levels = {
-  info: 1,
-  warning: 2,
-  danger: 3,
+  info: "1",
+  warning: "2",
+  danger: "3",
 } as const;
 
 export function Alert({ children, level, ...props }: BannerProps) {
@@ -25,7 +25,6 @@ export function Alert({ children, level, ...props }: BannerProps) {
       (child) => (Children.toArray(child)?.[0] as JSX.Element).props.children,
     ) ?? [];
 
-  console.info(typeof descriptions);
   return (
     <ShadcnAlert
       className={cn("my-5", {

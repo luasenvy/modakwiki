@@ -76,7 +76,7 @@ export default async function WikiDocPage(ctx: PageProps<"/[lng]/[doctype]">) {
     return (
       <>
         <Breadcrumb lng={lngParam} breadcrumbs={breadcrumbs} />
-        <Document lng={lngParam} doc={doc} doctype={doctype} session={session} />;
+        <Document lng={lngParam} doc={doc} doctype={doctype} session={session} />
       </>
     );
   } finally {

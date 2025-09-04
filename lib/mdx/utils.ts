@@ -27,6 +27,7 @@ import remarkGfmFootnote from "@/lib/mdx/remark/remark-gfm-footnote";
 import remarkGfmTable from "@/lib/mdx/remark/remark-gfm-table";
 import remarkGfmTask from "@/lib/mdx/remark/remark-gfm-task";
 import remarkKatex from "@/lib/mdx/remark/remark-katex";
+import remarkYoutube from "@/lib/mdx/remark/remark-youtube";
 
 export const remarkPlugins = [
   remarkSuperSub,
@@ -34,6 +35,7 @@ export const remarkPlugins = [
   remarkGfmTable,
   remarkKatex,
   remarkAlert,
+  remarkYoutube,
   remarkGfmFootnote,
   [remarkHeadingId, { defaults: true, uniqueDefaults: false }],
   [remarkFlexibleCodeTitles, { tokenForSpaceInTitle: "^" }],

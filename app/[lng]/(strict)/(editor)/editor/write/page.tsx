@@ -27,7 +27,7 @@ export default async function WritePage(ctx: PageProps<"/[lng]/editor/write">) {
     return (
       <>
         <Breadcrumb lng={lngParam} breadcrumbs={breadcrumbs} />
-        <MdxEditor lng={lngParam} />
+        <MdxEditor key="new" lng={lngParam} />
       </>
     );
   }
@@ -67,6 +67,7 @@ export default async function WritePage(ctx: PageProps<"/[lng]/editor/write">) {
       <>
         <Breadcrumb lng={lngParam} breadcrumbs={breadcrumbs} />
         <MdxEditor
+          key={doc.id}
           lng={lngParam}
           doc={doc}
           doctype={doctype}
