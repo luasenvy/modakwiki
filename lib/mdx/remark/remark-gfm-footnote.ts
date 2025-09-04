@@ -8,7 +8,6 @@ import { gfmFootnote } from "micromark-extension-gfm-footnote";
 const emptyOptions: Options = {};
 export default function remarkGfmFootnote(options: Options) {
   // @ts-expect-error: TS is wrong about `this`.
-  // eslint-disable-next-line unicorn/no-this-assignment
   const self = /** @type {Processor<Root>} */ (this);
   const settings: Options = options || emptyOptions;
   const data = self.data();

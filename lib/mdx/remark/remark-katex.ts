@@ -4,7 +4,6 @@ import { math } from "micromark-extension-math";
 const emptyOptions: Options = {};
 export default function remarkKatex(options: Options) {
   // @ts-expect-error: TS is wrong about `this`.
-  // eslint-disable-next-line unicorn/no-this-assignment
   const self = /** @type {Processor<Root>} */ (this);
   const settings: Options = options || emptyOptions;
   const data = self.data();

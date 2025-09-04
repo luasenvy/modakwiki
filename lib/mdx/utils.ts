@@ -22,6 +22,7 @@ import rehypeKatex from "rehype-katex";
 import remarkFlexibleCodeTitles from "remark-flexible-code-titles";
 import remarkHeadingId from "remark-heading-id";
 import remarkSuperSub from "remark-supersub";
+import remarkBanner from "@/lib/mdx/remark/remark-banner";
 import remarkGfmFootnote from "@/lib/mdx/remark/remark-gfm-footnote";
 import remarkGfmTable from "@/lib/mdx/remark/remark-gfm-table";
 import remarkGfmTask from "@/lib/mdx/remark/remark-gfm-task";
@@ -32,6 +33,7 @@ export const remarkPlugins = [
   remarkGfmTask,
   remarkGfmTable,
   remarkKatex,
+  remarkBanner,
   remarkGfmFootnote,
   [remarkHeadingId, { defaults: true, uniqueDefaults: false }],
   [remarkFlexibleCodeTitles, { tokenForSpaceInTitle: "^" }],

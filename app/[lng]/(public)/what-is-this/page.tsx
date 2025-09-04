@@ -18,6 +18,25 @@ export default async function HowToPage(ctx: PageProps<"/[lng]/what-is-this">) {
 
 \`모닥\`은 *몰다*, *모으다*를 어원으로 한 단어입니다. 모닥불의 의미가 *여러가지를 모아 지핀 불*이라는 것을 생각하면 쉽게 이해할 수 있습니다.
 
+!정보팁
+!정보임
+!정보임
+!정보임
+!정보임
+
+!!경고팁
+!경고임
+!경고임
+!경고임
+!경고임
+
+!!!위험팁
+되나?
+되나?
+되나?
+되나?
+
+
 `.trim();
 
   const breadcrumbs: Array<BreadcrumbItem> = [{ title: "모닥위키", href: `${lng}/what-is-this` }];

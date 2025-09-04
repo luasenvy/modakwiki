@@ -6,7 +6,6 @@ import { gfmTaskListItem } from "micromark-extension-gfm-task-list-item";
 
 export default function remarkGfmTask() {
   // @ts-expect-error: TS is wrong about `this`.
-  // eslint-disable-next-line unicorn/no-this-assignment
   const self = /** @type {Processor<Root>} */ (this);
   const data = self.data();
 
