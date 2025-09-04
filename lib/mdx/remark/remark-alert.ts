@@ -22,13 +22,32 @@ export default function remarkBanner(this: Processor) {
           (acc, child) => {
             if (child.type === "text") {
               const contents = child.value.match(/(?!!+)([^\n$]+)/gm) || [];
+              const value = contents.join(" ").trim();
 
-              return acc.concat(
-                contents.map((content) => ({
-                  type: "paragraph",
-                  children: [{ type: "text", value: content.trim() }],
-                })),
-              );
+              if (acc.length > 0) {
+                const prevParagraph: BlockContent | DefinitionContent = acc[acc.length - 1];
+                if (prevParagraph.type === "paragraph") {
+                  return acc.toSpliced(acc.length - 1, 1, {
+                    ...prevParagraph,
+                    children: prevParagraph.children.concat({ type: "text", value }),
+                  });
+                }
+
+                return acc.concat({ type: "paragraph", children: [{ type: "text", value }] });
+              } else {
+                // 제목
+                const [title, ...descriptions] = contents;
+                return acc.concat([
+                  {
+                    type: "paragraph",
+                    children: [{ type: "text", value: title?.trim() || "" }],
+                  },
+                  {
+                    type: "paragraph",
+                    children: [{ type: "text", value: descriptions.join(" ").trim() }],
+                  },
+                ]);
+              }
             }
 
             return acc;

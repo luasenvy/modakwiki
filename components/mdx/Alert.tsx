@@ -1,4 +1,4 @@
-import { Info, MessageSquareWarning, Siren, TriangleAlert } from "lucide-react";
+import { Info, Siren, TriangleAlert } from "lucide-react";
 import { Children, JSX } from "react";
 
 import { AlertDescription, AlertTitle, Alert as ShadcnAlert } from "@/components/ui/alert";
@@ -19,12 +19,13 @@ export function Alert({ children, level, ...props }: BannerProps) {
   const isWarning = level === levels.warning;
   const isDanger = level === levels.danger;
 
-  const [title, ...description] =
+  const [title, ...descriptions] =
     Children.map(
       children,
       (child) => (Children.toArray(child)?.[0] as JSX.Element).props.children,
     ) ?? [];
 
+  console.info(typeof descriptions);
   return (
     <ShadcnAlert
       className={cn("my-5", {
@@ -38,9 +39,15 @@ export function Alert({ children, level, ...props }: BannerProps) {
       {...props}
     >
       {isInfo ? <Info /> : isWarning ? <TriangleAlert /> : isDanger ? <Siren /> : null}
-      <AlertTitle>{title}</AlertTitle>
-      {Boolean(description.length) && (
-        <AlertDescription>{description.flatMap((node) => [node, " "])}</AlertDescription>
+      <AlertTitle className={cn({ "mb-1": Boolean(descriptions.length) })}>{title}</AlertTitle>
+      {Boolean(descriptions.length) && (
+        <AlertDescription>
+          {descriptions.map((description, i) => (
+            <p key={`alert-desc-${i}`} className="!m-0">
+              {description}
+            </p>
+          ))}
+        </AlertDescription>
       )}
     </ShadcnAlert>
   );
