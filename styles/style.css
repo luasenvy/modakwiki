@@ -111,6 +111,7 @@
   --color-sidebar-ring: var(--sidebar-ring);
 
   --font-mono: var(--font-ubuntu-mono), var(--font-nanum-gothic-coding), monospace;
+  --animate-caret-blink: caret-blink 0.2s ease-out infinite;
 }
 
 @layer base {

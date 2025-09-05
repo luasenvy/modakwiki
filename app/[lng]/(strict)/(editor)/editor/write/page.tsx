@@ -2,6 +2,7 @@ import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import { Breadcrumb, BreadcrumbItem } from "@/components/core/Breadcrumb";
 import MdxEditor from "@/components/core/MdxEditor";
+import { FootnoteHighlighter } from "@/components/core/MdxViewer/FootnoteHighlighter";
 import { auth } from "@/lib/auth/server";
 import { pool } from "@/lib/db";
 import { Language } from "@/lib/i18n/config";
@@ -33,6 +34,7 @@ export default async function WritePage(ctx: PageProps<"/[lng]/editor/write">) {
     return (
       <>
         <Breadcrumb lng={lngParam} breadcrumbs={breadcrumbs} />
+        <FootnoteHighlighter />
         <MdxEditor key="new" lng={lngParam} title={title} doctype={doctype} />
       </>
     );

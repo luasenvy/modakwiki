@@ -2,6 +2,8 @@ import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { Breadcrumb, BreadcrumbItem } from "@/components/core/Breadcrumb";
 import { Document } from "@/components/core/Document";
+import { FootnoteHighlighter } from "@/components/core/MdxViewer/FootnoteHighlighter";
+import { isDev } from "@/config";
 import { auth } from "@/lib/auth/server";
 import { pool } from "@/lib/db";
 import { Language } from "@/lib/i18n/config";
@@ -53,16 +55,24 @@ export default async function WikiDocPage(ctx: PageProps<"/[lng]/[doctype]">) {
       );
       doc = _doc;
     } else {
+      let sql = ``;
+      // 개발모드에서는 조회수 증가 쿼리를 실행하지 않음
+      if (isDev) {
+        sql = `SELECT id, title, description, content, email
+                 FROM ${table}
+                WHERE id = $1
+                  AND deleted IS NULL`;
+      } else {
+        sql = `UPDATE ${table}
+                  SET view = view + 1
+                WHERE id = $1
+                  AND deleted IS NULL
+            RETURNING id, title, description, content, email`;
+      }
+
       const {
         rows: [_doc],
-      } = await client.query<DocumentType>(
-        `UPDATE ${table}
-            SET view = view + 1
-          WHERE id = $1
-            AND deleted IS NULL
-    RETURNING id, title, description, content, email`,
-        [id],
-      );
+      } = await client.query<DocumentType>(sql, [id]);
       doc = _doc;
     }
 
@@ -97,6 +107,7 @@ export default async function WikiDocPage(ctx: PageProps<"/[lng]/[doctype]">) {
     return (
       <>
         <Breadcrumb lng={lngParam} breadcrumbs={breadcrumbs} />
+        <FootnoteHighlighter />
         <Document lng={lngParam} doc={doc} doctype={doctype} session={session} />
       </>
     );

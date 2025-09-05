@@ -2,12 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import debounce from "lodash.debounce";
-import {
-  AlignLeft,
-  CircleAlert,
-  MessageSquareHeart,
-  ScrollText,
-} from "lucide-react";
+import { AlignLeft, CircleAlert, MessageSquareHeart, ScrollText } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -16,9 +11,9 @@ import { toast } from "sonner";
 import { Viewport } from "@/components/core/Container";
 import { KeyboardShortcuts } from "@/components/core/MdxEditor/KeyboardShortcuts";
 import { LineEditor } from "@/components/core/MdxEditor/LineEditor";
+import { Remocon } from "@/components/core/MdxEditor/Remocon";
 import { TOCProvider, TOCScrollArea } from "@/components/fumadocs/toc";
 import TocClerk from "@/components/fumadocs/toc-clerk";
-
 import {
   Form,
   FormControl,
@@ -51,7 +46,6 @@ import {
 } from "@/lib/schema/document";
 import { localePrefix } from "@/lib/url";
 import { cn } from "@/lib/utils";
-import { Remocon } from "@/components/core/MdxEditor/Remocon";
 
 interface MdxEditorProps {
   lng: Language;
@@ -251,6 +245,8 @@ export default function MdxEditor({
                   // footnote
                   "[&_section.footnotes]:mt-24 [&_section.footnotes]:border-t",
                   "[&_section.footnotes>ol_li_p]:!my-1 [&_section.footnotes>ol_li]:text-sm",
+                  "[&_section.footnotes>ol_li[data-selected]]:repeat-3 [&_section.footnotes>ol_li[data-selected]]:animate-caret-blink [&_section.footnotes>ol_li[data-selected]]:text-rose-500",
+                  "[&_[data-footnote-ref=true][data-selected]]:repeat-3 [&_[data-footnote-ref=true][data-selected]]:animate-caret-blink [&_[data-footnote-ref=true][data-selected]]:text-rose-500",
                   "prose-a:[&[data-footnote-ref]]:before:content-['[']",
                   "prose-a:[&[data-footnote-ref]]:after:content-[']']",
                 )}
