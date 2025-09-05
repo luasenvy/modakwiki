@@ -142,6 +142,10 @@
     cursor: pointer;
   }
 
+  input[readonly],textarea[readonly] {
+    @apply !bg-muted !text-muted-foreground;
+  }
+
   .prose {
     a {
       @apply text-blue-500 hover:underline;

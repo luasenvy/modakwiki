@@ -252,37 +252,42 @@ export default function MdxEditor({
                 )}
               >
                 <div className="mb-2 flex items-center gap-1">
-                  <Toggle
-                    variant="outline"
-                    pressed={doctype === doctypeEnum.document}
-                    className={cn({
-                      "!border-blue-200 !bg-blue-50 !text-blue-800":
-                        doctype === doctypeEnum.document,
-                    })}
-                    onPressedChange={(pressed) =>
-                      pressed && form.setValue("type", doctypeEnum.document)
-                    }
-                    aria-label="Toggle wkdoc"
-                    size="sm"
-                  >
-                    <ScrollText className="size-4" />
-                    {t("document")}
-                  </Toggle>
-                  <Toggle
-                    variant="outline"
-                    pressed={doctype === doctypeEnum.essay}
-                    className={cn({
-                      "!border-rose-200 !bg-rose-50 !text-rose-800": doctype === doctypeEnum.essay,
-                    })}
-                    onPressedChange={(pressed) =>
-                      pressed && form.setValue("type", doctypeEnum.essay)
-                    }
-                    aria-label="Toggle essay"
-                    size="sm"
-                  >
-                    <MessageSquareHeart className="size-4" />
-                    {t("essay")}
-                  </Toggle>
+                  {(!Boolean(doc?.id) || doctypeEnum.document === doctype) && (
+                    <Toggle
+                      variant="outline"
+                      pressed={doctype === doctypeEnum.document}
+                      className={cn({
+                        "!border-blue-200 !bg-blue-50 !text-blue-800":
+                          doctype === doctypeEnum.document,
+                      })}
+                      onPressedChange={(pressed) =>
+                        pressed && form.setValue("type", doctypeEnum.document)
+                      }
+                      aria-label="Toggle wkdoc"
+                      size="sm"
+                    >
+                      <ScrollText className="size-4" />
+                      {t("document")}
+                    </Toggle>
+                  )}
+                  {(!Boolean(doc?.id) || doctypeEnum.essay === doctype) && (
+                    <Toggle
+                      variant="outline"
+                      pressed={doctype === doctypeEnum.essay}
+                      className={cn({
+                        "!border-rose-200 !bg-rose-50 !text-rose-800":
+                          doctype === doctypeEnum.essay,
+                      })}
+                      onPressedChange={(pressed) =>
+                        pressed && form.setValue("type", doctypeEnum.essay)
+                      }
+                      aria-label="Toggle essay"
+                      size="sm"
+                    >
+                      <MessageSquareHeart className="size-4" />
+                      {t("essay")}
+                    </Toggle>
+                  )}
                 </div>
 
                 <FormField
