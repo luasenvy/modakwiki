@@ -86,5 +86,13 @@
   "description": "description",
   "changed": "changed",
   "Information Changed": "Information Changed",
-  "Created": "Created"
+  "Created": "Created",
+  "You do not have permission to access this page.": "You do not have permission to access this page.",
+  "move to home": "move to home",
+  "Unable to save. Please enter both the title and content.": "Unable to save. Please enter both the title and content.",
+  "Content is empty or title is missing.": "Content is empty or title is missing.",
+  "change history": "change history",
+  "wiki syntax": "wiki syntax",
+  "writing guidelines": "writing guidelines",
+  "Page does not exist": "Page does not exist"
 }

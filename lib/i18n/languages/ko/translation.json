@@ -72,5 +72,13 @@
   "description": "설명",
   "changed": "변경됨",
   "Information Changed": "정보 변경됨",
-  "Created": "생성됨"
+  "Created": "생성됨",
+  "You do not have permission to access this page.": "페이지에 접근할 권한이 없습니다.",
+  "move to home": "홈으로",
+  "Unable to save. Please enter both the title and content.": "저장할 수 없습니다. 제목과 내용을 모두 입력해주세요.",
+  "Content is empty or title is missing.": "Content is empty or title is missing.",
+  "change history": "변경내역",
+  "wiki syntax": "위키문법",
+  "writing guidelines": "작성요령",
+  "Page does not exist": "페이지가 존재하지 않습니다."
 }

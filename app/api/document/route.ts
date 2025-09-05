@@ -78,7 +78,11 @@ export async function PATCH(req: NextRequest) {
       { added: 0, removed: 0 },
     );
 
-    if (!added && !removed && description === prev.description)
+    if (
+      !added &&
+      !removed &&
+      ((!Boolean(description) && !Boolean(prev.description)) || description === prev.description)
+    )
       return new Response(null, { status: 409 });
 
     await client.query(

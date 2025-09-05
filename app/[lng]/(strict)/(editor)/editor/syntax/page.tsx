@@ -1,6 +1,7 @@
 import { Breadcrumb, BreadcrumbItem } from "@/components/core/Breadcrumb";
 import { Document } from "@/components/core/Document";
 import type { Language } from "@/lib/i18n/config";
+import { useTranslation } from "@/lib/i18n/next";
 import { localePrefix } from "@/lib/url";
 import Logo from "@/public/brand/logo.webp";
 
@@ -261,9 +262,10 @@ function sayHello(x: number) {
 ~~~
 `;
 
+  const { t } = await useTranslation(lngParam);
+
   const breadcrumbs: Array<BreadcrumbItem> = [
-    { title: "편집자" },
-    { title: "위키문법", href: `${lng}/editor/syntax` },
+    { title: t("wiki syntax"), href: `${lng}/editor/syntax` },
   ];
 
   return (
