@@ -104,34 +104,6 @@ export function getToc(source: string): Array<TOCItemType> {
   );
 }
 
-export function getSelectedLine(textarea: HTMLTextAreaElement): string | null {
-  const value = textarea.value;
-  const selectionStart = textarea.selectionStart;
-  const selectionEnd = textarea.selectionEnd;
-
-  if (selectionStart !== selectionEnd) {
-    return value.substring(selectionStart, selectionEnd);
-  } else {
-    const curr = value.charAt(selectionStart);
-    const prev = value.charAt(selectionStart - 1);
-
-    if (!value.length) return null;
-
-    if (/\n/.test(curr) && /\n|^$/.test(prev)) {
-      return "";
-    } else if (prev === "\n") {
-      const least = value.substring(selectionStart).trim();
-      return least.substring(0, least.search(/\n|$/));
-    } else {
-      let indicator = selectionStart;
-      while (--indicator > 0 && !/\n|^$/.test(value.charAt(indicator)));
-
-      const least = value.substring(indicator).trim();
-      return least.substring(0, least.search(/\n|$/));
-    }
-  }
-}
-
 export function getHunks(content: string) {
   const lines = [];
 

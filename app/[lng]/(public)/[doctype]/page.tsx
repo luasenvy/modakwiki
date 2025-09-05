@@ -40,6 +40,7 @@ export default async function WikiDocPage(ctx: PageProps<"/[lng]/[doctype]">) {
       } = await client.query<DocumentType>(
         `SELECT d.id
               , d.title
+              , d.description
               , h.content
               , h.email
          FROM ${history} h
@@ -59,13 +60,33 @@ export default async function WikiDocPage(ctx: PageProps<"/[lng]/[doctype]">) {
             SET view = view + 1
           WHERE id = $1
             AND deleted IS NULL
-    RETURNING id, title, content, email`,
+    RETURNING id, title, description, content, email`,
         [id],
       );
       doc = _doc;
     }
 
-    if (!doc) return notFound();
+    if (!doc) {
+      const breadcrumbs: Array<BreadcrumbItem> = [
+        { title: doctypeEnum.document === doctype ? t("wiki document") : t("wiki essay") },
+        { title: t("Not Found"), href: `${lng}/${doctype}/${id}` },
+      ];
+
+      const guessTitle = (id as string).replaceAll("-", " ");
+      const content = `
+## 문서를 찾지 못했습니다.
+
+"${guessTitle}" 제목으로 등록된 ${t(doctype)}가 없습니다.
+
+가장 먼저 ${t(doctype)}를 [등록](${lng}/editor/write?title=${encodeURIComponent(guessTitle)}&type=${doctype})해보세요!
+      `;
+      return (
+        <>
+          <Breadcrumb lng={lngParam} breadcrumbs={breadcrumbs} />
+          <Document lng={lngParam} content={content.trim()} />
+        </>
+      );
+    }
 
     const session = await auth.api.getSession({ headers: await headers() });
     const breadcrumbs: Array<BreadcrumbItem> = [

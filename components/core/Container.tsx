@@ -1,4 +1,5 @@
-import { Component, createElement, FunctionComponent } from "react";
+import { createElement } from "react";
+import { SearchParamsScroller } from "@/components/core/SearchParamsScroller";
 import { cn } from "@/lib/utils";
 
 type AllowedComponent = "div" | "article";
@@ -18,12 +19,14 @@ export function Container<T extends AllowedComponent = typeof defaultContainerCo
 
 export function Viewport({ className, ...props }: React.ComponentPropsWithRef<"div">) {
   return (
-    <div
-      className={cn(
-        "relative flex h-[calc(100dvh_-_var(--spacing)_*_12)] w-full scroll-pt-8 overflow-auto lg:justify-center",
-        className,
-      )}
-      {...props}
-    />
+    <>
+      <SearchParamsScroller
+        className={cn(
+          "relative flex h-[calc(100dvh_-_var(--spacing)_*_12)] w-full scroll-pt-8 overflow-auto lg:justify-center",
+          className,
+        )}
+        {...props}
+      />
+    </>
   );
 }

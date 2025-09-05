@@ -18,6 +18,9 @@ export default async function WritePage(ctx: PageProps<"/[lng]/editor/write">) {
   const searchParams = await ctx.searchParams;
   const id = searchParams.id as string;
 
+  const doctype = searchParams.type as Doctype;
+  const title = searchParams.title as string;
+
   // 신규 문서 생성
   if (!id) {
     const { t } = await useTranslation(lngParam);
@@ -30,7 +33,7 @@ export default async function WritePage(ctx: PageProps<"/[lng]/editor/write">) {
     return (
       <>
         <Breadcrumb lng={lngParam} breadcrumbs={breadcrumbs} />
-        <MdxEditor key="new" lng={lngParam} />
+        <MdxEditor key="new" lng={lngParam} title={title} doctype={doctype} />
       </>
     );
   }
@@ -41,7 +44,6 @@ export default async function WritePage(ctx: PageProps<"/[lng]/editor/write">) {
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session) return redirect(`${lng}/signin`);
 
-    const doctype = searchParams.type as Doctype;
     const { table } = getTablesByDoctype(doctype);
     if (!table) return notFound();
 

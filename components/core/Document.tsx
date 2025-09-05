@@ -22,6 +22,7 @@ interface DocumentProps {
   doc?: DocumentType;
   content?: string;
   title?: string;
+  description?: string;
   session?: Session | null;
 }
 
@@ -31,10 +32,12 @@ export async function Document({
   doctype,
   content = "",
   title = "",
+  description = "",
   session,
 }: DocumentProps) {
   content = doc?.content ?? content;
   title = doc?.title ?? title;
+  description = doc?.description ?? description;
 
   const toc = getToc(content);
 
@@ -117,7 +120,13 @@ export async function Document({
             "prose-a:[&[data-footnote-ref]]:after:content-[']']",
           )}
         >
-          {title && <h1>{title}</h1>}
+          {title && <h1 className={cn("my-8", { "!mb-1": Boolean(description) })}>{title}</h1>}
+          {description && (
+            <h2 className="!m-0 !mb-8 font-font-semibold text-lg text-muted-foreground">
+              {description}
+            </h2>
+          )}
+
           <MdxLoader source={content} />
         </Container>
 

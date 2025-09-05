@@ -7,7 +7,6 @@ import { Icons } from "next/dist/lib/metadata/types/metadata-types";
 import { Nanum_Gothic_Coding, Ubuntu_Mono } from "next/font/google";
 import localFont from "next/font/local";
 import { ThemeProvider } from "next-themes";
-import { Toaster } from "sonner";
 import { logo, site } from "@/config";
 import type { Language } from "@/lib/i18n/config";
 

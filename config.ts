@@ -79,5 +79,3 @@ export const postgresql = {
 export type Postgresql = typeof postgresql;
 
 export const isDev = process.env.NODE_ENV! !== "production";
-
-export const keyboardcat = process.env.KEYBOARD_CAT! || "";

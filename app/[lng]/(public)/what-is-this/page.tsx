@@ -35,7 +35,7 @@ export default async function HowToPage(ctx: PageProps<"/[lng]/what-is-this">) {
   return (
     <>
       <Breadcrumb lng={lngParam} breadcrumbs={breadcrumbs} />
-      <Document lng={lngParam} content={content.trim()} />;
+      <Document lng={lngParam} content={content.trim()} />
     </>
   );
 }

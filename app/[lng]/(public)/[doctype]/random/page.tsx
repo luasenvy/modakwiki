@@ -31,7 +31,9 @@ export default async function WikiDocPage(ctx: PageProps<"/[lng]/[doctype]/rando
 
     if (!doc) {
       const { t } = await useTranslation(lngParam);
-      const content = isDev ? `[${t("Please register the first document!")}](${lng}/signin)` : "";
+      const content = isDev
+        ? `[${t("Please register the first document!")}](${lng}/editor/write)`
+        : "";
 
       const title = t("There is no any document.");
       const breadcrumbs: Array<BreadcrumbItem> = [{ title, href: `${lng}/w/random` }];

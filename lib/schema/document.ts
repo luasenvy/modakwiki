@@ -18,6 +18,7 @@ export type Doctype = (typeof doctypeEnum)[keyof typeof doctypeEnum];
 export const document = z.object({
   id: z.string(),
   title: z.string().min(1).max(60),
+  description: z.string().min(1).max(120).optional(),
   content: z.string().min(1),
   preview: z.string().max(120).optional(),
   view: z.number(),
@@ -33,6 +34,7 @@ export type Document = z.infer<typeof document>;
 export const documentForm = document
   .pick({
     title: true,
+    description: true,
     content: true,
     license: true,
   })

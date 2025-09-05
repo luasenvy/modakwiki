@@ -92,6 +92,7 @@ interface MdxEditorProps {
   lng: Language;
   doc?: DocumentType;
   doctype?: Doctype;
+  title?: string;
   deletable?: boolean;
 }
 
@@ -99,6 +100,7 @@ export default function MdxEditor({
   lng: lngParam,
   doc,
   doctype: defaultDoctype,
+  title: defaultTitle,
   deletable,
 }: MdxEditorProps) {
   const router = useRouter();
@@ -123,13 +125,15 @@ export default function MdxEditor({
     resolver: zodResolver(documentForm),
     defaultValues: {
       id: doc?.id,
+      description: doc?.description,
       type: defaultDoctype || doctypeEnum.document,
-      title: doc?.title || "",
+      title: doc?.title || defaultTitle || "",
       content: doc?.content || "",
     },
   });
 
   const title = form.watch("title");
+  const description = form.watch("description");
   const doctype = form.watch("type");
   const content = form.watch("content");
 
@@ -186,6 +190,10 @@ export default function MdxEditor({
     form.setValue("title", e.target.value);
   }, 110);
 
+  const handleChangeDescription = debounce((e: React.ChangeEvent<HTMLInputElement>) => {
+    form.setValue("description", e.target.value);
+  }, 110);
+
   const handleSubmit = form.handleSubmit(async (values: DocumentForm) => {
     const options = {
       method: values.id ? "PATCH" : "POST",
@@ -198,13 +206,9 @@ export default function MdxEditor({
     if (!res.ok) return toast.error(statusMessage({ t, status: res.status, options }));
 
     const { id } = await res.json();
-    toast.success(statusMessage({ t, status: res.status, options }), {
-      description: values.title,
-      action: {
-        label: t("Show Document"),
-        onClick: () => router.push(`${lng}/${values.type}?${new URLSearchParams({ id })}`),
-      },
-    });
+
+    toast.success(statusMessage({ t, status: res.status, options }), { description: values.title });
+    router.push(`${lng}/${values.type}?${new URLSearchParams({ id })}`);
   });
 
   const handleDelete = async () => {
@@ -345,7 +349,7 @@ export default function MdxEditor({
                 control={form.control}
                 name="title"
                 render={({ field: { value, onChange, ...field } }) => (
-                  <FormItem className="mb-6">
+                  <FormItem className="mb-4">
                     <FormControl>
                       <Input
                         {...field}
@@ -366,7 +370,32 @@ export default function MdxEditor({
                 )}
               />
 
-              {title && <h1 className="mt-8">{title}</h1>}
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field: { value, onChange, ...field } }) => (
+                  <FormItem className="mb-6">
+                    <FormControl>
+                      <Input
+                        {...field}
+                        ref={titleRef}
+                        className="rounded-none"
+                        placeholder={t("Please input description")}
+                        defaultValue={value}
+                        onChange={handleChangeDescription}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {title && <h1 className={cn("my-8", { "!mb-1": Boolean(description) })}>{title}</h1>}
+              {description && (
+                <h2 className="!m-0 !mb-8 font-font-semibold text-lg text-muted-foreground">
+                  {description}
+                </h2>
+              )}
 
               <DndContext
                 sensors={sensors}
@@ -477,7 +506,7 @@ export default function MdxEditor({
 
             <nav
               id="nav-toc"
-              className="sticky top-0 flex h-[calc(100dvh_-_var(--spacing)_*_12)] w-[286px] shrink-0 flex-col space-y-2 pt-8 pr-4 pl-2 [mask-image:linear-gradient(to_bottom,transparent,white_16px,white_calc(100%-16px),transparent)] max-xl:hidden"
+              className="sticky top-0 flex h-[calc(100dvh_-_var(--spacing)_*_12)] w-[286px] shrink-0 flex-col space-y-2 pt-56 pr-4 pl-2 [mask-image:linear-gradient(to_bottom,transparent,white_16px,white_calc(100%-16px),transparent)] max-xl:hidden"
             >
               <div className="mb-2 flex items-center gap-2">
                 <AlignLeft className="size-4" />
@@ -490,7 +519,7 @@ export default function MdxEditor({
 
               <Remocon
                 t={t}
-                copyText={content}
+                content={content}
                 copiable={Boolean(lines.length)}
                 deletable={deletable}
                 resetable={content !== (doc?.content || "")}
@@ -590,7 +619,7 @@ interface RemoconProps extends React.ComponentProps<"div"> {
   resetable?: boolean;
   clearable?: boolean;
   deletable?: boolean;
-  copyText?: string;
+  content?: string;
   onSave?: () => void;
   onClear?: () => void;
   onUndoAll?: () => void;
@@ -605,7 +634,7 @@ function Remocon({
   clearable,
   deletable,
   className,
-  copyText,
+  content,
   onSave: handleSave,
   onClear: handleClear,
   onUndoAll: handleUndoAll,
@@ -614,7 +643,7 @@ function Remocon({
   const [isCopied, setIsCopied] = useState<boolean>(false);
 
   const handleClickCopy = () => {
-    navigator.clipboard.writeText(copyText || "").then(() => {
+    navigator.clipboard.writeText(content || "").then(() => {
       setIsCopied(true);
       setTimeout(() => setIsCopied(false), 3000);
     });

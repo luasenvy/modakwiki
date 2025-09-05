@@ -19,18 +19,19 @@ export async function POST(req: NextRequest) {
 
   const client = await pool.connect();
   try {
-    const { type: doctype, title, content }: DocumentForm = await req.json();
+    const { type: doctype, title, description, content }: DocumentForm = await req.json();
 
     const { table, history } = getTablesByDoctype(doctype);
     const {
       rows: [{ id }],
     } = await client.query(
-      `INSERT INTO ${table} (id, title, content, email, preview)
-                     VALUES ($1, $2, $3, $4, $5)
+      `INSERT INTO ${table} (id, title, description, content, email, preview)
+                     VALUES ($1, $2, $3, $4, $5, $6)
                RETURNING id`,
       [
         kebabcase(title),
         title,
+        description,
         content,
         session.user.email,
         clearMarkdown(humanReadable(content).substring(0, 150)),
@@ -38,9 +39,9 @@ export async function POST(req: NextRequest) {
     );
 
     await client.query(
-      `INSERT INTO ${history} (id, content, email)
-                       VALUES ($1, $2, $3)`,
-      [id, content, session.user.email],
+      `INSERT INTO ${history} (id, description, content, email)
+                       VALUES ($1, $2, $3, $4)`,
+      [id, description, content, session.user.email],
     );
 
     return Response.json({ id }, { status: 201 });
@@ -56,14 +57,17 @@ export async function PATCH(req: NextRequest) {
 
   const client = await pool.connect();
   try {
-    const { id, type, content }: DocumentForm & { type: Doctype } = await req.json();
+    const { id, type, content, description }: DocumentForm & { type: Doctype } = await req.json();
 
     const { table, history } = getTablesByDoctype(type);
     if (!table) return new Response("Bad Request", { status: 400 });
 
     const {
       rows: [prev],
-    } = await client.query<DocumentType>(`SELECT content FROM ${table} WHERE id = $1`, [id]);
+    } = await client.query<DocumentType>(
+      `SELECT description, content FROM ${table} WHERE id = $1`,
+      [id],
+    );
 
     const { added, removed } = diffChars(prev.content, content).reduce(
       (acc, { added, removed, count }) => {
@@ -74,21 +78,23 @@ export async function PATCH(req: NextRequest) {
       { added: 0, removed: 0 },
     );
 
-    if (!added && !removed) return new Response(null, { status: 409 });
+    if (!added && !removed && description === prev.description)
+      return new Response(null, { status: 409 });
 
     await client.query(
       `UPDATE ${table}
           SET content = $1
             , preview = $2
+            , description = $3
             , updated = extract(epoch FROM current_timestamp) * 1000
-        WHERE id = $3`,
-      [content, clearMarkdown(humanReadable(content).substring(0, 150)), id],
+        WHERE id = $4`,
+      [content, clearMarkdown(humanReadable(content).substring(0, 150)), description, id],
     );
 
     await client.query(
-      `INSERT INTO ${history} (id, content, email, added, removed)
-                    VALUES ($1, $2, $3, $4, $5)`,
-      [id, content, session.user.email, added, removed],
+      `INSERT INTO ${history} (id, description, content, email, added, removed)
+                    VALUES ($1, $2, $3, $4, $5, $6)`,
+      [id, description, content, session.user.email, added, removed],
     );
 
     return Response.json({ id }, { status: 200 });

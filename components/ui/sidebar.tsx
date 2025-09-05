@@ -33,7 +33,6 @@ import {
 } from "@/components/ui/breadcrumb";
 
 import dynamic from "next/dynamic";
-// import { useBreadcrumb } from "@/hooks/use-breadcrumb"
 import Link from "next/link"
 import { BreadcrumbItem as BreadcrumbItemType } from "@/components/core/Breadcrumb"
 import { Toaster } from "@/components/ui/sonner"
@@ -352,16 +351,16 @@ function SidebarInset({ className, children, ...props }: React.ComponentProps<"m
       <header className="sticky top-0 flex h-12 shrink-0 items-center gap-2 border-b bg-background px-4">
         <SidebarTrigger className="-ml-1" />
         
-        <Breadcrumb>
-          <BreadcrumbList>
+        <Breadcrumb className="w-full">
+          <BreadcrumbList className="flex-nowrap w-full">
             {breadcrumbs.map(({ title, href }, i) => {
               const isCurrent = breadcrumbs.length - 1 === i;
               return (
                 <BreadcrumbItem key={`breadcrumb-${i}`} className={cn("text-muted-foreground")}>
-                  <BreadcrumbPage className={cn({
+                  <BreadcrumbPage className={cn("truncate",{
                     "font-semibold": isCurrent,
                     "text-muted-foreground": !isCurrent,
-                  })}>
+                  })} title={title}>
                     {(href && breadcrumbs.length - 1 > i) ? (
                       <Link href={href} className="text-muted-foreground hover:text-blue-500 hover:underline">{title}</Link>
                     ) : (
