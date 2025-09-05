@@ -345,7 +345,7 @@ export default function MdxEditor({
                 control={form.control}
                 name="title"
                 render={({ field: { value, onChange, ...field } }) => (
-                  <FormItem>
+                  <FormItem className="mb-6">
                     <FormControl>
                       <Input
                         {...field}
@@ -358,8 +358,8 @@ export default function MdxEditor({
                         required
                       />
                     </FormControl>
-                    <FormDescription className="!m-0 text-orange-500">
-                      {t("Cannot be change after document created.")}
+                    <FormDescription className="!m-0">
+                      {t("Title cannot be change after document created.")}
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -388,7 +388,7 @@ export default function MdxEditor({
                       id={`line-${i}`}
                       key={`line-${i}`}
                     >
-                      <MdxLoader>{line}</MdxLoader>
+                      <MdxLoader source={line} />
                       {selectedLine === i && (
                         <Textarea
                           name="prev"
@@ -458,7 +458,7 @@ export default function MdxEditor({
               </DndContext>
 
               <div className="bg-accent">
-                <MdxLoader>{hunk}</MdxLoader>
+                <MdxLoader source={hunk} />
               </div>
 
               <Textarea

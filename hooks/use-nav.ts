@@ -24,7 +24,7 @@ export const mainNavs: Array<NavItem> = [
     ],
   },
   {
-    title: "문서",
+    title: "위키",
     url: "#",
     items: [
       {

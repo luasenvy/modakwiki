@@ -5,6 +5,7 @@ import MdxEditor from "@/components/core/MdxEditor";
 import { auth } from "@/lib/auth/server";
 import { pool } from "@/lib/db";
 import { Language } from "@/lib/i18n/config";
+import { useTranslation } from "@/lib/i18n/next";
 import { Doctype, Document, getTablesByDoctype } from "@/lib/schema/document";
 import { localePrefix } from "@/lib/url";
 
@@ -19,9 +20,11 @@ export default async function WritePage(ctx: PageProps<"/[lng]/editor/write">) {
 
   // 신규 문서 생성
   if (!id) {
+    const { t } = await useTranslation(lngParam);
+
     const breadcrumbs: Array<BreadcrumbItem> = [
-      { title: "편집자" },
-      { title: "새 문서", href: `${lng}/editor/write` },
+      { title: t("editor") },
+      { title: t("new document"), href: `${lng}/editor/write` },
     ];
 
     return (
@@ -55,8 +58,10 @@ export default async function WritePage(ctx: PageProps<"/[lng]/editor/write">) {
 
     if (!doc) return notFound();
 
+    const { t } = await useTranslation(lngParam);
+
     const breadcrumbs: Array<BreadcrumbItem> = [
-      { title: "편집자" },
+      { title: t("editor") },
       {
         title: doc.title,
         href: `${lng}/editor/write?${new URLSearchParams({ id, type: doctype })}`,

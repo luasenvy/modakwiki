@@ -60,7 +60,7 @@
   "Show Document": "Show Document",
   "Update failed because there were no changes.": "Update failed because there were no changes.",
   "Document History": "Document History",
-  "Cannot be change after document created.": "Cannot be change after document created.",
+  "Title cannot be change after document created.": "Title cannot be change after document created.",
   "Not Found": "Not Found",
   "Update failed due to a conflict.": "Update failed due to a conflict.",
   "Clear Document": "Clear Document",
@@ -74,10 +74,11 @@
   "No documents found": "No documents found",
   "Please register the first document!": "Please register the first document!",
   "wiki document": "wiki document",
-  "wiki post": "wiki post",
+  "wiki essay": "wiki essay",
   "There is no any document.": "There is no any document.",
   "editor": "editor",
   "search": "search",
+  "new document": "new document",
   "w": "document",
   "e": "essay"
 }

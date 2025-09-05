@@ -10,11 +10,9 @@ interface DiffViewerProps {
 }
 
 export function DiffViewer({ curr, prev }: DiffViewerProps) {
-  const diffs = useMemo(() => diffChars(prev, curr), [curr, prev]);
-
-  return (
-    <MdxLoader>
-      {`~~~diff\n${diffs
+  const source = useMemo(
+    () =>
+      `~~~diff\n${diffChars(prev, curr)
         .map(({ added, removed, value }, i) =>
           added
             ? `+ ${value.replace(/(\n)/g, "$1+ ")}`
@@ -22,7 +20,9 @@ export function DiffViewer({ curr, prev }: DiffViewerProps) {
               ? `- ${value.replace(/(\n)/g, "$1- ")}`
               : value,
         )
-        .join("\n")}\n~~~`}
-    </MdxLoader>
+        .join("\n")}\n~~~`,
+    [curr, prev],
   );
+
+  return <MdxLoader source={source} />;
 }

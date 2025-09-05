@@ -1,3 +1,4 @@
+import { MDXComponents } from "mdx/types";
 import { Children, JSX } from "react";
 import { Components } from "react-markdown";
 import { Alert } from "@/components/mdx/Alert";
@@ -46,4 +47,4 @@ export default {
   },
   Alert,
   Youtube,
-} satisfies Components & Record<string, JSX.ElementType>;
+} satisfies MDXComponents;

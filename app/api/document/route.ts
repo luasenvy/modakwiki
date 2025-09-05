@@ -58,7 +58,7 @@ export async function PATCH(req: NextRequest) {
   try {
     const { id, type, content }: DocumentForm & { type: Doctype } = await req.json();
 
-    const { table } = getTablesByDoctype(type);
+    const { table, history } = getTablesByDoctype(type);
     if (!table) return new Response("Bad Request", { status: 400 });
 
     const {
