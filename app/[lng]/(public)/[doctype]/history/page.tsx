@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { Container, Viewport } from "@/components/core/Container";
 import { pool } from "@/lib/db";
 import { Language } from "@/lib/i18n/config";
+import { useTranslation } from "@/lib/i18n/next";
 import { Doctype, Document as DocumentType, getTablesByDoctype } from "@/lib/schema/document";
 import { History as DocumentHistory } from "@/lib/schema/history";
 import { localePrefix } from "@/lib/url";
@@ -37,6 +38,7 @@ export default async function HistoryPage(ctx: PageProps<"/[lng]/[doctype]/histo
     const { rows } = await client.query<DocumentHistory & { name: string }>(
       `SELECT h.added
             , h.email
+            , h.description
             , u.name
             , h.removed
             , h.created
@@ -50,6 +52,8 @@ export default async function HistoryPage(ctx: PageProps<"/[lng]/[doctype]/histo
     const dateFormater = new Intl.DateTimeFormat(lngParam);
     const numberFormat = new Intl.NumberFormat(lngParam);
 
+    const { t } = await useTranslation(lngParam);
+
     return (
       <Viewport className="!justify-start flex-col items-center">
         <Container
@@ -61,34 +65,45 @@ export default async function HistoryPage(ctx: PageProps<"/[lng]/[doctype]/histo
           <h2>{doc.title}</h2>
 
           <div>
-            {rows.map(({ added, removed, name, email, created }, i) => {
+            {rows.map(({ description, added, removed, name, email, created }, i) => {
               const isChanged = added + removed > 0;
+              const isDescriptionChange =
+                rows.length - 1 !== i && description !== rows[i + 1].description;
 
               return (
                 <div
                   key={`history-${i}`}
                   className="flex py-0.5 hover:bg-accent/80 max-sm:flex-col sm:items-center"
                 >
-                  <p className="!my-0 font-semibold">
-                    <Link
-                      href={
-                        isChanged
-                          ? `${lng}/${doctype}/diff?${new URLSearchParams({ id, created: String(created) })}`
-                          : `${lng}/${doctype}?${new URLSearchParams({ id, created: String(created) })}`
-                      }
-                      className="text-blue-500 no-underline hover:underline"
-                    >
-                      {isChanged ? (
-                        <>
-                          변경점 |{" "}
-                          <span className="text-green-600">+{numberFormat.format(added)}</span> |{" "}
-                          <span className="text-red-600">-{numberFormat.format(removed)}</span>
-                        </>
-                      ) : (
-                        "문서 생성됨"
-                      )}
-                    </Link>
-                  </p>
+                  <div>
+                    <p className="!my-0 font-semibold">
+                      <Link
+                        href={
+                          isChanged
+                            ? `${lng}/${doctype}/diff?${new URLSearchParams({ id, created: String(created) })}`
+                            : `${lng}/${doctype}?${new URLSearchParams({ id, created: String(created) })}`
+                        }
+                        className="text-blue-500 no-underline hover:underline"
+                      >
+                        {isChanged ? (
+                          <>
+                            변경점 |{" "}
+                            <span className="text-green-600">+{numberFormat.format(added)}</span> |{" "}
+                            <span className="text-red-600">-{numberFormat.format(removed)}</span>
+                          </>
+                        ) : isDescriptionChange ? (
+                          t("Information Changed")
+                        ) : (
+                          t("Created")
+                        )}
+                      </Link>
+                    </p>
+                    {isDescriptionChange && (
+                      <small>
+                        {t("description")}: {description || t("")}
+                      </small>
+                    )}
+                  </div>
 
                   <div className="ml-auto flex gap-1 max-sm:flex-col sm:items-center">
                     <p className="!my-0">

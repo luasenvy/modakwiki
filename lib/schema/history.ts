@@ -6,6 +6,7 @@ export const history = document
     id: true,
     title: true,
     content: true,
+    description: true,
     email: true,
     type: true,
     created: true,

@@ -66,5 +66,11 @@
   "search": "검색",
   "new document": "새 문서",
   "w": "문서",
-  "e": "기고"
+  "e": "기고",
+  "Please input description": "설명을 입력해주세요",
+  "Table of contents": "목차",
+  "description": "설명",
+  "changed": "변경됨",
+  "Information Changed": "정보 변경됨",
+  "Created": "생성됨"
 }

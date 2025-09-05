@@ -80,5 +80,11 @@
   "search": "search",
   "new document": "new document",
   "w": "document",
-  "e": "essay"
+  "e": "essay",
+  "Please input description": "Please input description",
+  "Table of contents": "Table of contents",
+  "description": "description",
+  "changed": "changed",
+  "Information Changed": "Information Changed",
+  "Created": "Created"
 }

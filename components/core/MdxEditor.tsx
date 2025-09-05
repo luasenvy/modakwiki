@@ -317,7 +317,8 @@ export default function MdxEditor({
                 "prose-table:m-0",
                 "prose-td:[&>img]:m-auto",
                 // footnote
-                "[&>section.footnotes]:mt-24 [&>section.footnotes]:border-t",
+                "[&_section.footnotes]:mt-24 [&_section.footnotes]:border-t",
+                "[&_section.footnotes>ol_li_p]:!my-1 [&_section.footnotes>ol_li]:text-sm",
                 "prose-a:[&[data-footnote-ref]]:before:content-['[']",
                 "prose-a:[&[data-footnote-ref]]:after:content-[']']",
               )}
@@ -510,7 +511,9 @@ export default function MdxEditor({
             >
               <div className="mb-2 flex items-center gap-2">
                 <AlignLeft className="size-4" />
-                <p className="m-0 text-muted-foreground text-sm">목차</p>
+                <p className="m-0 text-muted-foreground text-sm">
+                  {title || t("Table of contents")}
+                </p>
               </div>
 
               <TOCScrollArea className="mb-2 overflow-auto p-0">
