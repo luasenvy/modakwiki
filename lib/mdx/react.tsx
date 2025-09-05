@@ -9,6 +9,7 @@ import { MDXContent } from "mdx/types";
 import { useEffect, useState } from "react";
 import { Fragment, jsx, jsxs } from "react/jsx-runtime";
 import MDXComponents from "@/components/mdx";
+import { Spinner } from "@/components/ui/shadcn-io/spinner";
 import { escapeTextForBrowser } from "@/lib/html";
 import { rehypePlugins, remarkPlugins } from "@/lib/mdx/utils";
 
@@ -25,7 +26,12 @@ const runtime: EvaluateOptions = {
 };
 
 export function MdxLoader({ source }: MdxLoaderProps) {
-  const [MdxContent, setMdxContent] = useState<MDXContent>(() => () => <div>Loading...</div>);
+  const [MdxContent, setMdxContent] = useState<MDXContent>(() => () => (
+    <div className="flex py-4">
+      <Spinner className="m-auto" variant="ring" size={32} />
+    </div>
+  ));
+
   useEffect(() => {
     evaluate(escapeTextForBrowser(source), runtime).then((mod) => setMdxContent(() => mod.default));
   }, [source]);

@@ -215,6 +215,12 @@ export function clear(content: string) {
 }
 
 export function humanReadable(content: string) {
+  // remove youtubes
+  content = content.replace(/^@\[[^\]]+\]/gm, "");
+
+  // remove alerts
+  content = content.replace(/^![^\n$]+(\n|$)/gm, "");
+
   // remove footnotes
   content = content.replace(/\[\^[^\]]+](:[^\n|$]+)?/g, "");
 

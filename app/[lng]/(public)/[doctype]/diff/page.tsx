@@ -34,9 +34,10 @@ export default async function DiffPage(ctx: PageProps<"/[lng]/[doctype]/history"
 
     if (!title) return notFound();
 
-    const { rows } = await client.query<DocumentHistory>(
+    const { rows } = await client.query<DocumentHistory & { name: string }>(
       `SELECT h.content
             , u.name
+            , u.email
             , h.created
          FROM ${history} h
          JOIN "user" u ON u.email = h.email
@@ -69,12 +70,37 @@ export default async function DiffPage(ctx: PageProps<"/[lng]/[doctype]/history"
             "prose-pre:max-h-[calc(100dvh_-_var(--spacing)_*_80)]",
           )}
         >
-          <h2>
-            변경점 비교: {title} <sub>( {dateFormater.format(curr.created)} )</sub>
-          </h2>
+          <h2>변경점 비교: {title}</h2>
           <div className="mt-6 flex flex-col items-end">
             <p className="!m-0 font-mono text-muted-foreground text-sm">
-              변경전: {dateFormater.format(prev.created)}
+              변경전: {dateFormater.format(prev.created)}{" "}
+              <sub>
+                (
+                <a
+                  href={`mailto:${prev.email}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-500 no-underline hover:underline"
+                >
+                  {prev.name}
+                </a>
+                )
+              </sub>
+            </p>
+            <p className="!m-0 font-mono text-muted-foreground text-sm">
+              변경후: {dateFormater.format(curr.created)}{" "}
+              <sub>
+                (
+                <a
+                  href={`mailto:${curr.email}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-500 no-underline hover:underline"
+                >
+                  {curr.name}
+                </a>
+                )
+              </sub>
             </p>
           </div>
 
