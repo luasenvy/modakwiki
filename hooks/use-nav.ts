@@ -61,7 +61,7 @@ export const mainNavs: Array<NavItem> = [
   },
   {
     title: "파일",
-    scope: scopeEnum.editor,
+    scope: scopeEnum.admin,
     url: "#",
     items: [
       {
