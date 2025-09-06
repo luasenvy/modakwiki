@@ -74,12 +74,7 @@ export default async function HistoryPage(ctx: PageProps<"/[lng]/[doctype]/histo
         <Breadcrumb lng={lngParam} breadcrumbs={breadcrumbs} />
 
         <Viewport className="!justify-start flex-col items-center">
-          <Container
-            className={cn(
-              "relative w-full max-w-full px-4 lg:max-w-[calc(var(--container-3xl)_+_286px)] xl:max-w-[calc(var(--container-4xl)_+_286px)]",
-              "prose dark:prose-invert max-w-none",
-            )}
-          >
+          <Container variant="wide" className="prose dark:prose-invert">
             <h2>
               {t("change history")}: {doc.title}
             </h2>

@@ -1,13 +1,14 @@
 import { Info } from "lucide-react";
 import { Breadcrumb, BreadcrumbItem } from "@/components/core/Breadcrumb";
 import { Advertisement } from "@/components/core/button/Advertisement";
-import { Viewport } from "@/components/core/Container";
+import { Container, Viewport } from "@/components/core/Container";
 import { DocumentList } from "@/components/core/DocumentList";
 import { pool } from "@/lib/db";
 import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/next";
-import { Doctype, Document, doctypeEnum, getTablesByDoctype } from "@/lib/schema/document";
+import { Doctype, Document, doctypeEnum } from "@/lib/schema/document";
 import { localePrefix } from "@/lib/url";
+import { cn } from "@/lib/utils";
 
 export default async function SearchPage(ctx: PageProps<"/[lng]/search">) {
   const lngParam = (await ctx.params).lng as Language;
@@ -60,7 +61,16 @@ export default async function SearchPage(ctx: PageProps<"/[lng]/search">) {
         <Breadcrumb lng={lngParam} breadcrumbs={breadcrumbs} />
 
         <Viewport>
-          <DocumentList lng={lngParam} rows={rows} showDoctype />
+          <Container
+            as="div"
+            className={cn(
+              "relative w-full max-w-full lg:max-w-3xl xl:w-[calc(100%_-_286px)] xl:max-w-4xl",
+              "h-fit space-y-14",
+              "pr-2 pl-4 max-lg:pr-4",
+            )}
+          >
+            <DocumentList lng={lngParam} rows={rows} showDoctype />
+          </Container>
 
           <div className="sticky top-0 flex h-[calc(100dvh_-_var(--spacing)_*_12)] w-[286px] shrink-0 flex-col pt-8 pr-4 pl-2 [mask-image:linear-gradient(to_bottom,transparent,white_16px,white_calc(100%-16px),transparent)] max-xl:hidden">
             <div className="mb-2 flex items-center gap-2">

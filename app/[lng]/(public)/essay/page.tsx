@@ -1,8 +1,7 @@
 import { Info } from "lucide-react";
-import Link from "next/link";
 import { Breadcrumb, BreadcrumbItem } from "@/components/core/Breadcrumb";
 import { Advertisement } from "@/components/core/button/Advertisement";
-import { Viewport } from "@/components/core/Container";
+import { Container, Viewport } from "@/components/core/Container";
 import { DocumentList } from "@/components/core/DocumentList";
 import { pool } from "@/lib/db";
 import { Language } from "@/lib/i18n/config";
@@ -39,7 +38,9 @@ export default async function SearchPage(ctx: PageProps<"/[lng]/essay">) {
       <>
         <Breadcrumb lng={lngParam} breadcrumbs={breadcrumbs} />
         <Viewport>
-          <DocumentList lng={lngParam} rows={rows} doctype={doctypeEnum.essay} />
+          <Container as="div" variant="aside" className="space-y-14">
+            <DocumentList lng={lngParam} rows={rows} doctype={doctypeEnum.essay} />
+          </Container>
 
           <div className="sticky top-0 flex h-[calc(100dvh_-_var(--spacing)_*_12)] w-[286px] shrink-0 flex-col pt-8 pr-4 pl-2 [mask-image:linear-gradient(to_bottom,transparent,white_16px,white_calc(100%-16px),transparent)] max-xl:hidden">
             <div className="mb-2 flex items-center gap-2">

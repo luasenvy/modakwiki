@@ -142,7 +142,8 @@
     cursor: pointer;
   }
 
-  input[readonly],textarea[readonly] {
+  input[readonly],
+  textarea[readonly] {
     @apply !bg-muted !text-muted-foreground;
   }
 

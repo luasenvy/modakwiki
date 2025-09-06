@@ -2,18 +2,18 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import debounce from "lodash.debounce";
-import { AlignLeft, CircleAlert, MessageSquareHeart, ScrollText } from "lucide-react";
+import { CircleAlert, MessageSquareHeart, ScrollText } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { Viewport } from "@/components/core/Container";
+import { Container, Viewport } from "@/components/core/Container";
 import { KeyboardShortcuts } from "@/components/core/MdxEditor/KeyboardShortcuts";
 import { LineEditor } from "@/components/core/MdxEditor/LineEditor";
 import { Remocon } from "@/components/core/MdxEditor/Remocon";
-import { TOCProvider, TOCScrollArea } from "@/components/fumadocs/toc";
-import TocClerk from "@/components/fumadocs/toc-clerk";
+import { NavToc } from "@/components/core/MdxViewer/NavToc";
+import { TOCProvider } from "@/components/fumadocs/toc";
 import {
   Form,
   FormControl,
@@ -30,6 +30,7 @@ import {
   BannerIcon,
   BannerTitle,
 } from "@/components/ui/shadcn-io/banner";
+
 import { Textarea } from "@/components/ui/textarea";
 import { Toggle } from "@/components/ui/toggle";
 import { statusMessage } from "@/lib/fetch/react";
@@ -79,6 +80,7 @@ export default function MdxEditor({
     defaultValues: {
       id: doc?.id,
       description: doc?.description,
+      tags: doc?.tags || [],
       type: defaultDoctype || doctypeEnum.document,
       title: doc?.title || defaultTitle || "",
       content: doc?.content || "",
@@ -86,6 +88,7 @@ export default function MdxEditor({
   });
 
   const title = form.watch("title");
+  // const tags = form.watch("tags");
   const description = form.watch("description");
   const doctype = form.watch("type");
   const content = form.watch("content");
@@ -175,82 +178,7 @@ export default function MdxEditor({
         <form onSubmit={handleSubmit}>
           <TOCProvider toc={toc} single={false}>
             <Viewport>
-              <article
-                className={cn(
-                  "relative w-full max-w-full lg:max-w-3xl xl:w-[calc(100%_-_286px)] xl:max-w-4xl",
-                  "h-fit",
-                  "prose dark:prose-invert",
-                  "pt-8 pr-2 pb-24 pl-4 max-lg:pr-4",
-                  "break-keep",
-                  // Sub
-                  "[&_sub]:text-muted-foreground",
-                  // Link
-                  "prose-a:text-blue-600 prose-a:no-underline prose-a:hover:underline dark:prose-a:text-blue-500",
-                  // Code
-                  "prose-pre:max-h-[calc(var(--spacing)_*_100)]",
-                  // Image
-                  "prose-img:w-full",
-                  "prose-img:[&[alt*=width-4]]:max-w-4",
-                  "prose-img:[&[alt*=width-8]]:max-w-8",
-                  "prose-img:[&[alt*=width-12]]:max-w-12",
-                  "prose-img:[&[alt*=width-16]]:max-w-16",
-                  "prose-img:[&[alt*=width-20]]:max-w-20",
-                  "prose-img:[&[alt*=width-24]]:max-w-24",
-                  "prose-img:[&[alt*=width-28]]:max-w-28",
-                  "prose-img:[&[alt*=width-32]]:max-w-32",
-                  "prose-img:[&[alt*=width-36]]:max-w-36",
-                  "prose-img:[&[alt*=width-40]]:!max-w-40", // Avoid Duplicate with w-4
-                  "prose-img:[&[alt*=width-3xs]]:max-w-3xs",
-                  "prose-img:[&[alt*=width-2xs]]:max-w-2xs",
-                  "prose-img:[&[alt*=width-xs]]:max-w-xs",
-                  "prose-img:[&[alt*=width-sm]]:max-w-sm",
-                  "prose-img:[&[alt*=width-md]]:max-w-md",
-                  "prose-img:[&[alt*=width-lg]]:max-w-lg",
-                  "prose-img:[&[alt*=width-xl]]:max-w-xl",
-                  "prose-img:[&[alt*=width-2xl]]:max-w-2xl",
-                  "prose-img:[&[alt*=width-3xl]]:max-w-3xl",
-                  "prose-img:[&[alt*=width-4xl]]:max-w-4xl",
-                  "prose-img:[&[alt*=width-5xl]]:max-w-5xl",
-                  "prose-img:[&[alt*=width-6xl]]:max-w-6xl",
-                  "prose-img:[&[alt*=width-7xl]]:max-w-7xl",
-                  "prose-img:[&[alt*=height-4]]:max-h-4",
-                  "prose-img:[&[alt*=height-8]]:max-h-8",
-                  "prose-img:[&[alt*=height-12]]:max-h-12",
-                  "prose-img:[&[alt*=height-16]]:max-h-16",
-                  "prose-img:[&[alt*=height-20]]:max-h-20",
-                  "prose-img:[&[alt*=height-24]]:max-h-24",
-                  "prose-img:[&[alt*=height-28]]:max-h-28",
-                  "prose-img:[&[alt*=height-32]]:max-h-32",
-                  "prose-img:[&[alt*=height-36]]:max-h-36",
-                  "prose-img:[&[alt*=height-40]]:!max-h-40", // Avoid Duplicate with h-4
-                  "prose-img:[&[alt*=height-3xs]]:max-h-3xs",
-                  "prose-img:[&[alt*=height-2xs]]:max-h-2xs",
-                  "prose-img:[&[alt*=height-xs]]:max-h-xs",
-                  "prose-img:[&[alt*=height-sm]]:max-h-sm",
-                  "prose-img:[&[alt*=height-md]]:max-h-md",
-                  "prose-img:[&[alt*=height-lg]]:max-h-lg",
-                  "prose-img:[&[alt*=height-xl]]:max-h-xl",
-                  "prose-img:[&[alt*=height-2xl]]:max-h-2xl",
-                  "prose-img:[&[alt*=height-3xl]]:max-h-3xl",
-                  "prose-img:[&[alt*=height-4xl]]:max-h-4xl",
-                  "prose-img:[&[alt*=height-5xl]]:max-h-5xl",
-                  "prose-img:[&[alt*=height-6xl]]:max-h-6xl",
-                  "prose-img:[&[alt*=height-7xl]]:max-h-7xl",
-                  // Task
-                  "prose-ol:[&.contains-task-list]:[&_[type=checkbox]]:mr-2",
-                  "prose-ul:[&.contains-task-list]:[&_[type=checkbox]]:mr-2",
-                  // Table
-                  "prose-table:m-0",
-                  "prose-td:[&>img]:m-auto",
-                  // footnote
-                  "[&_section.footnotes]:mt-24 [&_section.footnotes]:border-t",
-                  "[&_section.footnotes>ol_li_p]:!my-1 [&_section.footnotes>ol_li]:text-sm",
-                  "[&_section.footnotes>ol_li[data-selected]]:repeat-3 [&_section.footnotes>ol_li[data-selected]]:animate-caret-blink [&_section.footnotes>ol_li[data-selected]]:text-rose-500",
-                  "[&_[data-footnote-ref=true][data-selected]]:repeat-3 [&_[data-footnote-ref=true][data-selected]]:animate-caret-blink [&_[data-footnote-ref=true][data-selected]]:text-rose-500",
-                  "prose-a:[&[data-footnote-ref]]:before:content-['[']",
-                  "prose-a:[&[data-footnote-ref]]:after:content-[']']",
-                )}
-              >
+              <Container as="article" variant="document">
                 <div className="mb-2 flex items-center gap-1">
                   {(!Boolean(doc?.id) || doctypeEnum.document === doctype) && (
                     <Toggle
@@ -288,6 +216,28 @@ export default function MdxEditor({
                       {t("essay")}
                     </Toggle>
                   )}
+
+                  {/* <Combobox
+                    data={availableTags}
+                    onOpenChange={(open) => console.log("Combobox is open?", open)}
+                    onValueChange={(newValue) => console.log("Combobox value:", newValue)}
+                    type="framework"
+                  >
+                    <ComboboxTrigger />
+                    <ComboboxContent>
+                      <ComboboxInput />
+                      <ComboboxEmpty />
+                      <ComboboxList>
+                        <ComboboxGroup>
+                          {availableTags.map((tag) => (
+                            <ComboboxItem key={tag.value} value={tag.value}>
+                              {tag.label}
+                            </ComboboxItem>
+                          ))}
+                        </ComboboxGroup>
+                      </ComboboxList>
+                    </ComboboxContent>
+                  </Combobox> */}
                 </div>
 
                 <FormField
@@ -366,23 +316,9 @@ export default function MdxEditor({
                   onChange={handleChangeHunk}
                   onKeyDown={handleKeyDownHunk}
                 />
-              </article>
+              </Container>
 
-              <nav
-                id="nav-toc"
-                className="sticky top-0 flex h-[calc(100dvh_-_var(--spacing)_*_12)] w-[286px] shrink-0 flex-col space-y-2 pt-56 pr-4 pl-2 [mask-image:linear-gradient(to_bottom,transparent,white_16px,white_calc(100%-16px),transparent)] max-xl:hidden"
-              >
-                <div className="mb-2 flex items-center gap-2">
-                  <AlignLeft className="size-4" />
-                  <p className="m-0 text-muted-foreground text-sm">
-                    {title || t("Table of contents")}
-                  </p>
-                </div>
-
-                <TOCScrollArea className="mb-2 overflow-auto p-0">
-                  <TocClerk lng={lngParam} />
-                </TOCScrollArea>
-
+              <NavToc lng={lngParam} title={title}>
                 <Remocon
                   t={t}
                   content={content}
@@ -399,7 +335,7 @@ export default function MdxEditor({
                     setTimeout(() => lineRef.current!.focus());
                   }}
                 />
-              </nav>
+              </NavToc>
             </Viewport>
           </TOCProvider>
 

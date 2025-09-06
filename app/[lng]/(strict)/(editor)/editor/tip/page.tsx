@@ -146,7 +146,7 @@ export default async function HowToPage(ctx: PageProps<"/[lng]/editor/tip">) {
   return (
     <>
       <Breadcrumb lng={lngParam} breadcrumbs={breadcrumbs} />
-      <Document lng={lngParam} title="작성요령" content={content.trim()} />
+      <Document lng={lngParam} title={t("writing guidelines")} content={content.trim()} />
     </>
   );
 }

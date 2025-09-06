@@ -98,17 +98,17 @@ export default async function WikiDocPage(ctx: PageProps<"/[lng]/[doctype]">) {
       );
     }
 
-    const session = await auth.api.getSession({ headers: await headers() });
     const breadcrumbs: Array<BreadcrumbItem> = [
       { title: doctypeEnum.document === doctype ? t("wiki document") : t("wiki essay") },
       { title: doc.title, href: `${lng}/${doctype}/${doc.id}` },
     ];
 
+    const session = await auth.api.getSession({ headers: await headers() });
     return (
       <>
         <Breadcrumb lng={lngParam} breadcrumbs={breadcrumbs} />
         <FootnoteHighlighter />
-        <Document lng={lngParam} doc={doc} doctype={doctype} session={session} />
+        <Document lng={lngParam} doc={doc} doctype={doctype} session={session?.user} />
       </>
     );
   } finally {

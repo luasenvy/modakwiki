@@ -8,6 +8,7 @@ import { localePrefix } from "@/lib/url";
 
 export default async function HowToPage(ctx: PageProps<"/[lng]/privacy">) {
   if (!isDev) return notFound();
+
   const lngParam = (await ctx.params).lng as Language;
   const lng = localePrefix(lngParam);
   const { t } = await useTranslation(lngParam);

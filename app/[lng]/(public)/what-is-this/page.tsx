@@ -1,6 +1,8 @@
 import { Breadcrumb, BreadcrumbItem } from "@/components/core/Breadcrumb";
 import { Document } from "@/components/core/Document";
+import { site } from "@/config";
 import type { Language } from "@/lib/i18n/config";
+import { useTranslation } from "@/lib/i18n/next";
 import { localePrefix } from "@/lib/url";
 
 export default async function HowToPage(ctx: PageProps<"/[lng]/what-is-this">) {
@@ -30,12 +32,13 @@ export default async function HowToPage(ctx: PageProps<"/[lng]/what-is-this">) {
 
 `.trim();
 
-  const breadcrumbs: Array<BreadcrumbItem> = [{ title: "모닥위키", href: `${lng}/what-is-this` }];
+  const { t } = await useTranslation(lngParam);
+  const breadcrumbs: Array<BreadcrumbItem> = [{ title: t(site.name), href: `${lng}/what-is-this` }];
 
   return (
     <>
       <Breadcrumb lng={lngParam} breadcrumbs={breadcrumbs} />
-      <Document lng={lngParam} content={content.trim()} />
+      <Document lng={lngParam} content={content.trim()} title={t(site.name)} />
     </>
   );
 }

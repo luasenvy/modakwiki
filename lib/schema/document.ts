@@ -21,6 +21,7 @@ export const document = z.object({
   description: z.string().min(1).max(120).optional(),
   content: z.string().min(1),
   preview: z.string().max(120).optional(),
+  tags: z.array(z.string()).optional(),
   view: z.number(),
   email: z.string().min(1),
   license: z.enum(licenseEnum).optional(),
@@ -35,6 +36,7 @@ export const documentForm = document
   .pick({
     title: true,
     description: true,
+    tags: true,
     content: true,
     license: true,
   })

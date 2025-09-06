@@ -94,5 +94,11 @@
   "change history": "change history",
   "wiki syntax": "wiki syntax",
   "writing guidelines": "writing guidelines",
-  "Page does not exist": "Page does not exist"
+  "Page does not exist": "Page does not exist",
+  "Type a category or search...": "Type a category or search...",
+  "Type a tag or search...": "Type a tag or search...",
+  "Category is not exists": "Category is not exists",
+  "Tag is not exists": "Tag is not exists",
+  "Create New": "Create New",
+  "No results found.": "No results found."
 }

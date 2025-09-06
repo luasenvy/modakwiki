@@ -43,8 +43,7 @@ export default async function WritePage(ctx: PageProps<"/[lng]/editor/write">) {
   // 기존 문서 편집
   const client = await pool.connect();
   try {
-    const session = await auth.api.getSession({ headers: await headers() });
-    if (!session) return redirect(`${lng}/signin`);
+    const session = (await auth.api.getSession({ headers: await headers() }))!;
 
     const { table } = getTablesByDoctype(doctype);
     if (!table) return notFound();

@@ -12,28 +12,31 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { useNavItems } from "@/hooks/use-nav";
+import { Session } from "@/lib/auth/server";
 import { Language } from "@/lib/i18n/config";
 import { localePrefix } from "@/lib/url";
 
 interface NavMenuProps {
   lng: Language;
-  scope?: number;
+  session?: Session["user"];
 }
 
-export function SidebarNav({ lng: lngParam, scope: userScope = 0 }: NavMenuProps) {
+export function SidebarNav({ lng: lngParam, session }: NavMenuProps) {
   const lng = localePrefix(lngParam);
   const pathname = usePathname();
 
   const mainNavs = useNavItems((state) => state.mainNavs);
   const subNavs = useNavItems((state) => state.subNavs);
 
+  const userScope = session?.scope || 0;
+
   const scopedMainNavs = useMemo(
     () => mainNavs.filter(({ scope }) => (!scope ? true : scope <= userScope)),
-    [mainNavs],
+    [mainNavs, userScope],
   );
   const scopedSubNavs = useMemo(
     () => subNavs.filter(({ scope }) => (!scope ? true : scope <= userScope)),
-    [subNavs],
+    [subNavs, userScope],
   );
 
   return (

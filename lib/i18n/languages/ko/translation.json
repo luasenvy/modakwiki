@@ -47,7 +47,7 @@
   "Update failed because there were no changes.": "변경사항이 없어 갱신에 실패하였습니다.",
   "Document History": "문서 역사",
   "Title cannot be change after document created.": "제목은 문서 생성 후 변경할 수 없습니다.",
-  "Not Found": "Not Found",
+  "Not Found": "페이지를 찾을 수 없습니다.",
   "Update failed due to a conflict.": "Update failed due to a conflict.",
   "Clear Document": "문서 비우기",
   "This action cannot be undone. Removes all content from the document you are currently editing.": "이 작업은 실행 후 되돌릴 수 없습니다. 현재 편집중인 문서의 모든 내용을 제거합니다.",
@@ -80,5 +80,11 @@
   "change history": "변경내역",
   "wiki syntax": "위키문법",
   "writing guidelines": "작성요령",
-  "Page does not exist": "페이지가 존재하지 않습니다."
+  "Page does not exist": "페이지가 존재하지 않습니다.",
+  "Type a category or search...": "카테고리 또는 검색어를 입력하세요...",
+  "Type a tag or search...": "태그 또는 검색어를 입력하세요...",
+  "Category is not exists": "카테고리가 존재하지 않습니다.",
+  "Tag is not exists": "태그가 존재하지 않습니다.",
+  "Create New": "새로 만들기",
+  "No results found.": "검색 결과가 없습니다."
 }

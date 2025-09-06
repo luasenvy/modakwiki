@@ -1,5 +1,8 @@
 "use client";
 
+import { TFunction } from "i18next";
+import { BrushCleaning, Check, Copy, History, Save, Shredder } from "lucide-react";
+import { useState } from "react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -12,11 +15,6 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-
-import { BrushCleaning, Check, Copy, History, Save, Shredder } from "lucide-react";
-
-import { TFunction } from "i18next";
-import { useState } from "react";
 import { cn } from "@/lib/utils";
 
 interface RemoconProps extends React.ComponentProps<"div"> {

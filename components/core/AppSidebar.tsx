@@ -10,7 +10,7 @@ import { Language } from "@/lib/i18n/config";
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
   lng: Language;
-  session: Session | null;
+  session?: Session["user"];
 }
 
 export async function AppSidebar({ lng: lngParam, session, ...props }: AppSidebarProps) {
@@ -23,7 +23,7 @@ export async function AppSidebar({ lng: lngParam, session, ...props }: AppSideba
         <SearchForm lng={lngParam} />
       </SidebarHeader>
       <SidebarContent>
-        <SidebarNav lng={lngParam} scope={session?.user.scope} />
+        <SidebarNav lng={lngParam} session={session} />
       </SidebarContent>
 
       <SidebarFooter className="space-y-2">

@@ -64,9 +64,9 @@ export default async function DiffPage(ctx: PageProps<"/[lng]/[doctype]/history"
       <Viewport className="!justify-start flex-col items-center">
         <Container
           as="article"
+          variant="wide"
           className={cn(
-            "relative w-full max-w-full px-4 lg:max-w-[calc(var(--container-3xl)_+_286px)] xl:max-w-[calc(var(--container-4xl)_+_286px)]",
-            "prose dark:prose-invert max-w-none",
+            "prose dark:prose-invert",
             "prose-pre:max-h-[calc(100dvh_-_var(--spacing)_*_80)]",
           )}
         >

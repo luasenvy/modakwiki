@@ -1,6 +1,6 @@
 "use client";
 
-import { FilePlus2, Image, Inbox, LucideIcon, ScrollText, SpellCheck } from "lucide-react";
+import { FilePlus2, Image, Inbox, LucideIcon, ScrollText, SpellCheck, Tags } from "lucide-react";
 import { create } from "zustand";
 import { ScopeEnum, scopeEnum } from "@/lib/schema/user";
 
@@ -68,6 +68,18 @@ export const mainNavs: Array<NavItem> = [
         title: "이미지",
         url: "/file/image",
         icon: Image,
+      },
+    ],
+  },
+  {
+    title: "사이트관리",
+    url: "#",
+    scope: scopeEnum.admin,
+    items: [
+      {
+        title: "태그관리",
+        url: "/site/tags",
+        icon: Tags,
       },
     ],
   },

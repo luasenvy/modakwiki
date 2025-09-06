@@ -1,7 +1,7 @@
 import { betterAuth } from "better-auth";
 import { betterAuth as authConfig } from "@/config";
 import { pool as database } from "@/lib/db";
-import { scopeEnum } from "@/lib/schema/user";
+import { scopeEnum, user } from "@/lib/schema/user";
 
 export const auth = betterAuth({
   database,
@@ -21,7 +21,13 @@ export const auth = betterAuth({
   },
   user: {
     additionalFields: {
-      scope: { type: "number" },
+      scope: {
+        type: "number",
+        validator: {
+          input: user.shape.scope,
+          output: user.shape.scope,
+        },
+      },
     },
   },
   session: {

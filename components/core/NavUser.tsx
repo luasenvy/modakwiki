@@ -28,8 +28,8 @@ import Logo from "@/public/brand/32x32.webp";
 interface NavUserProps {
   lng: Language;
   sitename: string;
-  session: Session | null;
   dev?: boolean;
+  session?: Session["user"];
 }
 
 export function NavUser({ lng: lngParam, sitename, session, dev }: NavUserProps) {
@@ -51,16 +51,14 @@ export function NavUser({ lng: lngParam, sitename, session, dev }: NavUserProps)
                 className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
               >
                 <Avatar className="h-8 w-8 rounded-full">
-                  {session.user.image && (
-                    <AvatarImage src={session.user.image} alt={session.user.name} />
-                  )}
+                  {session.image && <AvatarImage src={session.image} alt={session.name} />}
                   <AvatarFallback className="rounded-full">
-                    {session.user.name.substring(0, 2)}
+                    {session.name.substring(0, 2)}
                   </AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">{session.user.name}</span>
-                  <span className="truncate text-xs">{session.user.email}</span>
+                  <span className="truncate font-medium">{session.name}</span>
+                  <span className="truncate text-xs">{session.email}</span>
                 </div>
                 <ChevronsUpDown className="ml-auto size-4" />
               </SidebarMenuButton>
@@ -74,12 +72,12 @@ export function NavUser({ lng: lngParam, sitename, session, dev }: NavUserProps)
               {/* <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
-                  {session.user.image && <AvatarImage src={session.user.image} alt={session.user.name} />}
+                  {session.image && <AvatarImage src={session.image} alt={session.name} />}
                   <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">{session.user.name}</span>
-                  <span className="truncate text-xs">{session.user.email}</span>
+                  <span className="truncate font-medium">{session.name}</span>
+                  <span className="truncate text-xs">{session.email}</span>
                 </div>
               </div>
             </DropdownMenuLabel> */}

@@ -4,13 +4,13 @@ import { auth } from "@/lib/auth/server";
 import { Language } from "@/lib/i18n/config";
 import { scopeEnum } from "@/lib/schema/user";
 
-export default async function MemberLayout({ params, children }: LayoutProps<"/[lng]">) {
+export default async function AssociateLayout({ params, children }: LayoutProps<"/[lng]">) {
   const lngParam = (await params).lng as Language;
 
   const session = await auth.api.getSession({ headers: await headers() });
 
   return (
-    <ScopedLayout lng={lngParam as Language} session={session?.user} above={scopeEnum.member}>
+    <ScopedLayout lng={lngParam as Language} session={session?.user} above={scopeEnum.admin}>
       {children}
     </ScopedLayout>
   );
