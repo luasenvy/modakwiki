@@ -23,6 +23,8 @@ export function FootnoteHighlighter() {
 
     const handleHashChange = (e: HashChangeEvent) => {
       const { hash } = new URL(e.newURL);
+      if (!hash) return;
+
       footnoteHighlighting(hash);
       footnoteRefHighlighting(hash);
     };

@@ -117,8 +117,8 @@ export async function Document({
             // footnote
             "[&_section.footnotes]:mt-24 [&_section.footnotes]:border-t",
             "[&_section.footnotes>ol_li_p]:!my-1 [&_section.footnotes>ol_li]:text-sm",
-            "[&_section.footnotes>ol_li[data-selected]]:repeat-4 [&_section.footnotes>ol_li[data-selected]]:animate-caret-blink [&_section.footnotes>ol_li[data-selected]]:text-rose-500",
-            "[&_[data-footnote-ref=true][data-selected]]:repeat-4 [&_[data-footnote-ref=true][data-selected]]:animate-caret-blink [&_[data-footnote-ref=true][data-selected]]:text-rose-500",
+            "[&_section.footnotes>ol_li[data-selected]]:repeat-3 [&_section.footnotes>ol_li[data-selected]]:animate-caret-blink [&_section.footnotes>ol_li[data-selected]]:text-rose-500",
+            "[&_[data-footnote-ref=true][data-selected]]:repeat-3 [&_[data-footnote-ref=true][data-selected]]:animate-caret-blink [&_[data-footnote-ref=true][data-selected]]:text-rose-500",
             "prose-a:[&[data-footnote-ref]]:before:content-['[']",
             "prose-a:[&[data-footnote-ref]]:after:content-[']']",
           )}
