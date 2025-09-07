@@ -90,5 +90,10 @@
   "Select a category": "분류 선택",
   "Select tags": "태그 선택",
   "category": "분류",
-  "tag": "태그"
+  "tag": "태그",
+  "Please verify you are human before signin": "로그인 전 캡차를 완료하세요",
+  "Captcha token is missing": "토큰을 받지 못했습니다.",
+  "Captcha verification failed": "캡차 검증에 실패했습니다.",
+  "captcha_failed": "캡차 검증에 실패했습니다.",
+  "Sign in with Google": "구글로 로그인하기"
 }

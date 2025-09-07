@@ -2,7 +2,7 @@ import { GalleryVerticalEnd } from "lucide-react";
 import { headers as nextHeaders } from "next/headers";
 import { redirect } from "next/navigation";
 import { SigninForm } from "@/components/pages/signin/SigninForm";
-import { site } from "@/config";
+import { betterAuth as authConfig, site } from "@/config";
 import { auth } from "@/lib/auth/server";
 import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/next";
@@ -28,7 +28,11 @@ export default async function SigninPage(ctx: PageProps<"/[lng]/signin">) {
           {t(site.name)}
         </a>
 
-        <SigninForm lng={lngParam as Language} referer={referer} />
+        <SigninForm
+          lng={lngParam as Language}
+          referer={referer}
+          siteKey={authConfig.providers.hcaptcha.siteKey}
+        />
       </div>
     </div>
   );

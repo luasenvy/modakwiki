@@ -1,9 +1,11 @@
 "use client";
 
+import HCaptcha from "@hcaptcha/react-hcaptcha";
 import { SiGoogle } from "@icons-pack/react-simple-icons";
 import { createAuthClient } from "better-auth/client";
-import Link from "next/link";
 import { notFound } from "next/navigation";
+import { useTheme } from "next-themes";
+import { useCallback, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,47 +18,71 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { isDev } from "@/config";
+import { statusMessage } from "@/lib/fetch/react";
 import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/react";
 
 interface SigninFormProps {
   lng: Language;
+  siteKey: string;
   referer?: string;
 }
 
 const authClient = createAuthClient();
 
-export function SigninForm({ lng: lngParam, referer }: SigninFormProps) {
+export function SigninForm({ lng: lngParam, referer, siteKey }: SigninFormProps) {
   if (!isDev) return notFound();
 
+  const { theme } = useTheme();
   const { t } = useTranslation(lngParam);
 
-  const handleClickGoogleSignin = async () => {
+  const [token, setToken] = useState<string>();
+
+  const handleClickGoogleSignin = useCallback(async () => {
+    if (!token) return toast.error(t("Please verify you are human before signin"));
+
     const { error } = await authClient.signIn.social({
       provider: "google",
       callbackURL: referer,
+      fetchOptions: {
+        headers: new Headers({ "x-captcha-response": token }),
+      },
     });
 
-    if (error) return toast.error(error.message);
-  };
+    if (error) return toast.error(t(error.message!));
+  }, [token, referer]);
 
   return (
-    <div className="flex flex-col gap-6">
-      <Card>
+    <div className="flex flex-col items-center gap-6">
+      <Card className="w-full">
         <CardHeader className="text-center">
           <CardTitle className="text-xl">{t("Welcome back")}</CardTitle>
           <CardDescription>{t("Login with")}</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center justify-center gap-2">
-            <Button
-              variant="outline"
-              size="icon"
-              className="rounded-full"
-              onClick={handleClickGoogleSignin}
-            >
-              <SiGoogle />
-            </Button>
+          <div className="flex flex-col items-center gap-2">
+            {!token ? (
+              <>
+                <HCaptcha sitekey={siteKey} onVerify={setToken} theme={theme} />
+                <p className="font-semibold text-lg">
+                  {t("Please verify you are human before signin")}
+                </p>
+              </>
+            ) : (
+              <Button
+                variant="outline"
+                size="icon"
+                className="rounded-full"
+                onClick={handleClickGoogleSignin}
+                disabled={!token}
+                aria-label={t("Sign in with Google")}
+                title={
+                  !token ? t("Please verify you are human before signin") : t("Sign in with Google")
+                }
+              >
+                <SiGoogle />
+              </Button>
+            )}
           </div>
         </CardContent>
         <CardFooter className="flex-col border-t">

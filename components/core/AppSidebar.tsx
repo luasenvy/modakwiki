@@ -1,12 +1,14 @@
+import Link from "next/link";
 import { Advertisement } from "@/components/core/button/Advertisement";
 import { NavUser } from "@/components/core/NavUser";
 import { SearchForm } from "@/components/core/SearchForm";
 import { SidebarNav } from "@/components/core/SidebarNav";
-
+import { Separator } from "@/components/ui/separator";
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader } from "@/components/ui/sidebar";
 import { isDev, site } from "@/config";
 import { Session } from "@/lib/auth/server";
 import { Language } from "@/lib/i18n/config";
+import { useTranslation } from "@/lib/i18n/next";
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
   lng: Language;
@@ -14,7 +16,7 @@ interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
 }
 
 export async function AppSidebar({ lng: lngParam, session, ...props }: AppSidebarProps) {
-  // const { t } = await useTranslation(lngParam);
+  const { t } = await useTranslation(lngParam);
 
   return (
     <Sidebar {...props}>
@@ -36,7 +38,7 @@ export async function AppSidebar({ lng: lngParam, session, ...props }: AppSideba
             &copy; 2025 {new URL(site.baseurl).hostname} All rights reserved.
           </p>
 
-          {/* <div className="flex items-center justify-center">
+          <div className="flex items-center justify-center">
             <Link href="/privacy" className="text-blue-500 text-xs hover:underline">
               {t("Privacy Policy")}
             </Link>
@@ -46,7 +48,7 @@ export async function AppSidebar({ lng: lngParam, session, ...props }: AppSideba
             <Link href="/terms" className="text-blue-500 text-xs hover:underline">
               {t("Terms of Service")}
             </Link>
-          </div> */}
+          </div>
         </div>
       </SidebarFooter>
     </Sidebar>

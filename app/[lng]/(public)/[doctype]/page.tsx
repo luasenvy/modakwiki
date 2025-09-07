@@ -88,8 +88,7 @@ export default async function WikiDocPage(ctx: PageProps<"/[lng]/[doctype]">) {
 
 "${guessTitle}" 제목으로 등록된 ${t(doctype)}가 없습니다.
 
-가장 먼저 ${t(doctype)}를 [등록](${lng}/editor/write?title=${encodeURIComponent(guessTitle)}&type=${doctype})해보세요!
-      `;
+가장 먼저 ${t(doctype)}를 [등록](${lng}/editor/write?title=${encodeURIComponent(guessTitle)}&type=${doctype})해보세요!`;
       return (
         <>
           <Breadcrumb lng={lngParam} breadcrumbs={breadcrumbs} />

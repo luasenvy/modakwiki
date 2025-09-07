@@ -33,6 +33,10 @@ export const betterAuth = {
         secretKey: process.env.BETTER_AUTH_TURNSTILE_SECRET_KEY!,
       },
     },
+    hcaptcha: {
+      siteKey: process.env.BETTER_AUTH_HCAPTCHA_SITE_KEY!,
+      secretKey: process.env.BETTER_AUTH_HCAPTCHA_SECRET!,
+    },
   },
 };
 

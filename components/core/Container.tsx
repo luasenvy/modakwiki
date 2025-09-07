@@ -9,7 +9,7 @@ const defaultContainerComponent = "div" as const;
 const variants = {
   wide: "relative w-full max-w-full px-4 lg:max-w-[calc(var(--container-3xl)_+_286px)] xl:max-w-[calc(var(--container-4xl)_+_286px)]",
   aside:
-    "relative w-full max-w-full lg:max-w-3xl xl:w-[calc(100%_-_286px)] xl:max-w-4xl h-fit pr-2 pl-4 max-lg:pr-4",
+    "relative w-full max-w-full lg:max-w-3xl xl:w-[calc(100%_-_286px)] xl:max-w-4xl h-fit pr-2 pl-4 max-lg:pr-4 space-y-14",
   document: cn(
     "relative",
     "w-full h-fit max-w-full lg:max-w-3xl xl:w-[calc(100%_-_286px)] xl:max-w-4xl",
