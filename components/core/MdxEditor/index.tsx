@@ -183,8 +183,10 @@ export default function MdxEditor({
   }, [category]);
 
   useEffect(() => {
-    if (doctags?.length && tags.some((t) => doctags.includes(t.value)))
-      form.setValue("tags", doctags);
+    if (doc?.tags?.length && tags.some((t) => doc!.tags!.includes(t.value)))
+      return form.setValue("tags", doc!.tags!);
+
+    form.setValue("tags", []);
   }, [tags]);
 
   useEffect(() => {
@@ -211,7 +213,7 @@ export default function MdxEditor({
   }, [doctype]);
 
   useEffect(() => {
-    form.setValue("category", categories[0] || "");
+    form.setValue("category", doc?.category || categories[0] || "");
   }, [categories]);
 
   const toc = useMemo(() => getToc(content), [content]);
