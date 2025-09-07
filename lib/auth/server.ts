@@ -67,7 +67,6 @@ export async function verifyHCaptcha(token: string) {
     });
 
     const data = await res.json();
-    console.info(data);
     if (!data?.success)
       return { success: false, message: data["error-codes"] ?? data, status: 401 };
 
