@@ -4,7 +4,6 @@ import { useEffect } from "react";
 
 interface KeyboardShortcutsProps {
   onSave: () => void;
-  canSave?: boolean;
 }
 
 export function KeyboardShortcuts({ onSave: handleSave }: KeyboardShortcutsProps) {

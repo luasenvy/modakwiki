@@ -1,5 +1,7 @@
 import z from "zod";
 import { licenseEnum } from "@/lib/license";
+import { category } from "@/lib/schema/category";
+import { tag } from "@/lib/schema/tag";
 
 export const doctypeEnum = {
   document: "w",
@@ -21,7 +23,8 @@ export const document = z.object({
   description: z.string().min(1).max(120).optional(),
   content: z.string().min(1),
   preview: z.string().max(120).optional(),
-  tags: z.array(z.string()).optional(),
+  category: category.shape.id,
+  tags: z.array(tag.shape.id).optional(),
   view: z.number(),
   email: z.string().min(1),
   license: z.enum(licenseEnum).optional(),
@@ -36,9 +39,10 @@ export const documentForm = document
   .pick({
     title: true,
     description: true,
-    tags: true,
     content: true,
     license: true,
+    category: true,
+    tags: true,
   })
   .extend({
     id: z.string().optional(),

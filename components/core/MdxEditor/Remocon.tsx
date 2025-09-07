@@ -165,7 +165,7 @@ export function Remocon({
               <AlertDialogHeader>
                 <AlertDialogTitle>{t("Are you absolutely sure?")}</AlertDialogTitle>
                 <AlertDialogDescription>
-                  {t("This action cannot be undone. This will delete document permanently.")}
+                  {t("This action cannot be undone. This will delete data permanently.")}
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>

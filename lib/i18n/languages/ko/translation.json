@@ -38,7 +38,7 @@
   "Edit Document": "문서 편집",
   "Erase Changes": "변경 내역 지우기",
   "Delete Document": "문서 삭제",
-  "This action cannot be undone. This will delete document permanently.": "이 작업은 실행 후 되돌릴 수 없습니다. 이 문서를 영구적으로 삭제합니다.",
+  "This action cannot be undone. This will delete data permanently.": "이 작업은 실행 후 되돌릴 수 없습니다. 이 데이터를 영구적으로 삭제합니다.",
   "Request has been successful.": "요청이 성공적으로 처리되었습니다.",
   "Create has been successful.": "생성 되었습니다.",
   "Update has been successful.": "갱신 되었습니다.",

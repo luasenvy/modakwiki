@@ -8,6 +8,7 @@ import {
   Doctype,
   DocumentForm,
   Document as DocumentType,
+  doctypeEnum,
   getTablesByDoctype,
 } from "@/lib/schema/document";
 import { scopeEnum } from "@/lib/schema/user";
@@ -19,30 +20,50 @@ export async function POST(req: NextRequest) {
 
   const client = await pool.connect();
   try {
-    const { type: doctype, title, description, content }: DocumentForm = await req.json();
+    const {
+      type: doctype,
+      title,
+      description,
+      content,
+      category,
+      tags,
+    }: DocumentForm = await req.json();
 
     const { table, history } = getTablesByDoctype(doctype);
+    const isEssay = doctypeEnum.essay === doctype;
+    const sql = isEssay
+      ? `INSERT INTO ${table} (id, title, description, content, email, preview, category, tags)
+                VALUES ($1, $2, $3, $4, $5, $6, $7, '{${tags?.map((tag) => `"${tag}"`).join(",")}}')
+          RETURNING id`
+      : `INSERT INTO ${table} (id, title, description, content, email, preview)
+                VALUES ($1, $2, $3, $4, $5, $6)
+          RETURNING id`;
+
+    const params: Array<string | string[] | undefined | null> = [
+      kebabcase(title),
+      title,
+      description,
+      content,
+      session.user.email,
+      clearMarkdown(humanReadable(content).substring(0, 150)),
+    ];
+
+    if (isEssay) params.push(category);
+
     const {
       rows: [{ id }],
-    } = await client.query(
-      `INSERT INTO ${table} (id, title, description, content, email, preview)
-                     VALUES ($1, $2, $3, $4, $5, $6)
-               RETURNING id`,
-      [
-        kebabcase(title),
-        title,
-        description,
-        content,
-        session.user.email,
-        clearMarkdown(humanReadable(content).substring(0, 150)),
-      ],
-    );
+    } = await client.query(sql, params);
 
-    await client.query(
-      `INSERT INTO ${history} (id, description, content, email)
-                       VALUES ($1, $2, $3, $4)`,
-      [id, description, content, session.user.email],
-    );
+    const historySql = isEssay
+      ? `INSERT INTO ${history} (id, description, content, email, category, tags)
+                       VALUES ($1, $2, $3, $4, $5, '{${tags?.map((tag) => `"${tag}"`).join(",")}}')`
+      : `INSERT INTO ${history} (id, description, content, email)
+                       VALUES ($1, $2, $3, $4)`;
+    const historyParams = isEssay
+      ? [id, description, content, session.user.email, category]
+      : [id, description, content, session.user.email];
+
+    await client.query(historySql, historyParams);
 
     return Response.json({ id }, { status: 201 });
   } finally {

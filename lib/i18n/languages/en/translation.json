@@ -52,7 +52,7 @@
   "Edit Document": "Edit Document",
   "Erase Changes": "Erase Changes",
   "Delete Document": "Delete Document",
-  "This action cannot be undone. This will delete document permanently.": "This action cannot be undone. This will delete document permanently.",
+  "This action cannot be undone. This will delete data permanently.": "This action cannot be undone. This will delete data permanently.",
   "Request has been successful.": "Request has been successful.",
   "Create has been successful.": "Create has been successful.",
   "Update has been successful.": "Update has been successful.",

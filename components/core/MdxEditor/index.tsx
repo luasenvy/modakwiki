@@ -5,15 +5,17 @@ import debounce from "lodash.debounce";
 import { CircleAlert, MessageSquareHeart, ScrollText } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { Container, Viewport } from "@/components/core/Container";
+import { MultiSelect, MultiSelectOption } from "@/components/core/input/MultiSelect";
 import { KeyboardShortcuts } from "@/components/core/MdxEditor/KeyboardShortcuts";
 import { LineEditor } from "@/components/core/MdxEditor/LineEditor";
 import { Remocon } from "@/components/core/MdxEditor/Remocon";
 import { NavToc } from "@/components/core/MdxViewer/NavToc";
 import { TOCProvider } from "@/components/fumadocs/toc";
+
 import {
   Form,
   FormControl,
@@ -24,13 +26,19 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Banner,
   BannerAction,
   BannerClose,
   BannerIcon,
   BannerTitle,
 } from "@/components/ui/shadcn-io/banner";
-
 import { Textarea } from "@/components/ui/textarea";
 import { Toggle } from "@/components/ui/toggle";
 import { statusMessage } from "@/lib/fetch/react";
@@ -45,6 +53,7 @@ import {
   doctypeEnum,
   documentForm,
 } from "@/lib/schema/document";
+import { Tag } from "@/lib/schema/tag";
 import { localePrefix } from "@/lib/url";
 import { cn } from "@/lib/utils";
 
@@ -70,6 +79,8 @@ export default function MdxEditor({
 
   const [hunk, setHunk] = useState<string>("");
   const [lines, setLines] = useState<string[]>(getHunks(doc?.content || ""));
+  const [categories, setCategories] = useState<string[]>([]);
+  const [tags, setTags] = useState<MultiSelectOption[]>([]);
   const [selectedLine, setSelectedLine] = useState<number>(-1);
 
   const lineRef = useRef<HTMLTextAreaElement>(null);
@@ -80,6 +91,7 @@ export default function MdxEditor({
     defaultValues: {
       id: doc?.id,
       description: doc?.description,
+      category: doc?.category || "",
       tags: doc?.tags || [],
       type: defaultDoctype || doctypeEnum.document,
       title: doc?.title || defaultTitle || "",
@@ -88,7 +100,8 @@ export default function MdxEditor({
   });
 
   const title = form.watch("title");
-  // const tags = form.watch("tags");
+  const category = form.watch("category");
+  const doctags = form.watch("tags");
   const description = form.watch("description");
   const doctype = form.watch("type");
   const content = form.watch("content");
@@ -158,9 +171,48 @@ export default function MdxEditor({
     form.setValue("content", clearMarkdown(trailingFootnotes(lines.join("\n\n"))));
   }, [lines]);
 
+  const getTags = useCallback(async () => {
+    if (!category) return setTags([]);
+
+    const res = await fetch(`/api/tag?${new URLSearchParams({ category })}`);
+
+    if (!res.ok) return toast.error(statusMessage({ t, status: res.status }));
+
+    const rows: Tag[] = await res.json();
+    setTags(rows.map(({ id }) => ({ label: id, value: id })));
+  }, [category]);
+
+  useEffect(() => {
+    if (doctags?.length && tags.some((t) => doctags.includes(t.value)))
+      form.setValue("tags", doctags);
+  }, [tags]);
+
+  useEffect(() => {
+    getTags();
+  }, [getTags]);
+
   useEffect(() => {
     titleRef.current?.focus();
   }, []);
+
+  useEffect(() => {
+    setCategories([]);
+    form.setValue("tags", []);
+
+    if (doctype === doctypeEnum.essay) {
+      (async () => {
+        const res = await fetch("/api/category");
+
+        if (!res.ok) return toast.error(statusMessage({ t, status: res.status }));
+
+        setCategories(await res.json());
+      })();
+    }
+  }, [doctype]);
+
+  useEffect(() => {
+    form.setValue("category", categories[0] || "");
+  }, [categories]);
 
   const toc = useMemo(() => getToc(content), [content]);
 
@@ -239,7 +291,6 @@ export default function MdxEditor({
                     </ComboboxContent>
                   </Combobox> */}
                 </div>
-
                 <FormField
                   control={form.control}
                   name="title"
@@ -265,6 +316,59 @@ export default function MdxEditor({
                   )}
                 />
 
+                <div
+                  className={cn("flex items-center gap-1", {
+                    hidden: doctype !== doctypeEnum.essay,
+                  })}
+                >
+                  <FormField
+                    control={form.control}
+                    name="category"
+                    render={({ field: { value, onChange, ...field } }) => (
+                      <FormItem className="mb-6 shrink-0">
+                        <FormControl>
+                          <Select value={value} onValueChange={onChange} {...field}>
+                            <SelectTrigger>
+                              <SelectValue placeholder={t("Select a category")} />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {categories.map((id) => (
+                                <SelectItem key={id} value={id}>
+                                  {id}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {category && (
+                    <FormField
+                      control={form.control}
+                      name="tags"
+                      render={({ field: { value, onChange, ...field } }) => (
+                        <FormItem className="mb-6 grow">
+                          <FormControl>
+                            <MultiSelect
+                              responsive
+                              popoverClassName="!w-fit"
+                              onValueChange={onChange}
+                              defaultValue={value}
+                              options={tags}
+                              placeholder={t("Select tags")}
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
+                </div>
+
                 <FormField
                   control={form.control}
                   name="description"
@@ -283,7 +387,6 @@ export default function MdxEditor({
                     </FormItem>
                   )}
                 />
-
                 {title && (
                   <h1 className={cn("my-8", { "!mb-1": Boolean(description) })}>{title}</h1>
                 )}
@@ -292,7 +395,6 @@ export default function MdxEditor({
                     {description}
                   </h2>
                 )}
-
                 <LineEditor
                   lng={lngParam}
                   lines={lines}
@@ -300,13 +402,11 @@ export default function MdxEditor({
                   selectedLine={selectedLine}
                   setSelectedLine={setSelectedLine}
                 />
-
                 {hunk && (
                   <div className="bg-accent px-1">
                     <MdxLoader source={hunk} />
                   </div>
                 )}
-
                 <Textarea
                   ref={lineRef}
                   name="hunk"

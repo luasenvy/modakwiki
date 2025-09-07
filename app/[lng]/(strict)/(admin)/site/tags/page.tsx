@@ -4,7 +4,7 @@ import { CategoryList } from "@/components/core/list/CategoryList";
 
 import { pool } from "@/lib/db";
 import { Language } from "@/lib/i18n/config";
-import { Tag } from "@/lib/schema/tag";
+import { Category } from "@/lib/schema/category";
 import { localePrefix } from "@/lib/url";
 
 export default async function MyDocsPage(ctx: PageProps<"/[lng]/me/documents">) {
@@ -18,9 +18,9 @@ export default async function MyDocsPage(ctx: PageProps<"/[lng]/me/documents">) 
 
   const client = await pool.connect();
   try {
-    const { rows } = await client.query<Tag>(
-      `SELECT category, tags, description, created
-         FROM tag
+    const { rows } = await client.query<Category>(
+      `SELECT id, description, created
+         FROM category
      ORDER BY category ASC`,
     );
 
