@@ -9,6 +9,8 @@ export const history = document
     description: true,
     email: true,
     type: true,
+    category: true,
+    tags: true,
     created: true,
   })
   .extend({

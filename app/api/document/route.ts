@@ -11,6 +11,7 @@ import {
   doctypeEnum,
   getTablesByDoctype,
 } from "@/lib/schema/document";
+import { Tag } from "@/lib/schema/tag";
 import { scopeEnum } from "@/lib/schema/user";
 
 export async function POST(req: NextRequest) {
@@ -78,7 +79,8 @@ export async function PATCH(req: NextRequest) {
 
   const client = await pool.connect();
   try {
-    const { id, type, content, description }: DocumentForm & { type: Doctype } = await req.json();
+    const { id, type, content, description, category, tags }: DocumentForm & { type: Doctype } =
+      await req.json();
 
     const { table, history } = getTablesByDoctype(type);
     if (!table) return new Response("Bad Request", { status: 400 });
@@ -99,27 +101,38 @@ export async function PATCH(req: NextRequest) {
       { added: 0, removed: 0 },
     );
 
-    if (
-      !added &&
-      !removed &&
-      ((!Boolean(description) && !Boolean(prev.description)) || description === prev.description)
-    )
-      return new Response(null, { status: 409 });
+    const isDocumentChange = added > 0 || removed > 0;
+    const isMetadataChange =
+      description !== prev.description ||
+      category !== prev.category ||
+      JSON.stringify(tags) !== JSON.stringify(prev.tags);
+
+    // Nothing to changed
+    if (!isDocumentChange && !isMetadataChange) return new Response(null, { status: 409 });
 
     await client.query(
       `UPDATE ${table}
           SET content = $1
             , preview = $2
             , description = $3
+            , category = $4
+            , tags = $5
             , updated = extract(epoch FROM current_timestamp) * 1000
-        WHERE id = $4`,
-      [content, clearMarkdown(humanReadable(content).substring(0, 150)), description, id],
+        WHERE id = $6`,
+      [
+        content,
+        clearMarkdown(humanReadable(content).substring(0, 150)),
+        description,
+        category,
+        tags,
+        id,
+      ],
     );
 
     await client.query(
-      `INSERT INTO ${history} (id, description, content, email, added, removed)
-                    VALUES ($1, $2, $3, $4, $5, $6)`,
-      [id, description, content, session.user.email, added, removed],
+      `INSERT INTO ${history} (id, description, content, email, added, removed, category, tags)
+                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+      [id, description, content, session.user.email, added, removed, category, tags],
     );
 
     return Response.json({ id }, { status: 200 });

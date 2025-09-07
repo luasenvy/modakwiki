@@ -1,3 +1,4 @@
+import { ArrowRight, MoveRight } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Breadcrumb, BreadcrumbItem } from "@/components/core/Breadcrumb";
@@ -45,6 +46,8 @@ export default async function HistoryPage(ctx: PageProps<"/[lng]/[doctype]/histo
       `SELECT h.added
             , h.email
             , h.description
+            , h.category
+            , h.tags
             , u.name
             , h.removed
             , h.created
@@ -80,63 +83,110 @@ export default async function HistoryPage(ctx: PageProps<"/[lng]/[doctype]/histo
             </h2>
 
             <div>
-              {rows.map(({ description, added, removed, name, email, created }, i) => {
-                const isChanged = added + removed > 0;
-                const isDescriptionChange =
-                  rows.length - 1 !== i && description !== rows[i + 1].description;
+              {rows.map(
+                ({ description, added, removed, name, email, category, tags, created }, i) => {
+                  const isChanged = added + removed > 0;
+                  const prev = rows[i + 1];
 
-                return (
-                  <div
-                    key={`history-${i}`}
-                    className="flex py-0.5 hover:bg-accent/80 max-sm:flex-col sm:items-center"
-                  >
-                    <div>
-                      <p className="!my-0 font-semibold">
-                        <Link
-                          href={
-                            isChanged
-                              ? `${lng}/${doctype}/diff?${new URLSearchParams({ id, created: String(created) })}`
-                              : `${lng}/${doctype}?${new URLSearchParams({ id, created: String(created) })}`
-                          }
-                          className="text-blue-500 no-underline hover:underline"
-                        >
-                          {isChanged ? (
-                            <>
-                              변경점 |{" "}
-                              <span className="text-green-600">+{numberFormat.format(added)}</span>{" "}
-                              |{" "}
-                              <span className="text-red-600">-{numberFormat.format(removed)}</span>
-                            </>
-                          ) : isDescriptionChange ? (
-                            t("Information Changed")
-                          ) : (
-                            t("Created")
-                          )}
-                        </Link>
-                      </p>
-                      {isDescriptionChange && (
-                        <small>
-                          {t("description")}: {description || t("")}
-                        </small>
-                      )}
-                    </div>
+                  let isDescriptionChange = false;
+                  let isCategoryChange = false;
+                  let isTagsChange = false;
 
-                    <div className="ml-auto flex gap-1 max-sm:flex-col sm:items-center">
-                      <p className="!my-0">
-                        <a
-                          href={`mailto:${email}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-500 no-underline hover:underline"
-                        >
-                          {name}
-                        </a>
-                      </p>
-                      <p className="!my-0">{dateFormater.format(created)}</p>
+                  if (prev) {
+                    isDescriptionChange = description !== prev.description;
+                    isCategoryChange = category !== prev.category;
+                    isTagsChange = tags?.join("") !== prev.tags?.join("");
+                  }
+
+                  const isMetadataChange = isDescriptionChange || isCategoryChange || isTagsChange;
+
+                  return (
+                    <div
+                      key={`history-${i}`}
+                      className="not-first:mt-8 flex py-2 hover:bg-accent/80 max-sm:flex-col sm:items-center"
+                    >
+                      <div>
+                        <p className="!my-0 font-semibold">
+                          <Link
+                            href={
+                              isChanged
+                                ? `${lng}/${doctype}/diff?${new URLSearchParams({ id, created: String(created) })}`
+                                : `${lng}/${doctype}?${new URLSearchParams({ id, created: String(created) })}`
+                            }
+                            className="text-blue-500 no-underline hover:underline"
+                          >
+                            {isChanged ? (
+                              <>
+                                변경점 |{" "}
+                                <span className="text-green-600">
+                                  +{numberFormat.format(added)}
+                                </span>{" "}
+                                |{" "}
+                                <span className="text-red-600">
+                                  -{numberFormat.format(removed)}
+                                </span>
+                              </>
+                            ) : isDescriptionChange ? (
+                              t("Information Changed")
+                            ) : (
+                              t("Created")
+                            )}
+                          </Link>
+                        </p>
+
+                        {isMetadataChange && (
+                          <div className="mt-1 space-y-2 lg:space-y-1">
+                            {isDescriptionChange && (
+                              <div className="flex justify-start space-x-2 max-lg:flex-col lg:items-center">
+                                <p className="!my-0 text-muted-foreground text-xs">
+                                  {t("description")}:
+                                </p>
+                                <p className="!my-0 text-rose-600 text-xs">"{prev.description}"</p>
+                                <MoveRight className="size-4 max-lg:hidden" />
+                                <p className="!my-0 text-green-600 text-xs">"{description}"</p>
+                              </div>
+                            )}
+                            {isCategoryChange && (
+                              <div className="flex justify-start space-x-2 max-lg:flex-col lg:items-center">
+                                <p className="!my-0 text-muted-foreground text-xs">
+                                  {t("category")}:
+                                </p>
+                                <p className="!my-0 text-rose-600 text-xs">"{prev.category}"</p>
+                                <MoveRight className="size-4 max-lg:hidden" />
+                                <p className="!my-0 text-green-600 text-xs">"{category}"</p>
+                              </div>
+                            )}
+                            {isTagsChange && (
+                              <div className="flex justify-start space-x-2 max-lg:flex-col lg:items-center">
+                                <p className="!my-0 text-muted-foreground text-xs">{t("tag")}:</p>
+                                <p className="!my-0 text-rose-600 text-xs">
+                                  "{prev.tags?.join(", ")}"
+                                </p>
+                                <MoveRight className="size-4 max-lg:hidden" />
+                                <p className="!my-0 text-green-600 text-xs">"{tags?.join(", ")}"</p>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="ml-auto flex gap-1 max-sm:flex-col sm:items-center">
+                        <p className="!my-0 text-xs md:text-sm">
+                          <a
+                            href={`mailto:${email}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-500 no-underline hover:underline"
+                          >
+                            {name}
+                          </a>
+                        </p>
+                        <p className="!my-0 text-xs md:text-sm">{dateFormater.format(created)}</p>
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                },
+              )}
             </div>
           </Container>
         </Viewport>

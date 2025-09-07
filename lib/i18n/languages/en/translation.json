@@ -100,5 +100,9 @@
   "Category is not exists": "Category is not exists",
   "Tag is not exists": "Tag is not exists",
   "Create New": "Create New",
-  "No results found.": "No results found."
+  "No results found.": "No results found.",
+  "Select a category": "Select a category",
+  "Select tags": "Select tags",
+  "category": "category",
+  "tag": "tag"
 }

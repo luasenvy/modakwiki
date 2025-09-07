@@ -51,7 +51,7 @@ export default async function WritePage(ctx: PageProps<"/[lng]/editor/write">) {
     const {
       rows: [doc],
     } = await client.query<Document>(
-      `SELECT id, title, content, email, category, tags
+      `SELECT id, title, description, content, email, category, tags
          FROM ${table}
         WHERE id = $1
           AND email = $2

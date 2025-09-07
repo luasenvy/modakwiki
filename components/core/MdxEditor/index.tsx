@@ -13,9 +13,9 @@ import { MultiSelect, MultiSelectOption } from "@/components/core/input/MultiSel
 import { KeyboardShortcuts } from "@/components/core/MdxEditor/KeyboardShortcuts";
 import { LineEditor } from "@/components/core/MdxEditor/LineEditor";
 import { Remocon } from "@/components/core/MdxEditor/Remocon";
+import { FootnoteHighlighter } from "@/components/core/MdxViewer/FootnoteHighlighter";
 import { NavToc } from "@/components/core/MdxViewer/NavToc";
 import { TOCProvider } from "@/components/fumadocs/toc";
-
 import {
   Form,
   FormControl,
@@ -226,6 +226,7 @@ export default function MdxEditor({
           canSave ? handleSubmit() : toast.warning(t("Content is empty or title is missing."))
         }
       />
+      <FootnoteHighlighter />
 
       <Form {...form}>
         <form onSubmit={handleSubmit}>
