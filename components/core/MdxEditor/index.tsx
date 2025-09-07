@@ -101,7 +101,6 @@ export default function MdxEditor({
 
   const title = form.watch("title");
   const category = form.watch("category");
-  const doctags = form.watch("tags");
   const description = form.watch("description");
   const doctype = form.watch("type");
   const content = form.watch("content");
