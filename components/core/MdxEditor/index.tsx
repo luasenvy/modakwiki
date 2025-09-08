@@ -120,6 +120,25 @@ export default function MdxEditor({
     }
   };
 
+  const handlePaste = async (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
+    const files = e.clipboardData.files;
+    if (files.length) {
+      e.preventDefault();
+
+      const formData = new FormData();
+
+      for (const file of files) formData.append("files", file);
+
+      const options = { method: "POST", body: formData };
+
+      const res = await fetch("/api/file", options);
+
+      if (!res.ok) return statusMessage({ t, status: res.status, options });
+
+      console.info(res.status);
+    }
+  };
+
   const handleChangeTitle = debounce((e: React.ChangeEvent<HTMLInputElement>) => {
     form.setValue("title", e.target.value);
   }, 110);
@@ -401,6 +420,7 @@ export default function MdxEditor({
                   onFocus={() => setSelectedLine(-1)}
                   onChange={handleChangeHunk}
                   onKeyDown={handleKeyDownHunk}
+                  onPaste={handlePaste}
                 />
               </Container>
 
