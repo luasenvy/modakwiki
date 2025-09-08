@@ -111,5 +111,7 @@
   "Captcha token is missing": "Captcha token is missing",
   "Captcha verification failed": "Captcha verification failed",
   "captcha_failed": "Captcha verification failed",
-  "Sign in with Google": "Sign in with Google"
+  "Sign in with Google": "Sign in with Google",
+  "Author": "Author",
+  "compare changes": "compare changes"
 }

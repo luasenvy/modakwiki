@@ -7,6 +7,7 @@ import { pool } from "@/lib/db";
 import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/next";
 import { Doctype, Document, doctypeEnum } from "@/lib/schema/document";
+import { User } from "@/lib/schema/user";
 import { localePrefix } from "@/lib/url";
 import { cn } from "@/lib/utils";
 
@@ -35,18 +36,22 @@ export default async function SearchPage(ctx: PageProps<"/[lng]/search">) {
       [`%${term}%`],
     );
 
-    const { rows } = await client.query<Document & { type: Doctype }>(
-      `SELECT id, title, preview, '${doctypeEnum.document}' AS type
-         FROM document
-        WHERE deleted IS NULL
-          AND (title like $1 OR content like $1)
+    const { rows } = await client.query<Document & User & { type: Doctype }>(
+      `SELECT d.id, d.title, d.preview, '${doctypeEnum.document}' AS type, u.name, u.image, u.email, u."emailVerified"
+         FROM document d
+         JOIN "user" u
+           ON d.email = u.email
+        WHERE d.deleted IS NULL
+          AND (d.title like $1 OR d.content like $1)
        
        UNION ALL
 
-       SELECT id, title, preview, '${doctypeEnum.essay}' AS type
-         FROM essay
-        WHERE deleted IS NULL
-          AND (title like $1 OR content like $1)`,
+       SELECT e.id, e.title, e.preview, '${doctypeEnum.essay}' AS type, u.name, u.image, u.email, u."emailVerified"
+         FROM essay e
+         JOIN "user" u
+           ON e.email = u.email
+        WHERE e.deleted IS NULL
+          AND (e.title like $1 OR e.content like $1)`,
       [`%${term}%`],
     );
 
