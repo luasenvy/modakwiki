@@ -113,5 +113,9 @@
   "captcha_failed": "Captcha verification failed",
   "Sign in with Google": "Sign in with Google",
   "Author": "Author",
-  "compare changes": "compare changes"
+  "compare changes": "compare changes",
+  "Select All": "Select All",
+  "Clear": "Clear",
+  "Close": "Close",
+  "Search options...": "Search options..."
 }

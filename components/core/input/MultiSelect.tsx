@@ -106,6 +106,13 @@ interface MultiSelectGroup {
   options: MultiSelectOption[];
 }
 
+interface MultiSelectI18n {
+  selectAll?: string;
+  clear?: string;
+  close?: string;
+  placeholder?: string;
+}
+
 /**
  * Props for MultiSelect component
  */
@@ -274,7 +281,16 @@ interface MultiSelectProps
    * Optional, defaults to false.
    */
   closeOnSelect?: boolean;
+
+  i18n?: MultiSelectI18n;
 }
+
+const defaultI18n: MultiSelectI18n = {
+  selectAll: "Select All",
+  clear: "Clear",
+  close: "Close",
+  placeholder: "Search options...",
+};
 
 /**
  * Imperative methods exposed through ref
@@ -313,6 +329,7 @@ export const MultiSelect = forwardRef<MultiSelectRef, MultiSelectProps>(
       animation = 0,
       animationConfig,
       maxCount = 3,
+      i18n = {},
       modalPopover = false,
       asChild = false,
       className,
@@ -360,6 +377,7 @@ export const MultiSelect = forwardRef<MultiSelectRef, MultiSelectProps>(
     const selectedCountId = `${multiSelectId}-count`;
 
     const prevDefaultValueRef = useRef<string[]>(defaultValue);
+    i18n = { ...defaultI18n, ...i18n };
 
     const isGroupedOptions = useCallback(
       (opts: MultiSelectOption[] | MultiSelectGroup[]): opts is MultiSelectGroup[] => {
@@ -963,7 +981,7 @@ export const MultiSelect = forwardRef<MultiSelectRef, MultiSelectProps>(
             <Command>
               {searchable && (
                 <CommandInput
-                  placeholder="Search options..."
+                  placeholder={i18n.placeholder}
                   onKeyDown={handleInputKeyDown}
                   value={searchValue}
                   onValueChange={setSearchValue}
@@ -1010,7 +1028,7 @@ export const MultiSelect = forwardRef<MultiSelectRef, MultiSelectProps>(
                         <CheckIcon className="size-4" />
                       </div>
                       <span>
-                        (Select All
+                        ({i18n.selectAll}
                         {getAllOptions().length > 20 ? ` - ${getAllOptions().length} options` : ""})
                       </span>
                     </CommandItem>
@@ -1112,7 +1130,7 @@ export const MultiSelect = forwardRef<MultiSelectRef, MultiSelectProps>(
                           onSelect={handleClear}
                           className="flex-1 cursor-pointer justify-center"
                         >
-                          Clear
+                          {i18n.clear}
                         </CommandItem>
                         <Separator orientation="vertical" className="flex h-full min-h-6" />
                       </>
@@ -1121,7 +1139,7 @@ export const MultiSelect = forwardRef<MultiSelectRef, MultiSelectProps>(
                       onSelect={() => setIsPopoverOpen(false)}
                       className="max-w-full flex-1 cursor-pointer justify-center"
                     >
-                      Close
+                      {i18n.close}
                     </CommandItem>
                   </div>
                 </CommandGroup>

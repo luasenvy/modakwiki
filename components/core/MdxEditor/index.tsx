@@ -270,28 +270,6 @@ export default function MdxEditor({
                       {t("essay")}
                     </Toggle>
                   )}
-
-                  {/* <Combobox
-                    data={availableTags}
-                    onOpenChange={(open) => console.log("Combobox is open?", open)}
-                    onValueChange={(newValue) => console.log("Combobox value:", newValue)}
-                    type="framework"
-                  >
-                    <ComboboxTrigger />
-                    <ComboboxContent>
-                      <ComboboxInput />
-                      <ComboboxEmpty />
-                      <ComboboxList>
-                        <ComboboxGroup>
-                          {availableTags.map((tag) => (
-                            <ComboboxItem key={tag.value} value={tag.value}>
-                              {tag.label}
-                            </ComboboxItem>
-                          ))}
-                        </ComboboxGroup>
-                      </ComboboxList>
-                    </ComboboxContent>
-                  </Combobox> */}
                 </div>
                 <FormField
                   control={form.control}
@@ -356,6 +334,12 @@ export default function MdxEditor({
                           <FormControl>
                             <MultiSelect
                               responsive
+                              i18n={{
+                                selectAll: t("Select All"),
+                                clear: t("Clear"),
+                                close: t("Close"),
+                                placeholder: t("Search options..."),
+                              }}
                               popoverClassName="!w-fit"
                               onValueChange={onChange}
                               defaultValue={value}

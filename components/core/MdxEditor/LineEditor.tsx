@@ -47,7 +47,7 @@ export function LineEditor({
       handleChangeSelectedLine.cancel();
       e.preventDefault();
 
-      setLines(lines.toSpliced(selectedLine, 1, e.currentTarget.value.trim()));
+      setLines(lines.toSpliced(selectedLine, 1, ...e.currentTarget.value.trim().split("\n\n")));
       setSelectedLine(-1);
     }
   };

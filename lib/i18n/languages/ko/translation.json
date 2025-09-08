@@ -99,5 +99,9 @@
   "captcha_failed": "캡차 검증에 실패했습니다.",
   "compare changes": "변경점 비교",
   "Sign in with Google": "구글로 로그인하기",
-  "Author": "저자"
+  "Author": "저자",
+  "Select All": "전체선택",
+  "Clear": "비우기",
+  "Close": "닫기",
+  "Search options...": "찾아보기..."
 }
