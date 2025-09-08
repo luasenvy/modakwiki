@@ -1,6 +1,15 @@
 "use client";
 
-import { FilePlus2, Image, Inbox, LucideIcon, ScrollText, SpellCheck, Tags } from "lucide-react";
+import {
+  FilePlus2,
+  FlameKindling,
+  Image,
+  Inbox,
+  LucideIcon,
+  ScrollText,
+  SpellCheck,
+  Tags,
+} from "lucide-react";
 import { create } from "zustand";
 import { ScopeEnum, scopeEnum } from "@/lib/schema/user";
 
@@ -14,14 +23,9 @@ export interface NavItem {
 
 export const mainNavs: Array<NavItem> = [
   {
-    title: "Getting Started",
-    url: "#",
-    items: [
-      {
-        title: "모닥위키",
-        url: "/what-is-this",
-      },
-    ],
+    title: "모닥위키",
+    url: "/what-is-this",
+    icon: FlameKindling,
   },
   {
     title: "위키",

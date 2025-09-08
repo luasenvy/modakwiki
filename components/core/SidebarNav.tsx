@@ -41,29 +41,43 @@ export function SidebarNav({ lng: lngParam, session }: NavMenuProps) {
 
   return (
     <>
-      {scopedMainNavs.map((item) => (
-        <SidebarGroup key={item.title}>
-          <SidebarGroupLabel>{item.title}</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {item.items?.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={`${lng}${item.url}` === pathname}
-                    data-url={`${lng}${item.url}`}
-                  >
-                    <Link href={item.url}>
-                      {item.icon && createElement(item.icon)}
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      ))}
+      {scopedMainNavs.map((item) => {
+        const hasChild = Number(item.items?.length) > 0;
+        return (
+          <SidebarGroup key={item.title}>
+            {hasChild && <SidebarGroupLabel>{item.title}</SidebarGroupLabel>}
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {hasChild ? (
+                  item.items?.map((item) => (
+                    <SidebarMenuItem key={item.title}>
+                      <SidebarMenuButton
+                        asChild
+                        isActive={`${lng}${item.url}` === pathname}
+                        data-url={`${lng}${item.url}`}
+                      >
+                        <Link href={item.url}>
+                          {item.icon && createElement(item.icon)}
+                          <span>{item.title}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ))
+                ) : (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild isActive={`${lng}${item.url}` === pathname}>
+                      <Link href={item.url}>
+                        {item.icon && createElement(item.icon)}
+                        <span>{item.title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                )}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        );
+      })}
 
       <SidebarGroup className="mt-auto">
         <SidebarGroupContent>

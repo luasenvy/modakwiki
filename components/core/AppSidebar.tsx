@@ -38,17 +38,19 @@ export async function AppSidebar({ lng: lngParam, session, ...props }: AppSideba
             &copy; 2025 {new URL(site.baseurl).hostname} All rights reserved.
           </p>
 
-          <div className="flex items-center justify-center">
-            <Link href="/privacy" className="text-blue-500 text-xs hover:underline">
-              {t("Privacy Policy")}
-            </Link>
+          {isDev && (
+            <div className="flex items-center justify-center">
+              <Link href="/privacy" className="text-blue-500 text-xs hover:underline">
+                {t("Privacy Policy")}
+              </Link>
 
-            <Separator orientation="vertical" className="mx-2 w-px" />
+              <Separator orientation="vertical" className="mx-2 w-px" />
 
-            <Link href="/terms" className="text-blue-500 text-xs hover:underline">
-              {t("Terms of Service")}
-            </Link>
-          </div>
+              <Link href="/terms" className="text-blue-500 text-xs hover:underline">
+                {t("Terms of Service")}
+              </Link>
+            </div>
+          )}
         </div>
       </SidebarFooter>
     </Sidebar>
