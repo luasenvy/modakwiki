@@ -1,13 +1,14 @@
 import { toNextJsHandler } from "better-auth/next-js";
+import { NextRequest } from "next/server";
 import { auth, verifyHCaptcha } from "@/lib/auth/server";
 
 const handlers = toNextJsHandler(auth);
 export const { GET } = handlers;
 
-export const POST = async (req: Request) => {
+export const POST = async (req: NextRequest) => {
   const captchaToken = req.headers.get("x-captcha-response");
 
-  if (captchaToken) {
+  if (req.nextUrl.pathname.startsWith("/api/auth/sign-in/")) {
     const data = await verifyHCaptcha(captchaToken);
     if (!data?.success)
       return Response.json({ success: false, message: "captcha_failed" }, { status: 401 });

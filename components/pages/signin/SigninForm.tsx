@@ -63,7 +63,12 @@ export function SigninForm({ lng: lngParam, referer, siteKey }: SigninFormProps)
           <div className="flex flex-col items-center gap-2">
             {!token ? (
               <>
-                <HCaptcha sitekey={siteKey} onVerify={setToken} theme={theme} />
+                <HCaptcha
+                  sitekey={siteKey}
+                  // for animate
+                  onVerify={(token) => setTimeout(() => setToken(token), 1000)}
+                  theme={theme}
+                />
                 <p className="font-semibold text-lg">
                   {t("Please verify you are human before signin")}
                 </p>

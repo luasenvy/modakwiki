@@ -52,7 +52,7 @@ export const auth = betterAuth({
 export type Session = typeof auth.$Infer.Session;
 
 const hcaptchaSecret = authConfig.providers.hcaptcha.secretKey;
-export async function verifyHCaptcha(token: string) {
+export async function verifyHCaptcha(token?: string | null) {
   try {
     if (!token) return { success: false, message: "missing_token", status: 400 };
 
