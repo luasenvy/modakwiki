@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Breadcrumb, BreadcrumbItem } from "@/components/core/Breadcrumb";
 import { Container, Viewport } from "@/components/core/Container";
+import { PageHeadline } from "@/components/core/PageHeadline";
 import { pool } from "@/lib/db";
 import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/next";
@@ -78,11 +79,9 @@ export default async function HistoryPage(ctx: PageProps<"/[lng]/[doctype]/histo
 
         <Viewport className="!justify-start flex-col items-center">
           <Container variant="wide" className="prose dark:prose-invert">
-            <h2>
-              {t("change history")}: {doc.title}
-            </h2>
+            <PageHeadline title={`${t("change history")}: ${doc.title}`} />
 
-            <div>
+            <div className="mt-6">
               {rows.map(
                 ({ description, added, removed, name, email, category, tags, created }, i) => {
                   const isChanged = added + removed > 0;

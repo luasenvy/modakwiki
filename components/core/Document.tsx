@@ -4,6 +4,7 @@ import Link from "next/link";
 import { CopyButton } from "@/components/core/button/CopyButton";
 import { Container, Viewport } from "@/components/core/Container";
 import { NavToc } from "@/components/core/MdxViewer/NavToc";
+import { PageHeadline } from "@/components/core/PageHeadline";
 import { TOCProvider, TOCScrollArea } from "@/components/fumadocs/toc";
 import TocClerk from "@/components/fumadocs/toc-clerk";
 import { Button } from "@/components/ui/button";
@@ -48,12 +49,7 @@ export async function Document({
     <TOCProvider toc={toc} single={false}>
       <Viewport>
         <Container as="article" variant="document">
-          {title && <h1 className={cn("my-8", { "!mb-1": Boolean(description) })}>{title}</h1>}
-          {description && (
-            <h2 className="!m-0 !mb-8 font-font-semibold text-lg text-muted-foreground">
-              {description}
-            </h2>
-          )}
+          <PageHeadline title={title} description={description} />
 
           <MdxLoader source={content} />
         </Container>

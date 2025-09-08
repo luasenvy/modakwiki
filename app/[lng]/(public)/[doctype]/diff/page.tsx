@@ -1,8 +1,10 @@
 import { notFound } from "next/navigation";
 import { Container, Viewport } from "@/components/core/Container";
 import { DiffViewer } from "@/components/core/DiffViewer";
+import { PageHeadline } from "@/components/core/PageHeadline";
 import { pool } from "@/lib/db";
 import { Language } from "@/lib/i18n/config";
+import { useTranslation } from "@/lib/i18n/next";
 import { Doctype, Document as DocumentType, getTablesByDoctype } from "@/lib/schema/document";
 import { History as DocumentHistory } from "@/lib/schema/history";
 import { cn } from "@/lib/utils";
@@ -60,6 +62,8 @@ export default async function DiffPage(ctx: PageProps<"/[lng]/[doctype]/history"
       second: "2-digit",
     });
 
+    const { t } = await useTranslation(lngParam);
+
     return (
       <Viewport className="!justify-start flex-col items-center">
         <Container
@@ -70,7 +74,8 @@ export default async function DiffPage(ctx: PageProps<"/[lng]/[doctype]/history"
             "prose-pre:max-h-[calc(100dvh_-_var(--spacing)_*_80)]",
           )}
         >
-          <h2>변경점 비교: {title}</h2>
+          <PageHeadline title={`${t("compare changes")}: ${title}`} />
+
           <div className="mt-6 mb-2 flex flex-col items-end">
             <p className="!m-0 font-mono text-muted-foreground text-sm">
               변경전: {dateFormater.format(prev.created)}{" "}

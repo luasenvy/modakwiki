@@ -1,9 +1,10 @@
 import { Breadcrumb, BreadcrumbItem } from "@/components/core/Breadcrumb";
 import { Container, Viewport } from "@/components/core/Container";
 import { CategoryList } from "@/components/core/list/CategoryList";
-
+import { PageHeadline } from "@/components/core/PageHeadline";
 import { pool } from "@/lib/db";
 import { Language } from "@/lib/i18n/config";
+import { useTranslation } from "@/lib/i18n/next";
 import { Category } from "@/lib/schema/category";
 import { localePrefix } from "@/lib/url";
 
@@ -24,11 +25,18 @@ export default async function MyDocsPage(ctx: PageProps<"/[lng]/me/documents">) 
      ORDER BY category ASC`,
     );
 
+    const { t } = await useTranslation(lngParam);
     return (
       <>
         <Breadcrumb lng={lngParam} breadcrumbs={breadcrumbs} />
         <Viewport>
           <Container as="div" variant="wide" className="space-y-2">
+            <PageHeadline
+              prose
+              title={t("Tag Management")}
+              description={t("Manage your tags and categories")}
+            />
+
             <CategoryList rows={rows} />
           </Container>
         </Viewport>
