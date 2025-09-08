@@ -1,10 +1,8 @@
 import { MDXComponents } from "mdx/types";
-import { Children, JSX } from "react";
-import { Components } from "react-markdown";
+import { Children } from "react";
 import { Alert } from "@/components/mdx/Alert";
 import { AutoLink } from "@/components/mdx/AutoLink";
 import { Youtube } from "@/components/mdx/Youtube";
-// import { ImageZoom } from "@/components/ui/shadcn-io/image-zoom";
 import { cn } from "@/lib/utils";
 
 export default {

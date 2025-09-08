@@ -16,6 +16,61 @@ import {
 } from "@/lib/schema/document";
 import { localePrefix } from "@/lib/url";
 
+export async function generateMetadata(ctx: PageProps<"/[lng]/[doctype]">) {
+  const params = await ctx.params;
+  const searchParams = await ctx.searchParams;
+
+  const doctype = params.doctype as Doctype;
+
+  const id = searchParams.id;
+  const created = searchParams.created;
+
+  const client = await pool.connect();
+  try {
+    const { table, history } = getTablesByDoctype(doctype);
+
+    if (!table) return;
+
+    let doc;
+    if (created) {
+      const {
+        rows: [_doc],
+      } = await client.query<DocumentType>(
+        `SELECT d.id
+              , d.title
+              , h.description
+              , h.content
+              , h.email
+         FROM ${history} h
+         JOIN ${table} d
+           ON d.id = h.id
+        WHERE h.id = $1
+          AND h.created = $2
+          AND d.deleted IS NULL`,
+        [id, created],
+      );
+      doc = _doc;
+    } else {
+      const {
+        rows: [_doc],
+      } = await client.query<DocumentType>(
+        `SELECT title, description
+           FROM ${table}
+          WHERE id = $1
+            AND deleted IS NULL`,
+        [id],
+      );
+      doc = _doc;
+    }
+
+    return doc;
+  } catch (err) {
+    throw err;
+  } finally {
+    client.release();
+  }
+}
+
 export default async function WikiDocPage(ctx: PageProps<"/[lng]/[doctype]">) {
   const params = await ctx.params;
   const searchParams = await ctx.searchParams;
@@ -42,7 +97,7 @@ export default async function WikiDocPage(ctx: PageProps<"/[lng]/[doctype]">) {
       } = await client.query<DocumentType>(
         `SELECT d.id
               , d.title
-              , d.description
+              , h.description
               , h.content
               , h.email
          FROM ${history} h

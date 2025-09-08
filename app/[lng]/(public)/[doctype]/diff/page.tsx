@@ -52,12 +52,12 @@ export default async function DiffPage(ctx: PageProps<"/[lng]/[doctype]/history"
 
     const dateFormater = new Intl.DateTimeFormat(lngParam, {
       year: "numeric",
-      month: "short",
-      day: "numeric",
+      month: "2-digit",
+      day: "2-digit",
       hourCycle: "h23",
       hour: "2-digit",
-      minute: "numeric",
-      second: "numeric",
+      minute: "2-digit",
+      second: "2-digit",
     });
 
     return (
@@ -71,7 +71,7 @@ export default async function DiffPage(ctx: PageProps<"/[lng]/[doctype]/history"
           )}
         >
           <h2>변경점 비교: {title}</h2>
-          <div className="mt-6 flex flex-col items-end">
+          <div className="mt-6 mb-2 flex flex-col items-end">
             <p className="!m-0 font-mono text-muted-foreground text-sm">
               변경전: {dateFormater.format(prev.created)}{" "}
               <sub>
