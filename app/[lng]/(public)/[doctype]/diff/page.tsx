@@ -66,15 +66,8 @@ export default async function DiffPage(ctx: PageProps<"/[lng]/[doctype]/history"
 
     return (
       <Viewport className="!justify-start flex-col items-center">
-        <Container
-          as="article"
-          variant="wide"
-          className={cn(
-            "prose dark:prose-invert",
-            "prose-pre:max-h-[calc(100dvh_-_var(--spacing)_*_80)]",
-          )}
-        >
-          <PageHeadline title={`${t("compare changes")}: ${title}`} />
+        <Container as="div" variant="wide">
+          <PageHeadline title={t("compare changes")} description={title} prose />
 
           <div className="mt-6 mb-2 flex flex-col items-end">
             <p className="!m-0 font-mono text-muted-foreground text-sm">
