@@ -20,9 +20,7 @@
     "prepare": "husky"
   },
   "lint-staged": {
-    "*.{ts,tsx,js,jsx,mjs,cjs,json,css}": [
-      "biome check --write"
-    ]
+    "*.{ts,tsx,js,jsx,mjs,cjs,json,css}": ["biome check --write"]
   },
   "devDependencies": {
     "@biomejs/biome": "^2.2.3",

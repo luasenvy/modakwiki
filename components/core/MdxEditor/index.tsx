@@ -39,6 +39,7 @@ import {
   BannerIcon,
   BannerTitle,
 } from "@/components/ui/shadcn-io/banner";
+import { Spinner } from "@/components/ui/shadcn-io/spinner";
 import { Textarea } from "@/components/ui/textarea";
 import { Toggle } from "@/components/ui/toggle";
 import { statusMessage } from "@/lib/fetch/react";
@@ -79,10 +80,12 @@ export default function MdxEditor({
 
   const [hunk, setHunk] = useState<string>("");
   const [lines, setLines] = useState<string[]>(getHunks(doc?.content || ""));
+  const [uploading, setUploading] = useState<boolean>(false);
   const [categories, setCategories] = useState<string[]>([]);
   const [tags, setTags] = useState<MultiSelectOption[]>([]);
   const [selectedLine, setSelectedLine] = useState<number>(-1);
 
+  const containerRef = useRef<HTMLElement>(null);
   const lineRef = useRef<HTMLTextAreaElement>(null);
   const titleRef = useRef<HTMLInputElement>(null);
 
@@ -125,23 +128,29 @@ export default function MdxEditor({
     if (files.length) {
       e.preventDefault();
 
+      if (uploading) return;
+
+      handleChangeHunk.cancel();
+
       const formData = new FormData();
 
       for (const file of files) formData.append("files", file);
 
       const options = { method: "POST", body: formData };
 
+      setUploading(true);
       const res = await fetch("/api/image", options);
 
       if (!res.ok) return statusMessage({ t, status: res.status, options });
 
       const uris = await res.json();
 
-      (e.target as HTMLTextAreaElement).value += uris
-        .map((uri: string) => `![Uploaded Image](/api/image${uri})`)
-        .join("\n\n");
+      const curr =
+        hunk + uris.map((uri: string) => `![Uploaded Image](/api/image${uri})`).join("\n\n");
+      setHunk(curr);
 
-      // handleChangeHunk();
+      lineRef.current!.value = curr;
+      setUploading(false);
     }
   };
 
@@ -257,7 +266,7 @@ export default function MdxEditor({
         <form onSubmit={handleSubmit}>
           <TOCProvider toc={toc} single={false}>
             <Viewport>
-              <Container as="article" variant="document">
+              <Container ref={containerRef} as="article" variant="document">
                 <div className="mb-2 flex items-center gap-1">
                   {(!Boolean(doc?.id) || doctypeEnum.document === doctype) && (
                     <Toggle
@@ -418,16 +427,27 @@ export default function MdxEditor({
                     <MdxLoader source={hunk} />
                   </div>
                 )}
-                <Textarea
-                  ref={lineRef}
-                  name="hunk"
-                  className="h-fit max-h-56 min-h-28 resize-none rounded-none font-mono"
-                  placeholder={t("Writing a paragraph...")}
-                  onFocus={() => setSelectedLine(-1)}
-                  onChange={handleChangeHunk}
-                  onKeyDown={handleKeyDownHunk}
-                  onPaste={handlePaste}
-                />
+                <div className="relative">
+                  <Textarea
+                    ref={lineRef}
+                    name="hunk"
+                    className="h-fit max-h-56 min-h-28 resize-none rounded-none font-mono"
+                    placeholder={t("Writing a paragraph...")}
+                    onFocus={() => setSelectedLine(-1)}
+                    onChange={handleChangeHunk}
+                    onKeyDown={handleKeyDownHunk}
+                    onPaste={handlePaste}
+                  />
+
+                  {uploading && (
+                    <div className="absolute inset-0 flex bg-muted/80">
+                      <div className="m-auto space-y-1 text-center">
+                        <Spinner className="mx-auto" variant="ring" size={32} />
+                        <p className="text-sm">{t("Uploading...")}</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </Container>
 
               <NavToc lng={lngParam} title={title}>
