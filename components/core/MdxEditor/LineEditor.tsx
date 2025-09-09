@@ -12,10 +12,12 @@ import {
 import { arrayMove, SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import debounce from "lodash.debounce";
 import { Pencil, PencilOff, Trash } from "lucide-react";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { SortableItem } from "@/components/core/MdxEditor/SortableItem";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/shadcn-io/spinner";
 import { Textarea } from "@/components/ui/textarea";
+import { statusMessage } from "@/lib/fetch/react";
 import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/react";
 import { MdxLoader } from "@/lib/mdx/react";
@@ -37,6 +39,8 @@ export function LineEditor({
   setSelectedLine,
 }: LineEditorProps) {
   const { t } = useTranslation(lngParam);
+  const [uploading, setUploading] = useState<boolean>(false);
+  const inputRefs = useRef<Array<HTMLTextAreaElement>>(new Array(lines.length));
 
   const handleChangeSelectedLine = debounce((e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setLines((prev) => prev.toSpliced(selectedLine, 1, e.target.value.trim()));
@@ -79,6 +83,44 @@ export function LineEditor({
     useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 6 } }),
   );
 
+  const handlePasteChangeLine = async (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
+    const files = e.clipboardData.files;
+    if (files.length) {
+      e.preventDefault();
+
+      if (uploading) return;
+
+      handleChangeSelectedLine.cancel();
+
+      const formData = new FormData();
+
+      for (const file of files) formData.append("files", file);
+
+      const options = { method: "POST", body: formData };
+
+      setUploading(true);
+      const res = await fetch("/api/image", options);
+      setUploading(false);
+
+      if (!res.ok) return statusMessage({ t, status: res.status, options });
+
+      const uris = await res.json();
+
+      const textarea = inputRefs.current[selectedLine];
+      const line = lines[selectedLine];
+      const head = line.substring(0, textarea.selectionStart);
+      const tail = line.substring(textarea.selectionEnd);
+
+      const imageMarkdown = uris
+        .map((uri: string) => `![Uploaded Image](/api/image${uri})`)
+        .join("\n\n");
+      const text = `${head}\n\n${imageMarkdown}\n\n${tail}`;
+
+      setLines((prev) => prev.toSpliced(selectedLine, 1, text));
+      textarea.value = text;
+    }
+  };
+
   return (
     <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
       <SortableContext
@@ -98,14 +140,29 @@ export function LineEditor({
           >
             <MdxLoader source={line} />
             {selectedLine === i && (
-              <Textarea
-                name="prev"
-                className="mt-2 h-fit max-h-56 min-h-28 resize-none rounded-none font-mono"
-                placeholder={t("Please input text here")}
-                defaultValue={lines[selectedLine]}
-                onChange={handleChangeSelectedLine}
-                onKeyDown={handleKeyDownSelectedLine}
-              />
+              <div className="relative">
+                <Textarea
+                  ref={(el) => {
+                    inputRefs.current[i] = el as HTMLTextAreaElement;
+                  }}
+                  name="prev"
+                  className="mt-2 h-fit max-h-56 min-h-28 resize-none rounded-none font-mono"
+                  placeholder={t("Please input text here")}
+                  defaultValue={lines[selectedLine]}
+                  onChange={handleChangeSelectedLine}
+                  onKeyDown={handleKeyDownSelectedLine}
+                  onPaste={handlePasteChangeLine}
+                />
+
+                {uploading && (
+                  <div className="absolute inset-0 flex bg-muted/80">
+                    <div className="m-auto space-y-1 text-center">
+                      <Spinner className="mx-auto" variant="ring" size={32} />
+                      <p className="text-sm">{t("Uploading...")}</p>
+                    </div>
+                  </div>
+                )}
+              </div>
             )}
 
             <div className="absolute top-0 right-0 hidden bg-background shadow-sm group-hover/line:flex">

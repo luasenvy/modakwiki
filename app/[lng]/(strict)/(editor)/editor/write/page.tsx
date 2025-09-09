@@ -51,12 +51,14 @@ export default async function WritePage(ctx: PageProps<"/[lng]/editor/write">) {
     const {
       rows: [doc],
     } = await client.query<Document>(
-      `SELECT id, title, description, content, email, category, tags
-         FROM ${table}
-        WHERE id = $1
-          AND email = $2
-          AND deleted IS NULL`,
-      [id, session.user.email],
+      `SELECT d.id, d.title, d.description, d.content, u.email, d.category, d.tags
+         FROM ${table} d
+         JOIN "user" u
+           ON u.id = d."userId"
+        WHERE d.id = $1
+          AND d."userId" = $2
+          AND d.deleted IS NULL`,
+      [id, session.user.id],
     );
 
     if (!doc) return notFound();
@@ -79,7 +81,7 @@ export default async function WritePage(ctx: PageProps<"/[lng]/editor/write">) {
           lng={lngParam}
           doc={doc}
           doctype={doctype}
-          deletable={session.user.email === doc.email}
+          deletable={session.user.id === doc.userId}
         />
       </>
     );

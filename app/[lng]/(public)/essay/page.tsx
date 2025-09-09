@@ -27,7 +27,7 @@ export default async function SearchPage(ctx: PageProps<"/[lng]/essay">) {
     const { rows } = await client.query<Document & User & { type: Doctype }>(
       `SELECT e.id, e.title, e.preview, u.name, u.image, u."email", u."emailVerified"
          FROM "essay" e
-         JOIN "user" u ON e.email = u.email
+         JOIN "user" u ON e."userId" = u.id
         WHERE e.deleted IS NULL`,
     );
 

@@ -33,10 +33,10 @@ export async function POST(req: NextRequest) {
     const { table, history } = getTablesByDoctype(doctype);
     const isEssay = doctypeEnum.essay === doctype;
     const sql = isEssay
-      ? `INSERT INTO ${table} (id, title, description, content, email, preview, category, tags)
+      ? `INSERT INTO ${table} (id, title, description, content, "userId", preview, category, tags)
                 VALUES ($1, $2, $3, $4, $5, $6, $7, '{${tags?.map((tag) => `"${tag}"`).join(",")}}')
           RETURNING id`
-      : `INSERT INTO ${table} (id, title, description, content, email, preview)
+      : `INSERT INTO ${table} (id, title, description, content, "userId", preview)
                 VALUES ($1, $2, $3, $4, $5, $6)
           RETURNING id`;
 
@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
       title,
       description,
       content,
-      session.user.email,
+      session.user.id,
       clearMarkdown(humanReadable(content).substring(0, 150)),
     ];
 
@@ -56,13 +56,13 @@ export async function POST(req: NextRequest) {
     } = await client.query(sql, params);
 
     const historySql = isEssay
-      ? `INSERT INTO ${history} (id, description, content, email, category, tags)
+      ? `INSERT INTO ${history} (id, description, content, "userId", category, tags)
                        VALUES ($1, $2, $3, $4, $5, '{${tags?.map((tag) => `"${tag}"`).join(",")}}')`
-      : `INSERT INTO ${history} (id, description, content, email)
+      : `INSERT INTO ${history} (id, description, content, "userId")
                        VALUES ($1, $2, $3, $4)`;
     const historyParams = isEssay
-      ? [id, description, content, session.user.email, category]
-      : [id, description, content, session.user.email];
+      ? [id, description, content, session.user.id, category]
+      : [id, description, content, session.user.id];
 
     await client.query(historySql, historyParams);
 
@@ -130,9 +130,9 @@ export async function PATCH(req: NextRequest) {
     );
 
     await client.query(
-      `INSERT INTO ${history} (id, description, content, email, added, removed, category, tags)
+      `INSERT INTO ${history} (id, description, content, "userId", added, removed, category, tags)
                     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
-      [id, description, content, session.user.email, added, removed, category, tags],
+      [id, description, content, session.user.id, added, removed, category, tags],
     );
 
     return Response.json({ id }, { status: 200 });
@@ -160,8 +160,8 @@ export async function DELETE(req: NextRequest, ctx: RouteContext<"/api/document"
       `UPDATE ${table}
           SET deleted = extract(epoch FROM current_timestamp) * 1000
         WHERE id = $1
-          AND email = $2`,
-      [id, session.user.email],
+          AND "userId" = $2`,
+      [id, session.user.id],
     );
 
     if (!rowCount) return new Response(null, { status: 404 });

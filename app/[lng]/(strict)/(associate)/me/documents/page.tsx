@@ -31,28 +31,28 @@ export default async function MyDocsPage(ctx: PageProps<"/[lng]/me/documents">) 
          FROM (
            SELECT COUNT(*) AS total_count
              FROM document
-             WHERE deleted IS NULL AND email = $1
+             WHERE deleted IS NULL AND "userId" = $1
            
            UNION ALL
  
            SELECT COUNT(*) AS total_count
              FROM essay
-            WHERE deleted IS NULL AND email = $1
+            WHERE deleted IS NULL AND "userId" = $1
          )`,
-      [session.user.email],
+      [session.user.id],
     );
 
     const { rows } = await client.query<DocumentType & { type: Doctype }>(
       `SELECT id, title, preview, '${doctypeEnum.document}' AS type
          FROM document
-         WHERE deleted IS NULL AND email = $1
+         WHERE deleted IS NULL AND "userId" = $1
        
        UNION ALL
 
        SELECT id, title, preview, '${doctypeEnum.essay}' AS type
          FROM essay
-       WHERE deleted IS NULL AND email = $1`,
-      [session.user.email],
+       WHERE deleted IS NULL AND "userId" = $1`,
+      [session.user.id],
     );
 
     return (

@@ -43,9 +43,9 @@ export default async function HistoryPage(ctx: PageProps<"/[lng]/[doctype]/histo
 
     if (!doc) return notFound();
 
-    const { rows } = await client.query<DocumentHistory & { name: string }>(
+    const { rows } = await client.query<DocumentHistory & { email: string; name: string }>(
       `SELECT h.added
-            , h.email
+            , u.email
             , h.description
             , h.category
             , h.tags
@@ -53,7 +53,7 @@ export default async function HistoryPage(ctx: PageProps<"/[lng]/[doctype]/histo
             , h.removed
             , h.created
          FROM ${history} h
-         JOIN "user" u ON u.email = h.email
+         JOIN "user" u ON u.id = h."userId"
         WHERE h.id = $1
      ORDER BY h.created DESC`,
       [id],
@@ -83,7 +83,7 @@ export default async function HistoryPage(ctx: PageProps<"/[lng]/[doctype]/histo
 
             <div className="mt-6">
               {rows.map(
-                ({ description, added, removed, name, email, category, tags, created }, i) => {
+                ({ description, added, removed, name, category, tags, created, email }, i) => {
                   const isChanged = added + removed > 0;
                   const prev = rows[i + 1];
 

@@ -140,17 +140,16 @@ export default function MdxEditor({
 
       setUploading(true);
       const res = await fetch("/api/image", options);
+      setUploading(false);
 
       if (!res.ok) return statusMessage({ t, status: res.status, options });
 
       const uris = await res.json();
 
-      const curr =
-        hunk + uris.map((uri: string) => `![Uploaded Image](/api/image${uri})`).join("\n\n");
+      const curr = `${hunk}\n\n${uris.map((uri: string) => `![Uploaded Image](/api/image${uri})`).join("\n\n")}`;
       setHunk(curr);
 
       lineRef.current!.value = curr;
-      setUploading(false);
     }
   };
 

@@ -63,7 +63,7 @@ export async function Document({
               doctype={doctype}
               content={content}
               editable={Boolean(
-                doc && session && session.scope >= scopeEnum.editor && session.email === doc!.email,
+                doc && session && session.scope >= scopeEnum.editor && session.id === doc!.userId,
               )}
               copiable={Boolean(content && session && session.scope >= scopeEnum.associate)}
             />

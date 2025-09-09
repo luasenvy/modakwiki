@@ -40,10 +40,12 @@ export async function generateMetadata(ctx: PageProps<"/[lng]/[doctype]">) {
               , d.title
               , h.description
               , h.content
-              , h.email
+              , u.email
          FROM ${history} h
-         JOIN ${table} d
+         JOIN ${table} d 
            ON d.id = h.id
+         JOIN "user" u
+           ON d."userId" = u.id
         WHERE h.id = $1
           AND h.created = $2
           AND d.deleted IS NULL`,
@@ -99,10 +101,12 @@ export default async function WikiDocPage(ctx: PageProps<"/[lng]/[doctype]">) {
               , d.title
               , h.description
               , h.content
-              , h.email
+              , u.email
          FROM ${history} h
          JOIN ${table} d
            ON d.id = h.id
+         JOIN "user" u
+           ON h."userId" = u.id
         WHERE h.id = $1
           AND h.created = $2
           AND d.deleted IS NULL`,
@@ -113,16 +117,24 @@ export default async function WikiDocPage(ctx: PageProps<"/[lng]/[doctype]">) {
       let sql = ``;
       // 개발모드에서는 조회수 증가 쿼리를 실행하지 않음
       if (isDev) {
-        sql = `SELECT id, title, description, content, email
-                 FROM ${table}
-                WHERE id = $1
-                  AND deleted IS NULL`;
+        sql = `SELECT d.id, d.title, d.description, d.content, u.email
+                 FROM ${table} d
+                JOIN "user" u
+                  ON u.id = d."userId"
+               WHERE d.id = $1
+                 AND d.deleted IS NULL`;
       } else {
-        sql = `UPDATE ${table}
-                  SET view = view + 1
-                WHERE id = $1
-                  AND deleted IS NULL
-            RETURNING id, title, description, content, email`;
+        sql = `WITH d AS (
+                              UPDATE ${table} t
+                                 SET t.view = t.view + 1
+                               WHERE t.id = $1
+                                 AND t.deleted IS NULL
+                           RETURNING t.id, t.title, t.description, t.content, t."userId"
+                         )
+               SELECT d.id, d.title, d.description, d.content, u.email
+                 FROM d
+                 JOIN "user" u
+                   ON u.id = d."userId"`;
       }
 
       const {

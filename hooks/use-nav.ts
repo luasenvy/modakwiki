@@ -64,18 +64,6 @@ export const mainNavs: Array<NavItem> = [
     ],
   },
   {
-    title: "파일",
-    scope: scopeEnum.admin,
-    url: "#",
-    items: [
-      {
-        title: "이미지",
-        url: "/file/image",
-        icon: Image,
-      },
-    ],
-  },
-  {
     title: "사이트관리",
     url: "#",
     scope: scopeEnum.admin,
@@ -84,6 +72,11 @@ export const mainNavs: Array<NavItem> = [
         title: "태그관리",
         url: "/site/tags",
         icon: Tags,
+      },
+      {
+        title: "이미지관리",
+        url: "/site/image",
+        icon: Image,
       },
     ],
   },

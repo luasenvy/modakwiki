@@ -26,7 +26,7 @@ export const document = z.object({
   category: category.shape.id,
   tags: z.array(tag.shape.id).optional(),
   view: z.number(),
-  email: z.string().min(1),
+  userId: z.string().min(1),
   license: z.enum(licenseEnum).optional(),
   created: z.number(),
   updated: z.number(),

@@ -36,13 +36,13 @@ export default async function DiffPage(ctx: PageProps<"/[lng]/[doctype]/history"
 
     if (!title) return notFound();
 
-    const { rows } = await client.query<DocumentHistory & { name: string }>(
+    const { rows } = await client.query<DocumentHistory & { email: string; name: string }>(
       `SELECT h.content
             , u.name
             , u.email
             , h.created
          FROM ${history} h
-         JOIN "user" u ON u.email = h.email
+         JOIN "user" u ON u.id = h."userId"
         WHERE h.id = $1
           AND h.created <= $2
      ORDER BY h.created DESC

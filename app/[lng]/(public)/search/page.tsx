@@ -40,7 +40,7 @@ export default async function SearchPage(ctx: PageProps<"/[lng]/search">) {
       `SELECT d.id, d.title, d.preview, '${doctypeEnum.document}' AS type, u.name, u.image, u.email, u."emailVerified"
          FROM document d
          JOIN "user" u
-           ON d.email = u.email
+           ON d."userId" = u.id
         WHERE d.deleted IS NULL
           AND (d.title like $1 OR d.content like $1)
        
@@ -49,7 +49,7 @@ export default async function SearchPage(ctx: PageProps<"/[lng]/search">) {
        SELECT e.id, e.title, e.preview, '${doctypeEnum.essay}' AS type, u.name, u.image, u.email, u."emailVerified"
          FROM essay e
          JOIN "user" u
-           ON e.email = u.email
+           ON e."userId" = u.id
         WHERE e.deleted IS NULL
           AND (e.title like $1 OR e.content like $1)`,
       [`%${term}%`],
