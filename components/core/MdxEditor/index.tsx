@@ -131,11 +131,17 @@ export default function MdxEditor({
 
       const options = { method: "POST", body: formData };
 
-      const res = await fetch("/api/file", options);
+      const res = await fetch("/api/image", options);
 
       if (!res.ok) return statusMessage({ t, status: res.status, options });
 
-      console.info(res.status);
+      const uris = await res.json();
+
+      (e.target as HTMLTextAreaElement).value += uris
+        .map((uri: string) => `![Uploaded Image](/api/image${uri})`)
+        .join("\n\n");
+
+      // handleChangeHunk();
     }
   };
 

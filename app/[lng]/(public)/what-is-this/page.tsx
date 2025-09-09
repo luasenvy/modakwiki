@@ -1,3 +1,4 @@
+import { FlameKindling } from "lucide-react";
 import { Breadcrumb, BreadcrumbItem } from "@/components/core/Breadcrumb";
 import { Document } from "@/components/core/Document";
 import { site } from "@/config";

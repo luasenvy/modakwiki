@@ -6,15 +6,16 @@ import { storage } from "@/config";
 import { ReadableStreamResponse, readChunk } from "@/lib/stream";
 import { unwrap } from "@/lib/url";
 
-export async function GET(req: NextRequest, ctx: RouteContext<"/api/file/[...pathname]">) {
+const docroot = join(storage.root, "images");
+export async function GET(req: NextRequest, ctx: RouteContext<"/api/image/[...pathname]">) {
   const { pathname } = await ctx.params;
   const q = req.nextUrl.searchParams.get("q");
 
-  if (!pathname.length) return new Response("Not Found", { status: 404 });
+  if (pathname.length <= 0) return new Response("Not Found", { status: 404 });
 
   if (q) pathname.push(pathname.pop()!.concat(`-${q}`));
 
-  const filepath = join(storage.root, unwrap(pathname.join("/")));
+  const filepath = join(docroot, unwrap(pathname.join("/")));
 
   if (!existsSync(filepath)) return new Response("Not Found", { status: 404 });
 
