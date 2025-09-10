@@ -1,12 +1,11 @@
 import { TFunction } from "i18next";
-import { AlignLeft, FileClock, Pencil } from "lucide-react";
+import { FileClock, Pencil } from "lucide-react";
 import Link from "next/link";
 import { CopyButton } from "@/components/core/button/CopyButton";
 import { Container, Viewport } from "@/components/core/Container";
 import { NavToc } from "@/components/core/MdxViewer/NavToc";
 import { PageHeadline } from "@/components/core/PageHeadline";
-import { TOCProvider, TOCScrollArea } from "@/components/fumadocs/toc";
-import TocClerk from "@/components/fumadocs/toc-clerk";
+import { TOCProvider } from "@/components/fumadocs/toc";
 import { Button } from "@/components/ui/button";
 import { Session } from "@/lib/auth/server";
 import { Language } from "@/lib/i18n/config";

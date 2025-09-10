@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const session = await auth.api.getSession(req);
   if (!session) return new Response(null, { status: 401 });
-  if (session.user.scope < scopeEnum.editor) return new Response(null, { status: 403 });
+  if (session.user.scope < scopeEnum.admin) return new Response(null, { status: 403 });
 
   const client = await pool.connect();
   try {
@@ -35,10 +35,33 @@ export async function POST(req: NextRequest) {
   }
 }
 
+export async function PUT(req: NextRequest) {
+  const session = await auth.api.getSession(req);
+  if (!session) return new Response(null, { status: 401 });
+  if (session.user.scope < scopeEnum.admin) return new Response(null, { status: 403 });
+
+  const client = await pool.connect();
+  try {
+    const { id, name }: CategoryForm = await req.json();
+
+    await client.query(
+      `UPDATE category
+          SET id = $1
+            , updated = extract(epoch FROM current_timestamp) * 1000
+        WHERE id = $2`,
+      [name, id],
+    );
+
+    return new Response(null, { status: 204 });
+  } finally {
+    client.release();
+  }
+}
+
 export async function DELETE(req: NextRequest) {
   const session = await auth.api.getSession(req);
   if (!session) return new Response(null, { status: 401 });
-  if (session.user.scope < scopeEnum.editor) return new Response(null, { status: 403 });
+  if (session.user.scope < scopeEnum.admin) return new Response(null, { status: 403 });
 
   const id = req.nextUrl.searchParams.get("id");
 

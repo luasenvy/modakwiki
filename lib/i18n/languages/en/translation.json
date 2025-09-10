@@ -118,5 +118,9 @@
   "Clear": "Clear",
   "Close": "Close",
   "Search options...": "Search options...",
-  "Uploading...": "Uploading..."
+  "Uploading...": "Uploading...",
+  "Change name": "Change name",
+  "You can change the category name here.": "You can change the category name here.",
+  "You can change the tag name here.": "You can change the tag name here.",
+  "Select a tag": "Select a tag"
 }

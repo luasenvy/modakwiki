@@ -12,20 +12,21 @@ export interface BreadcrumbItem {
 }
 
 interface BreadcrumbProps {
+  home?: boolean;
   breadcrumbs?: Array<BreadcrumbItem>;
   lng: Language;
 }
 
-export function Breadcrumb({ lng: lngParam, breadcrumbs = [] }: BreadcrumbProps) {
+export function Breadcrumb({ lng: lngParam, breadcrumbs = [], home }: BreadcrumbProps) {
   const { setBreadcrumbs } = useSidebar();
 
   const { t } = useTranslation(lngParam);
   const lng = localePrefix(lngParam);
 
-  const Home: BreadcrumbItem = { title: t("Home"), href: `${lng}/` };
+  if (home) breadcrumbs = [{ title: t("Home"), href: `${lng}/` }, ...breadcrumbs];
 
   useEffect(() => {
-    setBreadcrumbs([Home, ...breadcrumbs]);
+    setBreadcrumbs(breadcrumbs);
   }, [breadcrumbs]);
 
   return null;

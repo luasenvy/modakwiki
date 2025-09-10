@@ -8,9 +8,13 @@ export const tag = z.object({
 
 export type Tag = z.infer<typeof tag>;
 
-export const tagForm = tag.pick({
-  id: true,
-  category: true,
-});
+export const tagForm = tag
+  .pick({
+    id: true,
+    category: true,
+  })
+  .extend({
+    name: z.string().min(1).max(30),
+  });
 
 export type TagForm = z.infer<typeof tagForm>;

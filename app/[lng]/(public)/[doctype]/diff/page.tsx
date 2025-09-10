@@ -25,7 +25,7 @@ export default async function DiffPage(ctx: PageProps<"/[lng]/[doctype]/history"
     if (!table) return notFound();
 
     const {
-      rows: [{ title }],
+      rows: [{ title } = {}],
     } = await client.query<DocumentType>(
       `SELECT title
          FROM ${table}

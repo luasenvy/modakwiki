@@ -1,8 +1,10 @@
 "use client";
 
-import { ChevronsDown, Trash } from "lucide-react";
+import debounce from "lodash.debounce";
+import { ChevronsDown, Edit, Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Alert } from "@/components/mdx/Alert";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,6 +24,7 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
+import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
 import { statusMessage } from "@/lib/fetch/react";
 import { useTranslation } from "@/lib/i18n/react";
@@ -39,11 +42,14 @@ export function CategoryList({ rows }: CategoryListProps) {
   const { t } = useTranslation();
 
   const firstInputRef = useRef<HTMLInputElement>(null);
+  const [categories, setCategories] = useState<Array<Category>>(rows);
   const [tags, setTags] = useState<Tag[]>([]);
   const [inputCategory, setInputCategory] = useState<string>("");
   const [inputTag, setInputTag] = useState<string>("");
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [loadingTags, setLoadingTags] = useState<boolean>(false);
+  const [changeCategoryName, setChangeCategoryName] = useState<string>("");
+  const [changeTagName, setChangeTagName] = useState<string>("");
 
   useEffect(() => {
     firstInputRef.current?.focus();
@@ -103,6 +109,39 @@ export function CategoryList({ rows }: CategoryListProps) {
     getTags();
   };
 
+  const handleClickEditNameTag = async (id: string, category: string, name: string) => {
+    const options = {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, category, name }),
+    };
+    const res = await fetch("/api/tag", options);
+
+    if (!res.ok) return statusMessage({ t, status: res.status, options });
+
+    const index = tags.findIndex(({ id: _id }) => id === _id);
+    if (index < 0) return router.refresh();
+
+    setTags((prev) => prev.toSpliced(index, 1, { ...prev[index], id: name }));
+  };
+
+  const handleClickEditNameCategory = async (id: string, name: string) => {
+    const options = {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, name }),
+    };
+    const res = await fetch("/api/category", options);
+
+    if (!res.ok) return statusMessage({ t, status: res.status, options });
+
+    const index = categories.findIndex(({ id: _id }) => id === _id);
+    if (index < 0) return router.refresh();
+
+    setCategories((prev) => prev.toSpliced(index, 1, { ...prev[index], id: name }));
+    setSelectedCategory(name);
+  };
+
   const handleClickDeleteCategory = async (id: string) => {
     const options = { method: "DELETE" };
 
@@ -155,42 +194,82 @@ export function CategoryList({ rows }: CategoryListProps) {
               t("No results found.")
             )}
           </CommandEmpty>
-          {rows.map(({ id }) => (
+          {categories.map(({ id }) => (
             <CommandItem
               key={id}
               onSelect={setSelectedCategory}
-              className={cn({ "!text-blue-500 underline": id === selectedCategory })}
+              className={cn("group", { "!text-blue-500 underline": id === selectedCategory })}
             >
               {id}
+              <div className={cn("ml-auto hidden items-center gap-1 group-hover:flex")}>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="ghost" size="icon" className="size-5">
+                      <Edit className="size-3.5 text-orange-500" />
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>{t("Change name")}</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        {t("You can change the category name here.")}
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
 
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button variant="ghost" size="icon" className="ml-auto size-6">
-                    <Trash className="size-3.5 text-destructive" />
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>{t("Are you absolutely sure?")}</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      {t("This action cannot be undone. This will delete data permanently.")}
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel onClick={(e) => e.stopPropagation()}>
-                      {t("Cancel")}
-                    </AlertDialogCancel>
-                    <AlertDialogAction
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleClickDeleteCategory(id);
-                      }}
-                    >
-                      {t("Yes, I'm sure")}
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
+                    <div className="py-4">
+                      <Input
+                        name={`category-name-${id}`}
+                        defaultValue={id}
+                        onChange={debounce((e) => setChangeCategoryName(e.target.value), 110)}
+                        onKeyDown={(e) => e.stopPropagation()}
+                      />
+                    </div>
+
+                    <AlertDialogFooter>
+                      <AlertDialogCancel onClick={(e) => e.stopPropagation()}>
+                        {t("Cancel")}
+                      </AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleClickEditNameCategory(id, changeCategoryName);
+                        }}
+                      >
+                        {t("Save")}
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="ghost" size="icon" className="size-5">
+                      <Trash className="size-3.5 text-destructive" />
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>{t("Are you absolutely sure?")}</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        {t("This action cannot be undone. This will delete data permanently.")}
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel onClick={(e) => e.stopPropagation()}>
+                        {t("Cancel")}
+                      </AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleClickDeleteCategory(id);
+                        }}
+                      >
+                        {t("Yes, I'm sure")}
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
             </CommandItem>
           ))}
         </CommandList>
@@ -224,36 +303,79 @@ export function CategoryList({ rows }: CategoryListProps) {
                   )}
                 </CommandEmpty>
                 {tags.map(({ category, id }) => (
-                  <CommandItem key={`tag-${category}-${id}`}>
+                  <CommandItem className="group" key={`tag-${category}-${id}`}>
                     {id}
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button variant="ghost" size="icon" className="ml-auto size-6">
-                          <Trash className="size-3.5 text-destructive" />
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>{t("Are you absolutely sure?")}</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            {t("This action cannot be undone. This will delete data permanently.")}
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel onClick={(e) => e.stopPropagation()}>
-                            {t("Cancel")}
-                          </AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleClickDeleteTag(category, id);
-                            }}
-                          >
-                            {t("Yes, I'm sure")}
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
+                    <div className={cn("ml-auto hidden items-center gap-1 group-hover:flex")}>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="ghost" size="icon" className="size-5">
+                            <Edit className="size-3.5 text-orange-500" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>{t("Change name")}</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              {t("You can change the tag name here.")}
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+
+                          <div className="py-4">
+                            <Input
+                              id={`tag-name-${id}`}
+                              defaultValue={id}
+                              onChange={debounce((e) => setChangeTagName(e.target.value), 110)}
+                              onKeyDown={(e) => e.stopPropagation()}
+                            />
+                          </div>
+
+                          <AlertDialogFooter>
+                            <AlertDialogCancel onClick={(e) => e.stopPropagation()}>
+                              {t("Cancel")}
+                            </AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleClickEditNameTag(id, category, changeTagName);
+                              }}
+                            >
+                              {t("Save")}
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="ghost" size="icon" className="ml-auto size-5">
+                            <Trash className="size-3.5 text-destructive" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>{t("Are you absolutely sure?")}</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              {t(
+                                "This action cannot be undone. This will delete data permanently.",
+                              )}
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel onClick={(e) => e.stopPropagation()}>
+                              {t("Cancel")}
+                            </AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleClickDeleteTag(category, id);
+                              }}
+                            >
+                              {t("Yes, I'm sure")}
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
                   </CommandItem>
                 ))}
               </CommandList>

@@ -99,6 +99,7 @@ export default async function WikiDocPage(ctx: PageProps<"/[lng]/[doctype]">) {
       } = await client.query<DocumentType>(
         `SELECT d.id
               , d.title
+              , h.userId
               , h.description
               , h.content
               , u.email
@@ -117,7 +118,7 @@ export default async function WikiDocPage(ctx: PageProps<"/[lng]/[doctype]">) {
       let sql = ``;
       // 개발모드에서는 조회수 증가 쿼리를 실행하지 않음
       if (isDev) {
-        sql = `SELECT d.id, d.title, d.description, d.content, u.email
+        sql = `SELECT d.id, d.title, d.description, d.content, u.email, d."userId"
                  FROM ${table} d
                 JOIN "user" u
                   ON u.id = d."userId"
@@ -131,7 +132,7 @@ export default async function WikiDocPage(ctx: PageProps<"/[lng]/[doctype]">) {
                                  AND t.deleted IS NULL
                            RETURNING t.id, t.title, t.description, t.content, t."userId"
                          )
-               SELECT d.id, d.title, d.description, d.content, u.email
+               SELECT d.id, d.title, d.description, d.content, u.email, d."userId"
                  FROM d
                  JOIN "user" u
                    ON u.id = d."userId"`;

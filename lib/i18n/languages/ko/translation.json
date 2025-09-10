@@ -81,9 +81,9 @@
   "wiki syntax": "위키문법",
   "writing guidelines": "작성요령",
   "Page does not exist": "페이지가 존재하지 않습니다.",
-  "Type a category or search...": "카테고리 또는 검색어를 입력하세요...",
+  "Type a category or search...": "분류 또는 검색어를 입력하세요...",
   "Type a tag or search...": "태그 또는 검색어를 입력하세요...",
-  "Category is not exists": "카테고리가 존재하지 않습니다.",
+  "Category is not exists": "분류가 존재하지 않습니다.",
   "Tag is not exists": "태그가 존재하지 않습니다.",
   "Create New": "새로 만들기",
   "No results found.": "검색 결과가 없습니다.",
@@ -104,5 +104,9 @@
   "Clear": "비우기",
   "Close": "닫기",
   "Search options...": "찾아보기...",
-  "Uploading...": "업로드 중입니다..."
+  "Uploading...": "업로드 중입니다...",
+  "Change name": "이름 변경",
+  "You can change the category name here.": "분류명을 변경할 수 있습니다.",
+  "You can change the tag name here.": "태그명을 변경할 수 있습니다.",
+  "Select a tag": "태그 선택"
 }

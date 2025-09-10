@@ -2,14 +2,13 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import debounce from "lodash.debounce";
-import { CircleAlert, MessageSquareHeart, ScrollText } from "lucide-react";
+import { CheckIcon, CircleAlert, MessageSquareHeart, ScrollText } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { Container, Viewport } from "@/components/core/Container";
-import { MultiSelect, MultiSelectOption } from "@/components/core/input/MultiSelect";
 import { KeyboardShortcuts } from "@/components/core/MdxEditor/KeyboardShortcuts";
 import { LineEditor } from "@/components/core/MdxEditor/LineEditor";
 import { Remocon } from "@/components/core/MdxEditor/Remocon";
@@ -40,6 +39,17 @@ import {
   BannerTitle,
 } from "@/components/ui/shadcn-io/banner";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
+import {
+  Tags,
+  TagsContent,
+  TagsEmpty,
+  TagsGroup,
+  TagsInput,
+  TagsItem,
+  TagsList,
+  TagsTrigger,
+  TagsValue,
+} from "@/components/ui/shadcn-io/tags";
 import { Textarea } from "@/components/ui/textarea";
 import { Toggle } from "@/components/ui/toggle";
 import { statusMessage } from "@/lib/fetch/react";
@@ -82,7 +92,7 @@ export default function MdxEditor({
   const [lines, setLines] = useState<string[]>(getHunks(doc?.content || ""));
   const [uploading, setUploading] = useState<boolean>(false);
   const [categories, setCategories] = useState<string[]>([]);
-  const [tags, setTags] = useState<MultiSelectOption[]>([]);
+  const [tags, setTags] = useState<Tag[]>([]);
   const [selectedLine, setSelectedLine] = useState<number>(-1);
 
   const containerRef = useRef<HTMLElement>(null);
@@ -107,6 +117,7 @@ export default function MdxEditor({
   const description = form.watch("description");
   const doctype = form.watch("type");
   const content = form.watch("content");
+  const selectedTags = form.watch("tags") || [];
 
   const handleChangeHunk = debounce((e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setHunk(e.target.value);
@@ -199,6 +210,21 @@ export default function MdxEditor({
     lineRef.current!.value = "";
   };
 
+  const handleRemoveTag = (value: string) => {
+    if (!selectedTags.includes(value)) return;
+
+    form.setValue(
+      "tags",
+      selectedTags.filter((v) => v !== value),
+    );
+  };
+
+  const handleSelectTag = (value: string) => {
+    if (selectedTags.includes(value)) return handleRemoveTag(value);
+
+    form.setValue("tags", [...selectedTags, value]);
+  };
+
   useEffect(() => {
     form.setValue("content", clearMarkdown(trailingFootnotes(lines.join("\n\n"))));
   }, [lines]);
@@ -210,12 +236,11 @@ export default function MdxEditor({
 
     if (!res.ok) return toast.error(statusMessage({ t, status: res.status }));
 
-    const rows: Tag[] = await res.json();
-    setTags(rows.map(({ id }) => ({ label: id, value: id })));
+    setTags(await res.json());
   }, [category]);
 
   useEffect(() => {
-    if (doc?.tags?.length && tags.some((t) => doc!.tags!.includes(t.value)))
+    if (doc?.tags?.length && tags.some((t) => doc!.tags!.includes(t.id)))
       return form.setValue("tags", doc!.tags!);
 
     form.setValue("tags", []);
@@ -365,21 +390,36 @@ export default function MdxEditor({
                       render={({ field: { value, onChange, ...field } }) => (
                         <FormItem className="mb-6 grow">
                           <FormControl>
-                            <MultiSelect
-                              responsive
-                              i18n={{
-                                selectAll: t("Select All"),
-                                clear: t("Clear"),
-                                close: t("Close"),
-                                placeholder: t("Search options..."),
-                              }}
-                              popoverClassName="!w-fit"
-                              onValueChange={onChange}
-                              defaultValue={value}
-                              options={tags}
-                              placeholder={t("Select tags")}
-                              {...field}
-                            />
+                            <Tags>
+                              <TagsTrigger i18n={{ selectATag: t("Select a tag") }}>
+                                {value?.map((tag) => (
+                                  <TagsValue key={tag} onRemove={() => handleRemoveTag(tag)}>
+                                    {tag}
+                                  </TagsValue>
+                                ))}
+                              </TagsTrigger>
+                              <TagsContent>
+                                <TagsInput placeholder={t("Search options...")} />
+                                <TagsList>
+                                  <TagsEmpty />
+                                  <TagsGroup>
+                                    {tags
+                                      .filter((tag) => !value?.includes(tag.id))
+                                      .map(({ id }) => (
+                                        <TagsItem key={id} onSelect={handleSelectTag} value={id}>
+                                          {id}
+                                          {selectedTags.includes(id) && (
+                                            <CheckIcon
+                                              className="text-muted-foreground"
+                                              size={14}
+                                            />
+                                          )}
+                                        </TagsItem>
+                                      ))}
+                                  </TagsGroup>
+                                </TagsList>
+                              </TagsContent>
+                            </Tags>
                           </FormControl>
                           <FormMessage />
                         </FormItem>

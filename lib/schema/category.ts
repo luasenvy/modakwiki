@@ -7,9 +7,13 @@ export const category = z.object({
 
 export type Category = z.infer<typeof category>;
 
-export const categoryForm = category.pick({
-  id: true,
-  description: true,
-});
+export const categoryForm = category
+  .pick({
+    id: true,
+    description: true,
+  })
+  .extend({
+    name: z.string().min(1).max(30),
+  });
 
 export type CategoryForm = z.infer<typeof categoryForm>;
