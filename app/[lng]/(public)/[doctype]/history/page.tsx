@@ -54,7 +54,7 @@ export default async function HistoryPage(ctx: PageProps<"/[lng]/[doctype]/histo
             , h.created
          FROM ${history} h
          JOIN "user" u ON u.id = h."userId"
-        WHERE h.id = $1
+        WHERE h."docId" = $1
      ORDER BY h.created DESC`,
       [id],
     );

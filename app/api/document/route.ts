@@ -129,7 +129,7 @@ export async function PATCH(req: NextRequest) {
     );
 
     await client.query(
-      `INSERT INTO ${history} (id, description, content, "userId", added, removed, category, tags)
+      `INSERT INTO ${history} ("docId", description, content, "userId", added, removed, category, tags)
                     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
       [id, description, content, session.user.id, added, removed, category, tags],
     );

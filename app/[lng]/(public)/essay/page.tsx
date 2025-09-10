@@ -23,16 +23,14 @@ export default async function SearchPage(ctx: PageProps<"/[lng]/essay">) {
     } = await client.query<{ count: number }>(
       `SELECT COUNT(*) AS count
          FROM essay
-        WHERE deleted IS NULL
-          AND approval IS TRUE`,
+        WHERE deleted IS NULL`,
     );
 
     const { rows } = await client.query<DocumentType & User & { type: Doctype }>(
       `SELECT e.id, e.title, e.preview, u.name, u.image, u."email", u."emailVerified", e.category, e.tags, e.created
-         FROM "essay" e
+         FROM essay e
          JOIN "user" u ON e."userId" = u.id
-        WHERE e.deleted IS NULL
-          AND approval IS TRUE`,
+        WHERE e.deleted IS NULL`,
     );
 
     const { t } = await useTranslation(lngParam);

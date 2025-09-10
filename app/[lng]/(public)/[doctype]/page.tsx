@@ -43,10 +43,10 @@ export async function generateMetadata(ctx: PageProps<"/[lng]/[doctype]">) {
               , u.email
          FROM ${history} h
          JOIN ${table} d 
-           ON d.id = h.id
+           ON d.id = h."docId"
          JOIN "user" u
            ON d."userId" = u.id
-        WHERE h.id = $1
+        WHERE h."docId" = $1
           AND h.created = $2
           AND d.deleted IS NULL`,
         [id, created],
@@ -105,10 +105,10 @@ export default async function WikiDocPage(ctx: PageProps<"/[lng]/[doctype]">) {
               , u.email
          FROM ${history} h
          JOIN ${table} d
-           ON d.id = h.id
+           ON d.id = h."docId"
          JOIN "user" u
            ON h."userId" = u.id
-        WHERE h.id = $1
+        WHERE h."docId" = $1
           AND h.created = $2
           AND d.deleted IS NULL`,
         [id, created],

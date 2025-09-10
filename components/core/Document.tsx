@@ -3,7 +3,6 @@ import { FileClock, Pencil } from "lucide-react";
 import Link from "next/link";
 import { CopyButton } from "@/components/core/button/CopyButton";
 import { Container, Viewport } from "@/components/core/Container";
-import { ApproveControl } from "@/components/core/MdxEditor/ApproveControl";
 import { NavToc } from "@/components/core/MdxViewer/NavToc";
 import { PageHeadline } from "@/components/core/PageHeadline";
 import { TOCProvider } from "@/components/fumadocs/toc";
@@ -66,9 +65,6 @@ export async function Document({
                 doc && session && session.scope >= scopeEnum.editor && session.id === doc!.userId,
               )}
               copiable={Boolean(content && session && session.scope >= scopeEnum.associate)}
-              approvable={Boolean(
-                doc && session && !doc.approved && session.scope >= scopeEnum.admin,
-              )}
             />
           )}
         </NavToc>
@@ -84,7 +80,6 @@ interface RemoconProps extends React.HTMLAttributes<HTMLDivElement> {
   content?: string;
   editable?: boolean;
   copiable?: boolean;
-  approvable?: boolean;
   doc?: DocumentType;
 }
 
@@ -93,7 +88,6 @@ function Remocon({
   t,
   editable,
   copiable,
-  approvable,
   doc,
   doctype,
   content,
@@ -145,7 +139,6 @@ function Remocon({
           </Button>
         )}
       </div>
-      {approvable && <ApproveControl lng={lngParam} />}
     </div>
   );
 }

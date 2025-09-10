@@ -43,7 +43,7 @@ export default async function DiffPage(ctx: PageProps<"/[lng]/[doctype]/history"
             , h.created
          FROM ${history} h
          JOIN "user" u ON u.id = h."userId"
-        WHERE h.id = $1
+        WHERE h."docId" = $1
           AND h.created <= $2
      ORDER BY h.created DESC
       LIMIT 2`,

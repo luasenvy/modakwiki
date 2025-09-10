@@ -25,13 +25,13 @@ export default async function SearchPage(ctx: PageProps<"/[lng]/search">) {
          FROM (
              SELECT COUNT(*) AS count
                FROM document
-              WHERE approved IS NOT NULL AND deleted IS NULL AND (title like $1 OR content like $1)
+              WHERE deleted IS NULL AND (title like $1 OR content like $1)
 
              UNION ALL
  
              SELECT COUNT(*) AS count
                FROM essay
-              WHERE approved IS NOT NULL AND deleted IS NULL AND (title like $1 OR content like $1)
+              WHERE deleted IS NULL AND (title like $1 OR content like $1)
          )`,
       [`%${term}%`],
     );
@@ -41,9 +41,7 @@ export default async function SearchPage(ctx: PageProps<"/[lng]/search">) {
          FROM document d
          JOIN "user" u
            ON d."userId" = u.id
-        WHERE d.deleted IS NULL
-          AND d.approved IS NOT NULL
-          AND (d.title like $1 OR d.content like $1)
+        WHERE d.deleted IS NULL AND (d.title like $1 OR d.content like $1)
        
        UNION ALL
 
@@ -51,9 +49,7 @@ export default async function SearchPage(ctx: PageProps<"/[lng]/search">) {
          FROM essay e
          JOIN "user" u
            ON e."userId" = u.id
-        WHERE e.deleted IS NULL
-          AND e.approved IS NOT NULL
-          AND (e.title like $1 OR e.content like $1)`,
+        WHERE e.deleted IS NULL AND (e.title like $1 OR e.content like $1)`,
       [`%${term}%`],
     );
 

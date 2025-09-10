@@ -76,11 +76,6 @@ export const mainNavs: Array<NavItem> = [
         icon: Tags,
       },
       {
-        title: "문서검수",
-        url: "/site/approval",
-        icon: TextSearch,
-      },
-      {
         title: "이미지관리",
         url: "/site/image",
         icon: Image,

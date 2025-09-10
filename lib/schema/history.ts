@@ -3,7 +3,6 @@ import { document } from "@/lib/schema/document";
 
 export const history = document
   .pick({
-    id: true,
     title: true,
     content: true,
     description: true,
@@ -14,6 +13,7 @@ export const history = document
     created: true,
   })
   .extend({
+    docId: document.shape.id,
     added: z.number(),
     removed: z.number(),
   });
