@@ -108,5 +108,13 @@
   "Change name": "이름 변경",
   "You can change the category name here.": "분류명을 변경할 수 있습니다.",
   "You can change the tag name here.": "태그명을 변경할 수 있습니다.",
-  "Select a tag": "태그 선택"
+  "Select a tag": "태그 선택",
+  "Please register the first essay!": "첫 기고를 등록해보세요!",
+  "There is no any essay.": "등록된 기고가 없습니다.",
+  "Approve Document": "문서 승인",
+  "All documents have been reviewed!": "모든 문서가 검토되었습니다!",
+  "Reject Document": "문서 비승인",
+  "This document cannot be approved.": "이 문서는 승인할 수 없습니다.",
+  "Reason for rejection": "비승인 사유",
+  "Not Implemented": "아직 구현되지 않은 기능입니다."
 }

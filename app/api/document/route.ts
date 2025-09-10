@@ -11,7 +11,6 @@ import {
   doctypeEnum,
   getTablesByDoctype,
 } from "@/lib/schema/document";
-import { Tag } from "@/lib/schema/tag";
 import { scopeEnum } from "@/lib/schema/user";
 
 export async function POST(req: NextRequest) {

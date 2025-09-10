@@ -4,7 +4,7 @@ import debounce from "lodash.debounce";
 import { ChevronsDown, Edit, Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Alert } from "@/components/mdx/Alert";
+
 import {
   AlertDialog,
   AlertDialogAction,

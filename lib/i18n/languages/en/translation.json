@@ -122,5 +122,13 @@
   "Change name": "Change name",
   "You can change the category name here.": "You can change the category name here.",
   "You can change the tag name here.": "You can change the tag name here.",
-  "Select a tag": "Select a tag"
+  "Select a tag": "Select a tag",
+  "Please register the first essay!": "Please register the first essay!",
+  "There is no any essay.": "There is no any essay.",
+  "Approve Document": "Approve Document",
+  "All documents have been reviewed!": "All documents have been reviewed!",
+  "Reject Document": "Reject Document",
+  "This document cannot be approved.": "This document cannot be approved.",
+  "Reason for rejection": "Reason for rejection",
+  "Not Implemented": "Not Implemented"
 }

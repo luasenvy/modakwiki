@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  BadgeCheck,
   FilePlus2,
   FlameKindling,
   Image,
@@ -9,6 +10,7 @@ import {
   ScrollText,
   SpellCheck,
   Tags,
+  TextSearch,
 } from "lucide-react";
 import { create } from "zustand";
 import { ScopeEnum, scopeEnum } from "@/lib/schema/user";
@@ -72,6 +74,11 @@ export const mainNavs: Array<NavItem> = [
         title: "태그관리",
         url: "/site/tags",
         icon: Tags,
+      },
+      {
+        title: "문서검수",
+        url: "/site/approval",
+        icon: TextSearch,
       },
       {
         title: "이미지관리",

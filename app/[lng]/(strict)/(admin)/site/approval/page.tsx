@@ -4,7 +4,6 @@ import { Advertisement } from "@/components/core/button/Advertisement";
 import { Container, Viewport } from "@/components/core/Container";
 import { Document } from "@/components/core/Document";
 import { DocumentList } from "@/components/core/DocumentList";
-import { isDev } from "@/config";
 import { pool } from "@/lib/db";
 import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/next";
@@ -12,27 +11,34 @@ import { Doctype, Document as DocumentType, doctypeEnum } from "@/lib/schema/doc
 import { User } from "@/lib/schema/user";
 import { localePrefix } from "@/lib/url";
 
-export default async function SearchPage(ctx: PageProps<"/[lng]/essay">) {
+export default async function SearchPage(ctx: PageProps<"/[lng]/site/approval">) {
   const lngParam = (await ctx.params).lng as Language;
   const lng = localePrefix(lngParam);
 
   const client = await pool.connect();
   try {
     const {
-      rows: [{ count }],
+      rows: [{ count: docCount }, { count: essayCount }],
     } = await client.query<{ count: number }>(
-      `SELECT COUNT(*) AS count
-         FROM essay
-        WHERE deleted IS NULL
-          AND approval IS TRUE`,
+      `SELECT count
+         FROM (
+             SELECT COUNT(*) AS count
+               FROM document
+              WHERE approved IS NULL AND deleted IS NULL
+
+             UNION ALL
+ 
+             SELECT COUNT(*) AS count
+               FROM essay
+              WHERE approved IS NULL AND deleted IS NULL
+         )`,
     );
 
     const { rows } = await client.query<DocumentType & User & { type: Doctype }>(
       `SELECT e.id, e.title, e.preview, u.name, u.image, u."email", u."emailVerified", e.category, e.tags, e.created
          FROM "essay" e
          JOIN "user" u ON e."userId" = u.id
-        WHERE e.deleted IS NULL
-          AND approval IS TRUE`,
+        WHERE e.approved IS NULL AND e.deleted IS NULL`,
     );
 
     const { t } = await useTranslation(lngParam);
@@ -59,7 +65,7 @@ export default async function SearchPage(ctx: PageProps<"/[lng]/essay">) {
               </div>
 
               <div className="relative ms-px min-h-0 overflow-auto py-3 text-sm [scrollbar-width:none]">
-                총 {count}개의 기고가 있습니다.
+                총 {docCount}개 문서와 {essayCount}개의 기고가 승인을 바라고 있습니다.
               </div>
 
               <Advertisement className="py-6" />
@@ -69,15 +75,13 @@ export default async function SearchPage(ctx: PageProps<"/[lng]/essay">) {
       );
     }
 
-    const content = isDev ? `[${t("Please register the first essay!")}](${lng}/editor/write)` : "";
-
-    const title = t("There is no any essay.");
-    const breadcrumbs: Array<BreadcrumbItem> = [{ title, href: `${lng}/essay` }];
-
+    const title = t("All documents have been reviewed!");
+    const breadcrumbs: Array<BreadcrumbItem> = [{ title, href: `${lng}/site/approval` }];
+    // const content  = ``.trim()
     return (
       <>
         <Breadcrumb lng={lngParam} breadcrumbs={breadcrumbs} />
-        <Document lng={lngParam} title={title} content={content.trim()} />
+        <Document lng={lngParam} title={title} />
       </>
     );
   } finally {

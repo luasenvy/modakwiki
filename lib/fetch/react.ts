@@ -26,4 +26,5 @@ export function statusMessage({ t, status, options }: StatusMessageProps) {
   if (status === 409) {
     if ("PUT" === method || "PATCH" === method) return t("Update failed due to a conflict.");
   }
+  if (status === 501) return t("Not Implemented");
 }

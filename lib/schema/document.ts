@@ -2,6 +2,7 @@ import z from "zod";
 import { licenseEnum } from "@/lib/license";
 import { category } from "@/lib/schema/category";
 import { tag } from "@/lib/schema/tag";
+import { user } from "@/lib/schema/user";
 
 export const doctypeEnum = {
   document: "w",
@@ -31,6 +32,8 @@ export const document = z.object({
   created: z.number(),
   updated: z.number(),
   deleted: z.number().optional(),
+  approved: z.number().optional(),
+  approver: user.shape.id.optional(),
 });
 
 export type Document = z.infer<typeof document>;
@@ -50,3 +53,11 @@ export const documentForm = document
   });
 
 export type DocumentForm = z.infer<typeof documentForm>;
+
+export const approvalForm = z.object({
+  id: document.shape.id,
+  reason: z.string().min(2).max(300),
+  type: z.enum(doctypeEnum),
+});
+
+export type ApprovalForm = z.infer<typeof approvalForm>;
