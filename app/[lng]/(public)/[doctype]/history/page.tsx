@@ -1,4 +1,4 @@
-import { ArrowRight, MoveRight } from "lucide-react";
+import { MoveRight } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Breadcrumb, BreadcrumbItem } from "@/components/core/Breadcrumb";
@@ -15,7 +15,6 @@ import {
 } from "@/lib/schema/document";
 import { History as DocumentHistory } from "@/lib/schema/history";
 import { localePrefix } from "@/lib/url";
-import { cn } from "@/lib/utils";
 
 export default async function HistoryPage(ctx: PageProps<"/[lng]/[doctype]/history">) {
   const params = await ctx.params;

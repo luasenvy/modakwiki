@@ -7,7 +7,6 @@ import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/next";
 import { Doctype, Document as DocumentType, getTablesByDoctype } from "@/lib/schema/document";
 import { History as DocumentHistory } from "@/lib/schema/history";
-import { cn } from "@/lib/utils";
 
 export default async function DiffPage(ctx: PageProps<"/[lng]/[doctype]/history">) {
   const params = await ctx.params;

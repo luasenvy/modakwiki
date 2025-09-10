@@ -13,17 +13,19 @@ import { useTranslation } from "@/lib/i18n/next";
 import { MdxLoader } from "@/lib/mdx/server";
 import { getToc } from "@/lib/mdx/utils";
 import { Doctype, Document as DocumentType } from "@/lib/schema/document";
-import { scopeEnum } from "@/lib/schema/user";
+import { scopeEnum, User } from "@/lib/schema/user";
 import { localePrefix } from "@/lib/url";
 import { cn } from "@/lib/utils";
 
 interface DocumentProps {
   lng: Language;
   doctype?: Doctype;
-  doc?: DocumentType;
+  doc?: DocumentType & User;
   content?: string;
   title?: string;
   description?: string;
+  author?: { name: string; image?: string; email?: string; emailVerified?: boolean };
+  created?: number;
   session?: Session["user"] | null;
 }
 
@@ -34,12 +36,17 @@ export async function Document({
   content = "",
   title = "",
   description = "",
+  author,
+  created,
   session,
 }: DocumentProps) {
   content = doc?.content ?? content;
   title = doc?.title ?? title;
   description = doc?.description ?? description;
-
+  author = doc?.name
+    ? { name: doc.name, image: doc.image, email: doc.email, emailVerified: doc.emailVerified }
+    : author;
+  created = doc?.created ?? created;
   const toc = getToc(content);
 
   const { t } = await useTranslation(lngParam);
@@ -48,7 +55,13 @@ export async function Document({
     <TOCProvider toc={toc} single={false}>
       <Viewport>
         <Container as="article" variant="document">
-          <PageHeadline title={title} description={description} />
+          <PageHeadline
+            lng={lngParam}
+            title={title}
+            description={description}
+            author={author}
+            created={created}
+          />
 
           <MdxLoader source={content} />
         </Container>
