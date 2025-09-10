@@ -363,10 +363,10 @@ export default function MdxEditor({
                     control={form.control}
                     name="category"
                     render={({ field: { value, onChange, ...field } }) => (
-                      <FormItem className="mb-6 shrink-0">
+                      <FormItem className="mb-2 shrink-0">
                         <FormControl>
                           <Select value={value} onValueChange={onChange} {...field}>
-                            <SelectTrigger>
+                            <SelectTrigger className="rounded-none">
                               <SelectValue placeholder={t("Select a category")} />
                             </SelectTrigger>
                             <SelectContent>
@@ -388,10 +388,13 @@ export default function MdxEditor({
                       control={form.control}
                       name="tags"
                       render={({ field: { value, onChange, ...field } }) => (
-                        <FormItem className="mb-6 grow">
+                        <FormItem className="mb-2 grow">
                           <FormControl>
                             <Tags>
-                              <TagsTrigger i18n={{ selectATag: t("Select a tag") }}>
+                              <TagsTrigger
+                                className="rounded-none"
+                                i18n={{ selectATag: t("Select a tag") }}
+                              >
                                 {value?.map((tag) => (
                                   <TagsValue key={tag} onRemove={() => handleRemoveTag(tag)}>
                                     {tag}
@@ -446,8 +449,9 @@ export default function MdxEditor({
                     </FormItem>
                   )}
                 />
+
                 {title && (
-                  <h1 className={cn("my-8", { "!mb-1": Boolean(description) })}>{title}</h1>
+                  <h1 className={cn("!my-12", { "!mb-1": Boolean(description) })}>{title}</h1>
                 )}
                 {description && (
                   <h2 className="!m-0 !mb-8 font-font-semibold text-lg text-muted-foreground">

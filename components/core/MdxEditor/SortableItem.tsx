@@ -1,6 +1,7 @@
 "use client";
 
 import { useSortable } from "@dnd-kit/sortable";
+// import { CSS } from "@dnd-kit/utilities";
 import { GripVertical } from "lucide-react";
 import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/react";
@@ -24,6 +25,7 @@ export function SortableItem({ lng: lngParam, children, className, ...props }: S
       className={cn(className, "relative flex items-center")}
       style={{
         transform: transform ? `translate(${transform.x}px, ${transform.y}px)` : undefined,
+        // transform: CSS.Transform.toString(transform),
         transition: isSorting ? transition : undefined,
       }}
       {...props}

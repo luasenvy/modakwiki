@@ -11,10 +11,11 @@ import {
 } from "@dnd-kit/core";
 import { arrayMove, SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import debounce from "lodash.debounce";
-import { Pencil, PencilOff, Trash } from "lucide-react";
+import { ChevronDown, ChevronUp, Pencil, PencilOff, Trash } from "lucide-react";
 import { useRef, useState } from "react";
 import { SortableItem } from "@/components/core/MdxEditor/SortableItem";
 import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
 import { Textarea } from "@/components/ui/textarea";
 import { statusMessage } from "@/lib/fetch/react";
@@ -165,55 +166,105 @@ export function LineEditor({
               </div>
             )}
 
-            <div className="absolute top-0 right-0 hidden bg-background shadow-sm group-hover/line:flex">
-              {selectedLine === i ? (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  type="button"
-                  title={t("Cancel Edit")}
-                  className="!bg-transparent !text-orange-500 hover:!text-orange-600"
-                  onClick={() => {
-                    // return prev
-                    setLines(
-                      Array.from(lines.toSpliced(selectedLine, 1, prevSelectedLineContent.current)),
-                    );
-                    setSelectedLine(-1);
-                  }}
-                >
-                  <PencilOff className="size-4" />
-                </Button>
-              ) : (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  type="button"
-                  title={t("Edit")}
-                  className="!bg-transparent !text-orange-500 hover:!text-orange-600"
-                  onClick={() => {
-                    if (selectedLine !== i) {
-                      prevSelectedLineContent.current = lines[i];
-                      return setSelectedLine(i);
-                    }
-                  }}
-                >
-                  <Pencil className="size-4" />
-                </Button>
-              )}
+            <div className="absolute top-0 right-0 hidden items-center bg-background shadow-sm group-hover/line:flex">
+              <div>
+                {i > 0 && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    type="button"
+                    title={t("한 문단 위로")}
+                    className="!bg-transparent !text-blue-500 hover:!text-blue-600 hover:!bg-accent !rounded-none"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      const toLines = lines.toSpliced(i - 1, 2, lines[i], lines[i - 1]);
+                      setLines(toLines);
+                      setSelectedLine(i - 1);
 
-              <Button
-                variant="ghost"
-                size="icon"
-                className="!bg-transparent hover:!text-red-600 text-red-500"
-                type="button"
-                title={t("Remove Paragraph")}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setLines((prev) => prev.filter((_, index) => index !== i));
-                }}
-              >
-                <Trash className="size-4" />
-              </Button>
+                      setTimeout(() => {
+                        inputRefs.current[i - 1].value = toLines[i - 1];
+                        inputRefs.current[i].value = toLines[i];
+                      });
+                    }}
+                  >
+                    <ChevronUp className="size-4" />
+                  </Button>
+                )}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  type="button"
+                  title={t("한 문단 아래로")}
+                  className="!bg-transparent !text-blue-500 hover:!text-blue-600 hover:!bg-accent !rounded-none"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    const toLines = lines.toSpliced(i, 2, lines[i + 1], lines[i]);
+                    setLines(toLines);
+                    setSelectedLine(i + 1);
+                    setTimeout(() => {
+                      inputRefs.current[i].value = toLines[i];
+                      inputRefs.current[i + 1].value = toLines[i + 1];
+                    });
+                  }}
+                >
+                  <ChevronDown className="size-4" />
+                </Button>
+              </div>
+
+              <Separator orientation="vertical" className="!h-4 mx-2 w-px" />
+
+              <div>
+                {selectedLine === i ? (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    type="button"
+                    title={t("Cancel Edit")}
+                    className="hover:!bg-accent !rounded-none !bg-transparent !text-orange-500 hover:!text-orange-600"
+                    onClick={() => {
+                      // return prev
+                      setLines(
+                        Array.from(
+                          lines.toSpliced(selectedLine, 1, prevSelectedLineContent.current),
+                        ),
+                      );
+                      setSelectedLine(-1);
+                    }}
+                  >
+                    <PencilOff className="size-4" />
+                  </Button>
+                ) : (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    type="button"
+                    title={t("Edit")}
+                    className="hover:!bg-accent !rounded-none !bg-transparent !text-orange-500 hover:!text-orange-600"
+                    onClick={() => {
+                      if (selectedLine !== i) {
+                        prevSelectedLineContent.current = lines[i];
+                        return setSelectedLine(i);
+                      }
+                    }}
+                  >
+                    <Pencil className="size-4" />
+                  </Button>
+                )}
+
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="hover:!bg-accent !rounded-none !bg-transparent hover:!text-rose-600 text-rose-500"
+                  type="button"
+                  title={t("Remove Paragraph")}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setLines((prev) => prev.filter((_, index) => index !== i));
+                  }}
+                >
+                  <Trash className="size-4" />
+                </Button>
+              </div>
             </div>
           </SortableItem>
         ))}
