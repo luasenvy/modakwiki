@@ -18,7 +18,6 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { isDev } from "@/config";
-import { statusMessage } from "@/lib/fetch/react";
 import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/react";
 

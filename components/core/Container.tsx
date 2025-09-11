@@ -93,7 +93,7 @@ export function Container<T extends AllowedComponent = typeof defaultContainerCo
   ...props
 }: React.ComponentProps<T> & { as?: T; variant?: keyof typeof variants }) {
   return createElement(as ?? defaultContainerComponent, {
-    className: cn("pt-8 pb-24", className, variants[variant]),
+    className: cn("pt-8 pb-24", variants[variant], className),
     ...props,
   });
 }

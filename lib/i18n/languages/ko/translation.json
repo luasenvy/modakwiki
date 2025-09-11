@@ -121,5 +121,7 @@
   "한 문단 아래로": "한 문단 아래로",
   "No tags found.": "태그가 없습니다.",
   "Upload Image": "이미지 업로드",
-  "An upload is already in progress.": "업로드가 진행중입니다."
+  "An upload is already in progress.": "업로드가 진행중입니다.",
+  "Delete": "삭제",
+  "Delete Image": "이미지 삭제"
 }

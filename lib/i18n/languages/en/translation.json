@@ -135,5 +135,7 @@
   "한 문단 아래로": "한 문단 아래로",
   "No tags found.": "No tags found.",
   "Upload Image": "Upload Image",
-  "An upload is already in progress.": "An upload is already in progress."
+  "An upload is already in progress.": "An upload is already in progress.",
+  "Delete": "Delete",
+  "Delete Image": "Delete Image"
 }

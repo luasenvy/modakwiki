@@ -77,3 +77,41 @@ export function fromNow(epoch: number | Date) {
 
   return `${Math.ceil(diff / DAY)} 일 전`;
 }
+
+const sizes = {
+  B: "B",
+  KB: "KB",
+  MB: "MB",
+} as const;
+
+export const byteto = (
+  value: number,
+  options?: {
+    type?: keyof typeof sizes;
+    autoscale?: boolean;
+    precision?: number;
+    locale?: Intl.LocalesArgument;
+  },
+): string => {
+  const type = options?.type ?? sizes.B;
+  let cursor = value;
+  switch (type) {
+    case sizes.MB:
+      cursor /= 1024;
+    case sizes.KB:
+      cursor /= 1024;
+  }
+
+  if (options?.autoscale !== false && cursor >= 1024) {
+    switch (type) {
+      case sizes.B:
+        return byteto(value, { ...options, type: sizes.KB });
+      case sizes.KB:
+        return byteto(value, { ...options, type: sizes.MB });
+    }
+  }
+
+  return new Intl.NumberFormat(options?.locale)
+    .format(Number(cursor.toFixed(options?.precision ?? 2)))
+    .concat(type);
+};
