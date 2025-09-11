@@ -14,6 +14,7 @@ import debounce from "lodash.debounce";
 import { ChevronDown, ChevronUp, Pencil, PencilOff, Trash } from "lucide-react";
 import { useRef, useState } from "react";
 import { SortableItem } from "@/components/core/MdxEditor/SortableItem";
+import { UploadImageButton } from "@/components/pages/site/image/UploadImageButton";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
@@ -83,6 +84,30 @@ export function LineEditor({
     useSensor(MouseSensor, { activationConstraint: { distance: 8 } }),
     useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 6 } }),
   );
+
+  const uploadImage = async (files: FileList) => {
+    handleChangeSelectedLine.cancel();
+
+    const formData = new FormData();
+
+    for (const file of files) formData.append("files", file);
+
+    const options = { method: "POST", body: formData };
+
+    setUploading(true);
+    const res = await fetch("/api/image", options);
+    setUploading(false);
+
+    if (!res.ok) return statusMessage({ t, status: res.status, options });
+
+    const uris = await res.json();
+
+    const curr = `${hunk}\n\n${uris.map((uri: string) => `![Uploaded Image](/api/image${uri})`).join("\n\n")}`;
+    setHunk(curr);
+
+    const textarea = inputRefs.current[selectedLine];
+    lineRef.current!.value = curr;
+  };
 
   const handlePasteChangeLine = async (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
     const files = e.clipboardData.files;
@@ -154,6 +179,8 @@ export function LineEditor({
                   onKeyDown={handleKeyDownSelectedLine}
                   onPaste={handlePasteChangeLine}
                 />
+
+                <UploadImageButton lng={lngParam} uploading={uploading} onSelect={uploadImage} />
 
                 {uploading && (
                   <div className="absolute inset-0 flex bg-muted/80">

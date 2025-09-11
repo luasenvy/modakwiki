@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import debounce from "lodash.debounce";
-import { CheckIcon, CircleAlert, ImageUp, MessageSquareHeart, ScrollText } from "lucide-react";
+import { CheckIcon, CircleAlert, MessageSquareHeart, ScrollText } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -15,7 +15,7 @@ import { Remocon } from "@/components/core/MdxEditor/Remocon";
 import { FootnoteHighlighter } from "@/components/core/MdxViewer/FootnoteHighlighter";
 import { NavToc } from "@/components/core/MdxViewer/NavToc";
 import { TOCProvider } from "@/components/fumadocs/toc";
-import { Button } from "@/components/ui/button";
+import { UploadImageButton } from "@/components/pages/site/image/UploadImageButton";
 import {
   Form,
   FormControl,
@@ -99,7 +99,6 @@ export default function MdxEditor({
   const containerRef = useRef<HTMLElement>(null);
   const lineRef = useRef<HTMLTextAreaElement>(null);
   const titleRef = useRef<HTMLInputElement>(null);
-  const uploadRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<DocumentForm>({
     resolver: zodResolver(documentForm),
@@ -157,19 +156,6 @@ export default function MdxEditor({
     setHunk(curr);
 
     lineRef.current!.value = curr;
-  };
-
-  const handleChangeUploadImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (uploading) {
-      e.target.value = "";
-      return toast.error(t("An upload is already in progress."));
-    }
-
-    const files = e.target.files;
-    if (!files?.length) return;
-
-    uploadImage(files);
-    e.target.value = "";
   };
 
   const handlePaste = async (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
@@ -502,28 +488,7 @@ export default function MdxEditor({
                     onPaste={handlePaste}
                   />
 
-                  <div className="mt-1 flex items-center justify-end">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      type="button"
-                      className="rounded-none"
-                      onClick={() => uploadRef.current?.click()}
-                    >
-                      <ImageUp className="size-5" />
-                      {t("Upload Image")}
-                    </Button>
-
-                    <input
-                      ref={uploadRef}
-                      name="upload"
-                      type="file"
-                      className="hidden"
-                      multiple
-                      accept="image/*"
-                      onChange={handleChangeUploadImage}
-                    />
-                  </div>
+                  <UploadImageButton lng={lngParam} uploading={uploading} onSelect={uploadImage} />
 
                   {uploading && (
                     <div className="absolute inset-0 flex bg-muted/80">
