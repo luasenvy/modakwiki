@@ -36,7 +36,7 @@ export function UploadImageButton({
   };
 
   return (
-    <div className="mt-1 flex items-center justify-end">
+    <>
       <Button
         variant="outline"
         size="sm"
@@ -57,6 +57,6 @@ export function UploadImageButton({
         accept="image/*"
         onChange={handleChangeUploadImage}
       />
-    </div>
+    </>
   );
 }

@@ -14,6 +14,7 @@ import debounce from "lodash.debounce";
 import { ChevronDown, ChevronUp, Pencil, PencilOff, Trash } from "lucide-react";
 import { useRef, useState } from "react";
 import { SortableItem } from "@/components/core/MdxEditor/SortableItem";
+import { ImageSelectButton } from "@/components/pages/site/image/ImageSelectButton";
 import { UploadImageButton } from "@/components/pages/site/image/UploadImageButton";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -23,6 +24,7 @@ import { statusMessage } from "@/lib/fetch/react";
 import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/react";
 import { MdxLoader } from "@/lib/mdx/react";
+import { Image as ImageType } from "@/lib/schema/image";
 import { cn } from "@/lib/utils";
 
 interface LineEditorProps {
@@ -102,11 +104,32 @@ export function LineEditor({
 
     const uris = await res.json();
 
-    const curr = `${hunk}\n\n${uris.map((uri: string) => `![Uploaded Image](/api/image${uri})`).join("\n\n")}`;
-    setHunk(curr);
-
     const textarea = inputRefs.current[selectedLine];
-    lineRef.current!.value = curr;
+    const line = lines[selectedLine];
+    const head = line.substring(0, textarea.selectionStart);
+    const tail = line.substring(textarea.selectionEnd);
+
+    const imageMarkdown = uris
+      .map((uri: string) => `![Uploaded Image](/api/image${uri})`)
+      .join("\n\n");
+    const text = `${head}\n\n${imageMarkdown}\n\n${tail}`;
+
+    setLines((prev) => prev.toSpliced(selectedLine, 1, text));
+    textarea.value = text;
+  };
+
+  const handleSelectImage = (image: ImageType) => {
+    const textarea = inputRefs.current[selectedLine];
+    if (!textarea) return;
+
+    const line = lines[selectedLine];
+    const head = line.substring(0, textarea.selectionStart);
+    const tail = line.substring(textarea.selectionEnd);
+
+    const curr = `${head}\n\n![${image.name}](/api/image${image.uri}-o)\n\n${tail}`;
+
+    setLines((prev) => prev.toSpliced(selectedLine, 1, curr));
+    textarea.value = curr;
   };
 
   const handlePasteChangeLine = async (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
@@ -116,34 +139,7 @@ export function LineEditor({
 
       if (uploading) return;
 
-      handleChangeSelectedLine.cancel();
-
-      const formData = new FormData();
-
-      for (const file of files) formData.append("files", file);
-
-      const options = { method: "POST", body: formData };
-
-      setUploading(true);
-      const res = await fetch("/api/image", options);
-      setUploading(false);
-
-      if (!res.ok) return statusMessage({ t, status: res.status, options });
-
-      const uris = await res.json();
-
-      const textarea = inputRefs.current[selectedLine];
-      const line = lines[selectedLine];
-      const head = line.substring(0, textarea.selectionStart);
-      const tail = line.substring(textarea.selectionEnd);
-
-      const imageMarkdown = uris
-        .map((uri: string) => `![Uploaded Image](/api/image${uri})`)
-        .join("\n\n");
-      const text = `${head}\n\n${imageMarkdown}\n\n${tail}`;
-
-      setLines((prev) => prev.toSpliced(selectedLine, 1, text));
-      textarea.value = text;
+      uploadImage(files);
     }
   };
 
@@ -180,7 +176,11 @@ export function LineEditor({
                   onPaste={handlePasteChangeLine}
                 />
 
-                <UploadImageButton lng={lngParam} uploading={uploading} onSelect={uploadImage} />
+                <div className="mt-1 flex items-center justify-end gap-1">
+                  <UploadImageButton lng={lngParam} uploading={uploading} onSelect={uploadImage} />
+
+                  <ImageSelectButton lng={lngParam} onSelect={handleSelectImage} />
+                </div>
 
                 {uploading && (
                   <div className="absolute inset-0 flex bg-muted/80">

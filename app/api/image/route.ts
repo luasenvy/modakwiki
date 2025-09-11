@@ -13,6 +13,29 @@ import { scopeEnum } from "@/lib/schema/user";
 const docroot = join(storage.root, "images");
 const trashDocroot = join(storage.root, "images_trash");
 
+export async function GET(req: NextRequest) {
+  const client = await pool.connect();
+  try {
+    const { rows } = await client.query(
+      `SELECT id
+            , license
+            , uri
+            , portrait
+            , size
+            , name
+            , "userId"
+            , created
+         FROM image
+        WHERE deleted IS NULL
+     ORDER BY created DESC`,
+    );
+
+    return Response.json(rows);
+  } finally {
+    client.release();
+  }
+}
+
 export async function POST(req: NextRequest) {
   const session = await auth.api.getSession(req);
   if (!session) return new Response(null, { status: 401 });

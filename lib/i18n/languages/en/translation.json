@@ -137,5 +137,7 @@
   "Upload Image": "Upload Image",
   "An upload is already in progress.": "An upload is already in progress.",
   "Delete": "Delete",
-  "Delete Image": "Delete Image"
+  "Delete Image": "Delete Image",
+  "Select Image": "Select Image",
+  "You can select an image": "You can select an image"
 }

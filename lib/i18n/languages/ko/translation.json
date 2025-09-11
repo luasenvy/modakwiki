@@ -123,5 +123,7 @@
   "Upload Image": "이미지 업로드",
   "An upload is already in progress.": "업로드가 진행중입니다.",
   "Delete": "삭제",
-  "Delete Image": "이미지 삭제"
+  "Delete Image": "이미지 삭제",
+  "Select Image": "이미지 선택",
+  "You can select an image": "이미지를 선택할 수 있습니다."
 }

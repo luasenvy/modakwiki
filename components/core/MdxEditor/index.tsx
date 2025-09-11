@@ -15,6 +15,7 @@ import { Remocon } from "@/components/core/MdxEditor/Remocon";
 import { FootnoteHighlighter } from "@/components/core/MdxViewer/FootnoteHighlighter";
 import { NavToc } from "@/components/core/MdxViewer/NavToc";
 import { TOCProvider } from "@/components/fumadocs/toc";
+import { ImageSelectButton } from "@/components/pages/site/image/ImageSelectButton";
 import { UploadImageButton } from "@/components/pages/site/image/UploadImageButton";
 import {
   Form,
@@ -65,6 +66,7 @@ import {
   doctypeEnum,
   documentForm,
 } from "@/lib/schema/document";
+import { Image as ImageType } from "@/lib/schema/image";
 import { Tag } from "@/lib/schema/tag";
 import { localePrefix } from "@/lib/url";
 import { cn } from "@/lib/utils";
@@ -133,6 +135,17 @@ export default function MdxEditor({
       setHunk("");
       lineRef.current!.value = "";
     }
+  };
+
+  const handleSelectImage = async (image: ImageType) => {
+    if (!lineRef.current) return;
+
+    const { selectionStart, selectionEnd } = lineRef.current;
+
+    const curr = `${hunk.substring(0, selectionStart)}\n\n![${image.name}](/api/image${image.uri}-o)\n\n${hunk.substring(selectionEnd)}`;
+
+    setHunk(curr);
+    lineRef.current.value = curr;
   };
 
   const uploadImage = async (files: FileList) => {
@@ -488,7 +501,15 @@ export default function MdxEditor({
                     onPaste={handlePaste}
                   />
 
-                  <UploadImageButton lng={lngParam} uploading={uploading} onSelect={uploadImage} />
+                  <div className="mt-1 flex items-center justify-end gap-1">
+                    <UploadImageButton
+                      lng={lngParam}
+                      uploading={uploading}
+                      onSelect={uploadImage}
+                    />
+
+                    <ImageSelectButton lng={lngParam} onSelect={handleSelectImage} />
+                  </div>
 
                   {uploading && (
                     <div className="absolute inset-0 flex bg-muted/80">
