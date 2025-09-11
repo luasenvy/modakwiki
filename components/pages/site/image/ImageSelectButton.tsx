@@ -13,6 +13,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Spinner } from "@/components/ui/shadcn-io/spinner";
 import { statusMessage } from "@/lib/fetch/react";
 import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/react";
@@ -29,6 +30,7 @@ export function ImageSelectButton({
 }: UploadImageButtonProps) {
   const [images, setImages] = useState<Array<ImageType>>([]);
   const [open, setOpen] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const { t } = useTranslation(lngParam);
 
@@ -36,7 +38,9 @@ export function ImageSelectButton({
     if (!open) return;
 
     (async () => {
+      setLoading(true);
       const res = await fetch(`/api/image`);
+      setLoading(false);
 
       if (!res.ok) return toast.error(statusMessage({ t, status: res.status }));
 
@@ -64,24 +68,32 @@ export function ImageSelectButton({
           <DialogDescription>{t("You can select an image")}</DialogDescription>
         </DialogHeader>
 
-        <div className="grid max-h-[calc(100dvh_-_(var(--spacing)_*_40))] gap-1 overflow-y-auto sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-          {images.map((image) => (
-            <div
-              key={`image-${image.id}`}
-              className="relative flex h-[200px] flex-col justify-end border border-border bg-center bg-cover p-2 hover:bg-accent sm:h-[150px] lg:h-[200px]"
-              style={{
-                cursor: "pointer",
-                backgroundImage: `url('/api/image${image.uri}-t')`,
-              }}
-              onClick={() => {
-                handleSelect?.(image);
-                setOpen(false);
-              }}
-            >
-              <p className="truncate text-center text-shadow-sm text-sm text-white">{image.name}</p>
-            </div>
-          ))}
-        </div>
+        {loading ? (
+          <div className="max-h-[calc(100dvh_-_(var(--spacing)_*_40))] py-6">
+            <Spinner className="mx-auto" variant="ring" size={32} />
+          </div>
+        ) : (
+          <div className="grid max-h-[calc(100dvh_-_(var(--spacing)_*_40))] gap-1 overflow-y-auto sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+            {images.map((image) => (
+              <div
+                key={`image-${image.id}`}
+                className="relative flex h-[200px] flex-col justify-end border border-border bg-center bg-cover p-2 hover:bg-accent sm:h-[150px] lg:h-[200px]"
+                style={{
+                  cursor: "pointer",
+                  backgroundImage: `url('/api/image${image.uri}-t')`,
+                }}
+                onClick={() => {
+                  handleSelect?.(image);
+                  setOpen(false);
+                }}
+              >
+                <p className="truncate text-center text-shadow-sm text-sm text-white">
+                  {image.name}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
       </DialogContent>
     </Dialog>
   );
