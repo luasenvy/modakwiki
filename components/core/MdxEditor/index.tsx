@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import debounce from "lodash.debounce";
-import { CheckIcon, CircleAlert, MessageSquareHeart, ScrollText } from "lucide-react";
+import { CheckIcon, CircleAlert, ImageUp, MessageSquareHeart, ScrollText } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -15,6 +15,7 @@ import { Remocon } from "@/components/core/MdxEditor/Remocon";
 import { FootnoteHighlighter } from "@/components/core/MdxViewer/FootnoteHighlighter";
 import { NavToc } from "@/components/core/MdxViewer/NavToc";
 import { TOCProvider } from "@/components/fumadocs/toc";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -98,6 +99,7 @@ export default function MdxEditor({
   const containerRef = useRef<HTMLElement>(null);
   const lineRef = useRef<HTMLTextAreaElement>(null);
   const titleRef = useRef<HTMLInputElement>(null);
+  const uploadRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<DocumentForm>({
     resolver: zodResolver(documentForm),
@@ -134,34 +136,51 @@ export default function MdxEditor({
     }
   };
 
+  const uploadImage = async (files: FileList) => {
+    handleChangeHunk.cancel();
+
+    const formData = new FormData();
+
+    for (const file of files) formData.append("files", file);
+
+    const options = { method: "POST", body: formData };
+
+    setUploading(true);
+    const res = await fetch("/api/image", options);
+    setUploading(false);
+
+    if (!res.ok) return statusMessage({ t, status: res.status, options });
+
+    const uris = await res.json();
+
+    const curr = `${hunk}\n\n${uris.map((uri: string) => `![Uploaded Image](/api/image${uri})`).join("\n\n")}`;
+    setHunk(curr);
+
+    lineRef.current!.value = curr;
+  };
+
+  const handleChangeUploadImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (uploading) {
+      e.target.value = "";
+      return toast.error(t("An upload is already in progress."));
+    }
+
+    const files = e.target.files;
+    if (!files?.length) return;
+
+    uploadImage(files);
+    e.target.value = "";
+  };
+
   const handlePaste = async (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
     const files = e.clipboardData.files;
-    if (files.length) {
-      e.preventDefault();
+    if (!files.length) return;
 
-      if (uploading) return;
+    e.preventDefault();
 
-      handleChangeHunk.cancel();
+    if (uploading) return toast.error(t("An upload is already in progress."));
 
-      const formData = new FormData();
-
-      for (const file of files) formData.append("files", file);
-
-      const options = { method: "POST", body: formData };
-
-      setUploading(true);
-      const res = await fetch("/api/image", options);
-      setUploading(false);
-
-      if (!res.ok) return statusMessage({ t, status: res.status, options });
-
-      const uris = await res.json();
-
-      const curr = `${hunk}\n\n${uris.map((uri: string) => `![Uploaded Image](/api/image${uri})`).join("\n\n")}`;
-      setHunk(curr);
-
-      lineRef.current!.value = curr;
-    }
+    uploadImage(files);
   };
 
   const handleChangeTitle = debounce((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -329,11 +348,12 @@ export default function MdxEditor({
                     </Toggle>
                   )}
                 </div>
+
                 <FormField
                   control={form.control}
                   name="title"
                   render={({ field: { value, onChange, ...field } }) => (
-                    <FormItem className="mb-4">
+                    <FormItem className="mb-2 gap-1">
                       <FormControl>
                         <Input
                           {...field}
@@ -346,7 +366,7 @@ export default function MdxEditor({
                           required
                         />
                       </FormControl>
-                      <FormDescription className="!m-0">
+                      <FormDescription className="!m-0 text-orange-500 text-xs">
                         {t("Title cannot be change after document created.")}
                       </FormDescription>
                       <FormMessage />
@@ -363,7 +383,7 @@ export default function MdxEditor({
                     control={form.control}
                     name="category"
                     render={({ field: { value, onChange, ...field } }) => (
-                      <FormItem className="mb-2 shrink-0">
+                      <FormItem className="mb-1 shrink-0">
                         <FormControl>
                           <Select value={value} onValueChange={onChange} {...field}>
                             <SelectTrigger className="rounded-none">
@@ -388,7 +408,7 @@ export default function MdxEditor({
                       control={form.control}
                       name="tags"
                       render={({ field: { value, onChange, ...field } }) => (
-                        <FormItem className="mb-2 grow">
+                        <FormItem className="mb-1 grow">
                           <FormControl>
                             <Tags>
                               <TagsTrigger
@@ -404,7 +424,7 @@ export default function MdxEditor({
                               <TagsContent>
                                 <TagsInput placeholder={t("Search options...")} />
                                 <TagsList>
-                                  <TagsEmpty />
+                                  <TagsEmpty>{t("No tags found.")}</TagsEmpty>
                                   <TagsGroup>
                                     {tags
                                       .filter((tag) => !value?.includes(tag.id))
@@ -435,7 +455,7 @@ export default function MdxEditor({
                   control={form.control}
                   name="description"
                   render={({ field: { value, onChange, ...field } }) => (
-                    <FormItem className="mb-6">
+                    <FormItem className="mb-4">
                       <FormControl>
                         <Input
                           {...field}
@@ -481,6 +501,29 @@ export default function MdxEditor({
                     onKeyDown={handleKeyDownHunk}
                     onPaste={handlePaste}
                   />
+
+                  <div className="mt-1 flex items-center justify-end">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      type="button"
+                      className="rounded-none"
+                      onClick={() => uploadRef.current?.click()}
+                    >
+                      <ImageUp className="size-5" />
+                      {t("Upload Image")}
+                    </Button>
+
+                    <input
+                      ref={uploadRef}
+                      name="upload"
+                      type="file"
+                      className="hidden"
+                      multiple
+                      accept="image/*"
+                      onChange={handleChangeUploadImage}
+                    />
+                  </div>
 
                   {uploading && (
                     <div className="absolute inset-0 flex bg-muted/80">

@@ -162,7 +162,7 @@ export const TagsValue = ({
         // biome-ignore lint/a11y/noStaticElementInteractions: "This is a clickable badge"
         // biome-ignore lint/a11y/useKeyWithClickEvents: "This is a clickable badge"
         <div
-          className="size-auto cursor-pointer hover:text-muted-foreground"
+          className="size-auto cursor-pointer hover:text-destructive"
           onClick={handleRemove}
         >
           <XIcon size={12} />

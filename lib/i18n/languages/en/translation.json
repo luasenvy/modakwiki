@@ -130,5 +130,10 @@
   "Reject Document": "Reject Document",
   "This document cannot be approved.": "This document cannot be approved.",
   "Reason for rejection": "Reason for rejection",
-  "Not Implemented": "Not Implemented"
+  "Not Implemented": "Not Implemented",
+  "한 문단 위로": "한 문단 위로",
+  "한 문단 아래로": "한 문단 아래로",
+  "No tags found.": "No tags found.",
+  "Upload Image": "Upload Image",
+  "An upload is already in progress.": "An upload is already in progress."
 }
