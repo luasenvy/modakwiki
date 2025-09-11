@@ -32,7 +32,7 @@ export default async function HowToPage(ctx: PageProps<"/[lng]/editor/syntax">) 
   try {
     const {
       rows: [{ count }],
-    } = await client.query<ImageType>(
+    } = await client.query<{ count: number }>(
       `SELECT COUNT(*) AS count
          FROM image
         WHERE deleted IS NULL`,
@@ -88,7 +88,7 @@ export default async function HowToPage(ctx: PageProps<"/[lng]/editor/syntax">) 
           <div className="sticky top-0 flex h-[calc(100dvh_-_var(--spacing)_*_12)] w-[286px] shrink-0 flex-col pt-8 pr-4 pl-2 [mask-image:linear-gradient(to_bottom,transparent,white_16px,white_calc(100%-16px),transparent)] max-xl:hidden">
             <div className="mb-2 flex items-center gap-2">
               <Info className="size-4" />
-              <p className="m-0 text-muted-foreground text-sm">이미지정보</p>
+              <p className="m-0 text-muted-foreground text-sm">이미지 정보</p>
             </div>
 
             <div className="relative ms-px min-h-0 overflow-auto py-3 text-sm [scrollbar-width:none]">
