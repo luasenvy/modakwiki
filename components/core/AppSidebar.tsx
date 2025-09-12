@@ -40,7 +40,7 @@ export async function AppSidebar({ lng: lngParam, session, ...props }: AppSideba
 
           {isDev && (
             <div className="flex items-center justify-center">
-              <Link href="/privacy" className="text-blue-500 text-xs hover:underline">
+              <Link href="/privacy" className="font-semibold text-blue-500 text-xs hover:underline">
                 {t("Privacy Policy")}
               </Link>
 

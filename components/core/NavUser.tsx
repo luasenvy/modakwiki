@@ -4,6 +4,7 @@ import { ChevronsUpDown, LogIn, LogOut, User } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { AvatarProfile } from "@/components/core/AvatarProfile";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -50,16 +51,16 @@ export function NavUser({ lng: lngParam, sitename, session, dev }: NavUserProps)
                 size="lg"
                 className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
               >
-                <Avatar className="h-8 w-8 rounded-full">
-                  {session.image && <AvatarImage src={session.image} alt={session.name} />}
-                  <AvatarFallback className="rounded-full">
-                    {session.name.substring(0, 2)}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">{session.name}</span>
-                  <span className="truncate text-xs">{session.email}</span>
-                </div>
+                <AvatarProfile
+                  profile={{
+                    name: session.name,
+                    image: session.image,
+                    email: session.email,
+                    emailVerified: session.emailVerified,
+                  }}
+                  size="lg"
+                  flatten
+                />
                 <ChevronsUpDown className="ml-auto size-4" />
               </SidebarMenuButton>
             </DropdownMenuTrigger>
@@ -69,26 +70,6 @@ export function NavUser({ lng: lngParam, sitename, session, dev }: NavUserProps)
               align="start"
               sideOffset={4}
             >
-              {/* <DropdownMenuLabel className="p-0 font-normal">
-              <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <Avatar className="h-8 w-8 rounded-lg">
-                  {session.image && <AvatarImage src={session.image} alt={session.name} />}
-                  <AvatarFallback className="rounded-lg">CN</AvatarFallback>
-                </Avatar>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">{session.name}</span>
-                  <span className="truncate text-xs">{session.email}</span>
-                </div>
-              </div>
-            </DropdownMenuLabel> */}
-              {/* <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <Sparkles />
-                Upgrade to Pro
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator /> */}
               <DropdownMenuGroup>
                 <DropdownMenuItem asChild>
                   <Link href={`${lng}/me`}>

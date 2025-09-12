@@ -1,5 +1,6 @@
 import { CheckCircle, CheckCircleIcon, ChevronRight } from "lucide-react";
 import Link from "next/link";
+import { AvatarProfile } from "@/components/core/AvatarProfile";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Pill,
@@ -65,25 +66,7 @@ export async function DocumentList({
             </h2>
 
             <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-1">
-                <Avatar className="size-6 rounded-full">
-                  {image && <AvatarImage className="!m-0" src={image} alt={name} />}
-                  <AvatarFallback className="rounded-full">{name.substring(0, 2)}</AvatarFallback>
-                </Avatar>
-                <p className="!my-0 text-xs">
-                  <a
-                    href={`mailto:${email}`}
-                    className="text-blue-500 no-underline hover:underline"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {name}
-                  </a>
-                  {emailVerified && (
-                    <CheckCircle className="ml-0.5 inline size-2.5 text-green-600" />
-                  )}
-                </p>
-              </div>
+              <AvatarProfile profile={{ name, email, image, emailVerified }} size="sm" />
 
               <p className="!my-0 text-xs">{datetimeFormat.format(created)}</p>
             </div>
