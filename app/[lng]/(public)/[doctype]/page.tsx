@@ -106,6 +106,8 @@ export default async function WikiDocPage(ctx: PageProps<"/[lng]/[doctype]">) {
         `SELECT d.id
               , d.title
               , h.userId
+              , h.category
+              , h.tags
               , h.description
               , h.content
               , u.email
@@ -127,7 +129,7 @@ export default async function WikiDocPage(ctx: PageProps<"/[lng]/[doctype]">) {
       let sql = ``;
       // 개발모드에서는 조회수 증가 쿼리를 실행하지 않음
       if (isDev) {
-        sql = `SELECT d.id, d.title, d.description, d.content, u."emailVerified", u.image, u.name, u.email, d."userId"
+        sql = `SELECT d.id, d.title, d.description, d.content, d.category, d.tags, u."emailVerified", u.image, u.name, u.email, d."userId"
                  FROM ${table} d
                 JOIN "user" u
                   ON u.id = d."userId"
@@ -139,9 +141,9 @@ export default async function WikiDocPage(ctx: PageProps<"/[lng]/[doctype]">) {
                                  SET t.view = t.view + 1
                                WHERE t.id = $1
                                  AND t.deleted IS NULL
-                           RETURNING t.id, t.title, t.description, t.content, t."userId"
+                           RETURNING t.id, t.title, t.description, t.content, t.category, t.tags, t."userId"
                          )
-               SELECT d.id, d.title, d.description, d.content, u.email, u.name, u.image, u."emailVerified", d."userId"
+               SELECT d.id, d.title, d.description, d.content, d.category, d.tags, u.email, u.name, u.image, u."emailVerified", d."userId"
                  FROM d
                  JOIN "user" u
                    ON u.id = d."userId"`;

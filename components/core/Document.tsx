@@ -24,6 +24,8 @@ interface DocumentProps {
   content?: string;
   title?: string;
   description?: string;
+  category?: string;
+  tags?: string[];
   author?: { name: string; image?: string; email?: string; emailVerified?: boolean };
   created?: number;
   session?: Session["user"] | null;
@@ -36,6 +38,8 @@ export async function Document({
   content = "",
   title = "",
   description = "",
+  category,
+  tags,
   author,
   created,
   session,
@@ -47,6 +51,8 @@ export async function Document({
     ? { name: doc.name, image: doc.image, email: doc.email, emailVerified: doc.emailVerified }
     : author;
   created = doc?.created ?? created;
+  category = doc?.category ?? category;
+  tags = doc?.tags ?? tags;
   const toc = getToc(content);
 
   const { t } = await useTranslation(lngParam);
@@ -61,6 +67,8 @@ export async function Document({
             description={description}
             author={author}
             created={created}
+            category={category}
+            tags={tags}
           />
 
           <MdxLoader source={content} />
