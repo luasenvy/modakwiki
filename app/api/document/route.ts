@@ -31,6 +31,22 @@ export async function POST(req: NextRequest) {
 
     const { table, history } = getTablesByDoctype(doctype);
     const isEssay = doctypeEnum.essay === doctype;
+
+    if (isEssay) {
+      const {
+        rows: [{ count }],
+      } = await client.query<{ count: number }>(
+        `SELECT COUNT(*)
+          FROM tag
+         WHERE "category" = $1
+           AND id IN (${tags?.map((tag) => `'${tag}'`).join(",")})
+         `,
+        [category, tags],
+      );
+
+      if (count !== tags?.length) return new Response("Bad Request", { status: 400 });
+    }
+
     const sql = isEssay
       ? `INSERT INTO ${table} (id, title, description, content, "userId", preview, category, tags)
                 VALUES ($1, $2, $3, $4, $5, $6, $7, '{${tags?.map((tag) => `"${tag}"`).join(",")}}')
