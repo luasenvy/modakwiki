@@ -139,5 +139,19 @@
   "Delete": "Delete",
   "Delete Image": "Delete Image",
   "Select Image": "Select Image",
-  "You can select an image": "You can select an image"
+  "You can select an image": "You can select an image",
+  "public": "Public Domain",
+  "cc0": "CC0 1.0 Universal",
+  "ccby": "CC BY 4.0 International",
+  "ccbysa": "CC BY-SA 4.0 International",
+  "ccbysa3": "CC BY-SA 3.0 Unported",
+  "ccbyncsa": "CC BY-NC-SA 4.0 International",
+  "kogl1": "공공누리 제 1유형: 출처표시",
+  "kogl2": "공공누리 제 2유형: 출처 표시 + 상업적 이용금지",
+  "kogl3": "공공누리 제 3유형: 출처표시 + 변경금지",
+  "kogl4": "공공누리 제 4유형: 출처표시 + 상업적 이용금지 + 변경금지",
+  "koglopen": "공공누리 만료 공공저작물: 자유이용",
+  "Last Modified": "Last Modified",
+  "Select a license": "Select a license",
+  "license": "license"
 }

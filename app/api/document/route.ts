@@ -26,6 +26,7 @@ export async function POST(req: NextRequest) {
       description,
       content,
       category,
+      license,
       tags,
     }: DocumentForm = await req.json();
 
@@ -48,11 +49,11 @@ export async function POST(req: NextRequest) {
     }
 
     const sql = isEssay
-      ? `INSERT INTO ${table} (id, title, description, content, "userId", preview, category, tags)
-                VALUES ($1, $2, $3, $4, $5, $6, $7, '{${tags?.map((tag) => `"${tag}"`).join(",")}}')
+      ? `INSERT INTO ${table} (id, title, description, content, "userId", preview, license, category, tags)
+                       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, '{${tags?.map((tag) => `"${tag}"`).join(",")}}')
           RETURNING id`
-      : `INSERT INTO ${table} (id, title, description, content, "userId", preview)
-                VALUES ($1, $2, $3, $4, $5, $6)
+      : `INSERT INTO ${table} (id, title, description, content, "userId", preview, license)
+                VALUES ($1, $2, $3, $4, $5, $6, $7)
           RETURNING id`;
 
     const params: Array<string | string[] | undefined | null> = [
@@ -62,6 +63,7 @@ export async function POST(req: NextRequest) {
       content,
       session.user.id,
       clearMarkdown(humanReadable(content).substring(0, 150)),
+      license,
     ];
 
     if (isEssay) params.push(category);
@@ -71,13 +73,13 @@ export async function POST(req: NextRequest) {
     } = await client.query(sql, params);
 
     const historySql = isEssay
-      ? `INSERT INTO ${history} (id, description, content, "userId", category, tags)
-                       VALUES ($1, $2, $3, $4, $5, '{${tags?.map((tag) => `"${tag}"`).join(",")}}')`
-      : `INSERT INTO ${history} (id, description, content, "userId")
-                       VALUES ($1, $2, $3, $4)`;
+      ? `INSERT INTO ${history} (id, description, content, "userId", license, category, tags)
+                       VALUES ($1, $2, $3, $4, $5, $6, '{${tags?.map((tag) => `"${tag}"`).join(",")}}')`
+      : `INSERT INTO ${history} (id, description, content, license, "userId")
+                       VALUES ($1, $2, $3, $4, $5)`;
     const historyParams = isEssay
-      ? [id, description, content, session.user.id, category]
-      : [id, description, content, session.user.id];
+      ? [id, description, content, session.user.id, license, category]
+      : [id, description, content, license, session.user.id];
 
     await client.query(historySql, historyParams);
 
@@ -94,8 +96,15 @@ export async function PATCH(req: NextRequest) {
 
   const client = await pool.connect();
   try {
-    const { id, type, content, description, category, tags }: DocumentForm & { type: Doctype } =
-      await req.json();
+    const {
+      id,
+      type,
+      content,
+      description,
+      license,
+      category,
+      tags,
+    }: DocumentForm & { type: Doctype } = await req.json();
 
     const { table, history } = getTablesByDoctype(type);
     if (!table) return new Response("Bad Request", { status: 400 });
@@ -130,14 +139,16 @@ export async function PATCH(req: NextRequest) {
           SET content = $1
             , preview = $2
             , description = $3
-            , category = $4
-            , tags = $5
+            , license = $4
+            , category = $5
+            , tags = $6
             , updated = extract(epoch FROM current_timestamp) * 1000
-        WHERE id = $6`,
+        WHERE id = $7`,
       [
         content,
         clearMarkdown(humanReadable(content).substring(0, 150)),
         description,
+        license,
         category,
         tags,
         id,
@@ -145,9 +156,9 @@ export async function PATCH(req: NextRequest) {
     );
 
     await client.query(
-      `INSERT INTO ${history} ("docId", description, content, "userId", added, removed, category, tags)
-                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
-      [id, description, content, session.user.id, added, removed, category, tags],
+      `INSERT INTO ${history} ("docId", description, content, "userId", added, removed, category, tags, license)
+                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+      [id, description, content, session.user.id, added, removed, category, tags, license],
     );
 
     return Response.json({ id }, { status: 200 });

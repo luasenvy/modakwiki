@@ -8,6 +8,7 @@ export const history = document
     description: true,
     userId: true,
     type: true,
+    license: true,
     category: true,
     tags: true,
     created: true,

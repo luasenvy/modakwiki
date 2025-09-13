@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Session } from "@/lib/auth/server";
 import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/next";
+import { License, licenseEnum } from "@/lib/license";
 import { MdxLoader } from "@/lib/mdx/server";
 import { getToc } from "@/lib/mdx/utils";
 import { Doctype, Document as DocumentType } from "@/lib/schema/document";
@@ -25,9 +26,11 @@ interface DocumentProps {
   title?: string;
   description?: string;
   category?: string;
+  license?: License;
   tags?: string[];
   author?: { name: string; image?: string; email?: string; emailVerified?: boolean };
   created?: number;
+  updated?: number;
   session?: Session["user"] | null;
 }
 
@@ -38,10 +41,12 @@ export async function Document({
   content = "",
   title = "",
   description = "",
+  license = licenseEnum.ccbysa,
   category,
   tags,
   author,
   created,
+  updated,
   session,
 }: DocumentProps) {
   content = doc?.content ?? content;
@@ -51,6 +56,8 @@ export async function Document({
     ? { name: doc.name, image: doc.image, email: doc.email, emailVerified: doc.emailVerified }
     : author;
   created = doc?.created ?? created;
+  updated = doc?.updated ?? updated;
+  license = doc?.license ?? license;
   category = doc?.category ?? category;
   tags = doc?.tags ?? tags;
   const toc = getToc(content);
@@ -67,7 +74,9 @@ export async function Document({
             description={description}
             author={author}
             created={created}
+            updated={updated}
             category={category}
+            license={license}
             tags={tags}
           />
 

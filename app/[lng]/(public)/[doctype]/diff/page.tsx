@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { Breadcrumb, BreadcrumbItem } from "@/components/core/Breadcrumb";
 import { Container, Viewport } from "@/components/core/Container";
 import { DiffViewer } from "@/components/core/DiffViewer";
 import { PageHeadline } from "@/components/core/PageHeadline";
@@ -7,16 +8,21 @@ import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/next";
 import { Doctype, Document as DocumentType, getTablesByDoctype } from "@/lib/schema/document";
 import { History as DocumentHistory } from "@/lib/schema/history";
+import { localePrefix } from "@/lib/url";
 
-export default async function DiffPage(ctx: PageProps<"/[lng]/[doctype]/history">) {
+export default async function DiffPage(ctx: PageProps<"/[lng]/[doctype]/diff">) {
   const params = await ctx.params;
-  const lngParam = params.lng as Language;
   const doctype = params.doctype as Doctype;
+
+  const lngParam = (await ctx.params).lng as Language;
+  const lng = localePrefix(lngParam);
 
   // const lng = localePrefix(lngParam);
 
-  const id = (await ctx.searchParams).id as string;
-  const created = Number((await ctx.searchParams).created as string);
+  const searchParams = await ctx.searchParams;
+
+  const id = searchParams.id as string;
+  const created = Number(searchParams.created as string);
 
   const client = await pool.connect();
   try {
@@ -63,47 +69,64 @@ export default async function DiffPage(ctx: PageProps<"/[lng]/[doctype]/history"
 
     const { t } = await useTranslation(lngParam);
 
+    const breadcrumbs: Array<BreadcrumbItem> = [
+      { title: t("essay") },
+      { title: t("change history") },
+      {
+        title: title,
+        href: `${lng}/${doctype}/history?${new URLSearchParams({ id })}`,
+      },
+      {
+        title: t("diff"),
+        href: `${lng}/${doctype}/diff?${new URLSearchParams({ id, created: searchParams.created as string })}`,
+      },
+    ];
+
     return (
-      <Viewport className="!justify-start flex-col items-center">
-        <Container as="div" variant="wide">
-          <PageHeadline title={t("compare changes")} description={title} prose />
+      <>
+        <Breadcrumb lng={lngParam} breadcrumbs={breadcrumbs} />
 
-          <div className="mt-6 mb-2 flex flex-col items-end">
-            <p className="!m-0 font-mono text-muted-foreground text-sm">
-              변경전: {dateFormater.format(prev.created)}{" "}
-              <sub>
-                (
-                <a
-                  href={`mailto:${prev.email}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-500 no-underline hover:underline"
-                >
-                  {prev.name}
-                </a>
-                )
-              </sub>
-            </p>
-            <p className="!m-0 font-mono text-muted-foreground text-sm">
-              변경후: {dateFormater.format(curr.created)}{" "}
-              <sub>
-                (
-                <a
-                  href={`mailto:${curr.email}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-500 no-underline hover:underline"
-                >
-                  {curr.name}
-                </a>
-                )
-              </sub>
-            </p>
-          </div>
+        <Viewport className="!justify-start flex-col items-center">
+          <Container as="div" variant="wide">
+            <PageHeadline lng={lngParam} title={t("compare changes")} description={title} prose />
 
-          <DiffViewer curr={curr.content} prev={prev.content} />
-        </Container>
-      </Viewport>
+            <div className="mt-6 mb-2 flex flex-col items-end">
+              <p className="!m-0 font-mono text-muted-foreground text-sm">
+                변경전: {dateFormater.format(prev.created)}{" "}
+                <sub>
+                  (
+                  <a
+                    href={`mailto:${prev.email}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-500 no-underline hover:underline"
+                  >
+                    {prev.name}
+                  </a>
+                  )
+                </sub>
+              </p>
+              <p className="!m-0 font-mono text-muted-foreground text-sm">
+                변경후: {dateFormater.format(curr.created)}{" "}
+                <sub>
+                  (
+                  <a
+                    href={`mailto:${curr.email}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-500 no-underline hover:underline"
+                  >
+                    {curr.name}
+                  </a>
+                  )
+                </sub>
+              </p>
+            </div>
+
+            <DiffViewer curr={curr.content} prev={prev.content} />
+          </Container>
+        </Viewport>
+      </>
     );
   } finally {
     client.release();

@@ -48,6 +48,7 @@ export default async function HistoryPage(ctx: PageProps<"/[lng]/[doctype]/histo
             , h.description
             , h.category
             , h.tags
+            , h.license
             , u.name
             , h.removed
             , h.created
@@ -78,25 +79,31 @@ export default async function HistoryPage(ctx: PageProps<"/[lng]/[doctype]/histo
 
         <Viewport className="!justify-start flex-col items-center">
           <Container variant="wide" className="prose dark:prose-invert">
-            <PageHeadline title={`${t("change history")}: ${doc.title}`} />
+            <PageHeadline lng={lngParam} title={`${t("change history")}: ${doc.title}`} />
 
             <div className="mt-6">
               {rows.map(
-                ({ description, added, removed, name, category, tags, created, email }, i) => {
+                (
+                  { description, added, removed, name, category, tags, created, email, license },
+                  i,
+                ) => {
                   const isChanged = added + removed > 0;
                   const prev = rows[i + 1];
 
                   let isDescriptionChange = false;
                   let isCategoryChange = false;
                   let isTagsChange = false;
+                  let isLicenseChange = false;
 
                   if (prev) {
                     isDescriptionChange = description !== prev.description;
                     isCategoryChange = category !== prev.category;
                     isTagsChange = tags?.join("") !== prev.tags?.join("");
+                    isLicenseChange = license !== prev.license;
                   }
 
-                  const isMetadataChange = isDescriptionChange || isCategoryChange || isTagsChange;
+                  const isMetadataChange =
+                    isDescriptionChange || isCategoryChange || isTagsChange || isLicenseChange;
 
                   return (
                     <div
@@ -124,7 +131,7 @@ export default async function HistoryPage(ctx: PageProps<"/[lng]/[doctype]/histo
                                   -{numberFormat.format(removed)}
                                 </span>
                               </>
-                            ) : isDescriptionChange ? (
+                            ) : isMetadataChange ? (
                               t("Information Changed")
                             ) : (
                               t("Created")
@@ -134,6 +141,20 @@ export default async function HistoryPage(ctx: PageProps<"/[lng]/[doctype]/histo
 
                         {isMetadataChange && (
                           <div className="mt-1 space-y-2 lg:space-y-1">
+                            {isLicenseChange && (
+                              <div className="flex justify-start space-x-2 max-lg:flex-col lg:items-center">
+                                <p className="!my-0 text-muted-foreground text-xs">
+                                  {t("license")}:
+                                </p>
+                                <p className="!my-0 text-rose-600 text-xs">
+                                  "{t(prev.license as string)}"
+                                </p>
+                                <MoveRight className="size-4 max-lg:hidden" />
+                                <p className="!my-0 text-green-600 text-xs">
+                                  "{t(license as string)}"
+                                </p>
+                              </div>
+                            )}
                             {isDescriptionChange && (
                               <div className="flex justify-start space-x-2 max-lg:flex-col lg:items-center">
                                 <p className="!my-0 text-muted-foreground text-xs">

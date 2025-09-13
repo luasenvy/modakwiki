@@ -16,17 +16,13 @@ import { ImageZoom } from "@/components/ui/shadcn-io/image-zoom";
 import { pool } from "@/lib/db";
 import { byteto } from "@/lib/format";
 import type { Language } from "@/lib/i18n/config";
+import { useTranslation } from "@/lib/i18n/next";
 import { Image as ImageType } from "@/lib/schema/image";
 import { localePrefix } from "@/lib/url";
 
 export default async function HowToPage(ctx: PageProps<"/[lng]/editor/syntax">) {
   const lngParam = (await ctx.params).lng as Language;
   const lng = localePrefix(lngParam);
-
-  const breadcrumbs: Array<BreadcrumbItem> = [
-    { title: "파일" },
-    { title: "이미지", href: `${lng}/editor/syntax` },
-  ];
 
   const client = await pool.connect();
   try {
@@ -53,29 +49,34 @@ export default async function HowToPage(ctx: PageProps<"/[lng]/editor/syntax">) 
         WHERE deleted IS NULL`,
     );
 
+    const { t } = await useTranslation(lngParam);
+
+    const breadcrumbs: Array<BreadcrumbItem> = [
+      { title: t("file") },
+      { title: t("image"), href: `${lng}/editor/syntax` },
+    ];
+
     return (
       <>
         <Breadcrumb lng={lngParam} breadcrumbs={breadcrumbs} />
         <Viewport>
           <Container as="div" variant="aside" className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
             {rows.map(({ id, uri, name, size }) => (
-              <Card
-                className="h-[400px] rounded-none hover:bg-accent sm:h-[300px]"
-                key={`image-${id}`}
-              >
+              <Card className="!mb-0 gap-1 rounded-none hover:bg-accent" key={`image-${id}`}>
                 <CardHeader>
                   <CardTitle>{name}</CardTitle>
                   <CardDescription>
                     <p className="text-sm">{byteto(size)}</p>
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="size-full">
-                  <ImageZoom
-                    zoomMargin={40}
-                    zoomImg={{ src: `/api/image${uri}` }}
-                    className="relative size-full"
-                  >
-                    <Image src={`/api/image${uri}?q=t`} alt={name} fill />
+                <CardContent>
+                  <ImageZoom zoomMargin={40} zoomImg={{ src: `/api/image${uri}` }}>
+                    <div
+                      aria-label={name}
+                      role="img"
+                      className="h-[400px] w-full bg-center bg-cover bg-no-repeat sm:h-[150px]"
+                      style={{ backgroundImage: `url('/api/image${uri}-t')` }}
+                    />
                   </ImageZoom>
                 </CardContent>
                 <CardFooter className="flex items-center justify-end gap-2 py-1">

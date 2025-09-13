@@ -8,12 +8,13 @@ interface DiffViewerProps {
 
 export function DiffViewer({ curr, prev }: DiffViewerProps) {
   return (
-    <pre>
+    <pre className="!p-2 !bg-zinc-900 !overflow-x-hidden !border-none">
       <code
         className={cn(
-          "text-muted-foreground [&_del]:text-rose-600 [&_ins]:text-green-600",
-          "w-full p-2",
-          "text-sm",
+          "!text-muted-foreground [&_del]:text-rose-600 [&_ins]:text-green-600",
+          "!text-sm",
+          "!bg-zinc-900",
+          "!whitespace-pre-wrap !break-keep",
         )}
       >
         {diffChars(prev, curr).map(({ added, removed, value }, i) =>

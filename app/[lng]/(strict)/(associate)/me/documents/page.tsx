@@ -4,12 +4,14 @@ import Link from "next/link";
 import { Breadcrumb, BreadcrumbItem } from "@/components/core/Breadcrumb";
 import { Advertisement } from "@/components/core/button/Advertisement";
 import { Container, Viewport } from "@/components/core/Container";
+import { DocumentList } from "@/components/core/DocumentList";
 import { auth } from "@/lib/auth/server";
 import { pool } from "@/lib/db";
 import { Language } from "@/lib/i18n/config";
+import { useTranslation } from "@/lib/i18n/next";
 import { Doctype, Document as DocumentType, doctypeEnum } from "@/lib/schema/document";
+import { User } from "@/lib/schema/user";
 import { localePrefix } from "@/lib/url";
-import { cn } from "@/lib/utils";
 
 export default async function MyDocsPage(ctx: PageProps<"/[lng]/me/documents">) {
   const session = (await auth.api.getSession({ headers: await headers() }))!;
@@ -25,63 +27,49 @@ export default async function MyDocsPage(ctx: PageProps<"/[lng]/me/documents">) 
   const client = await pool.connect();
   try {
     const {
-      rows: [{ count }],
+      rows: [{ count: docCount }, { count: essayCount }],
     } = await client.query<{ count: number }>(
-      `SELECT SUM(total_count) AS count
-         FROM (
-           SELECT COUNT(*) AS total_count
-             FROM document
-             WHERE deleted IS NULL AND "userId" = $1
-           
-           UNION ALL
- 
-           SELECT COUNT(*) AS total_count
-             FROM essay
-            WHERE deleted IS NULL AND "userId" = $1
-         )`,
+      ` SELECT COUNT(*) AS count
+          FROM document
+          WHERE deleted IS NULL AND "userId" = $1
+        
+        UNION ALL
+
+        SELECT COUNT(*) AS count
+          FROM essay
+        WHERE deleted IS NULL AND "userId" = $1`,
       [session.user.id],
     );
 
-    const { rows } = await client.query<DocumentType & { type: Doctype }>(
-      `SELECT id, title, preview, '${doctypeEnum.document}' AS type
-         FROM document
-         WHERE deleted IS NULL AND "userId" = $1
+    const { rows } = await client.query<DocumentType & User & { type: Doctype }>(
+      `SELECT d.id, d.title, d.preview, '${doctypeEnum.document}' AS type, u.name, u.image, u.email, u."emailVerified"
+         FROM document d
+         JOIN "user" u
+           ON d."userId" = u.id
+         WHERE d.deleted IS NULL AND d."userId" = $1
        
        UNION ALL
 
-       SELECT id, title, preview, '${doctypeEnum.essay}' AS type
-         FROM essay
-       WHERE deleted IS NULL AND "userId" = $1`,
+       SELECT e.id, e.title, e.preview, '${doctypeEnum.essay}' AS type, u.name, u.image, u.email, u."emailVerified"
+         FROM essay e
+         JOIN "user" u
+           ON e."userId" = u.id
+       WHERE e.deleted IS NULL AND e."userId" = $1`,
       [session.user.id],
     );
+
+    const { t } = await useTranslation(lngParam);
 
     return (
       <>
         <Breadcrumb lng={lngParam} breadcrumbs={breadcrumbs} />
         <Viewport>
-          <Container
-            as="div"
-            className={cn(
-              "relative w-full max-w-full lg:max-w-3xl xl:w-[calc(100%_-_286px)] xl:max-w-4xl",
-              "h-fit",
-              "pr-2 pl-4 max-lg:pr-4",
+          <Container as="div" variant="aside">
+            {rows.length > 0 ? (
+              <DocumentList lng={lngParam} rows={rows} showDoctype />
+            ) : (
+              t("No results found.")
             )}
-          >
-            {rows.map(({ id, title, type, preview }) => (
-              <div className="prose dark:prose-invert max-w-none" key={id}>
-                <h2 className="mb-1 font-semibold text-xl">
-                  <Link
-                    key={id}
-                    href={`${lng}/${type}?${new URLSearchParams({ id })}`}
-                    className="text-blue-500 no-underline hover:underline"
-                  >
-                    {title}
-                  </Link>
-                </h2>
-
-                <p className="text-muted-foreground text-sm">{preview}...</p>
-              </div>
-            ))}
           </Container>
 
           <div className="sticky top-0 flex h-[calc(100dvh_-_var(--spacing)_*_12)] w-[286px] shrink-0 flex-col pt-8 pr-4 pl-2 [mask-image:linear-gradient(to_bottom,transparent,white_16px,white_calc(100%-16px),transparent)] max-xl:hidden">
@@ -91,7 +79,7 @@ export default async function MyDocsPage(ctx: PageProps<"/[lng]/me/documents">) 
             </div>
 
             <div className="relative ms-px min-h-0 overflow-auto py-3 text-sm [scrollbar-width:none]">
-              총 {count}개 문서가 보관되어 있습니다.
+              총 {docCount}개 문서와 {essayCount}개 기고가 있습니다.
             </div>
 
             <Advertisement className="py-6" />

@@ -57,6 +57,7 @@ import { Toggle } from "@/components/ui/toggle";
 import { statusMessage } from "@/lib/fetch/react";
 import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/react";
+import { licenseEnum } from "@/lib/license";
 import { MdxLoader } from "@/lib/mdx/react";
 import { clear as clearMarkdown, getHunks, getToc, trailingFootnotes } from "@/lib/mdx/utils";
 import {
@@ -108,6 +109,7 @@ export default function MdxEditor({
       id: doc?.id,
       description: doc?.description,
       category: doc?.category || "",
+      license: doc?.license || licenseEnum.ccbysa,
       tags: doc?.tags || [],
       type: defaultDoctype || doctypeEnum.document,
       title: doc?.title || defaultTitle || "",
@@ -373,16 +375,40 @@ export default function MdxEditor({
                   )}
                 />
 
-                <div
-                  className={cn("flex items-center gap-1", {
-                    hidden: doctype !== doctypeEnum.essay,
-                  })}
-                >
+                <div className="flex items-center gap-1">
+                  <FormField
+                    control={form.control}
+                    name="license"
+                    render={({ field: { value, onChange, ...field } }) => (
+                      <FormItem className="mb-1 shrink-0">
+                        <FormControl>
+                          <Select value={value} onValueChange={onChange} {...field}>
+                            <SelectTrigger className="rounded-none">
+                              <SelectValue placeholder={t("Select a license")} />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {Object.values(licenseEnum).map((value) => (
+                                <SelectItem key={value} value={value}>
+                                  {t(value)}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
                   <FormField
                     control={form.control}
                     name="category"
                     render={({ field: { value, onChange, ...field } }) => (
-                      <FormItem className="mb-1 shrink-0">
+                      <FormItem
+                        className={cn("mb-1 shrink-0", {
+                          hidden: doctype !== doctypeEnum.essay,
+                        })}
+                      >
                         <FormControl>
                           <Select value={value} onValueChange={onChange} {...field}>
                             <SelectTrigger className="rounded-none">
@@ -407,7 +433,11 @@ export default function MdxEditor({
                       control={form.control}
                       name="tags"
                       render={({ field: { value, onChange, ...field } }) => (
-                        <FormItem className="mb-1 grow">
+                        <FormItem
+                          className={cn("mb-1 grow", {
+                            hidden: doctype !== doctypeEnum.essay,
+                          })}
+                        >
                           <FormControl>
                             <Tags>
                               <TagsTrigger
