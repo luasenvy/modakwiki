@@ -153,5 +153,10 @@
   "koglopen": "공공누리 만료 공공저작물: 자유이용",
   "Last Modified": "Last Modified",
   "Select a license": "Select a license",
-  "license": "license"
+  "license": "license",
+  "created": "created",
+  "diff": "diff",
+  "file": "file",
+  "image": "image",
+  "First Created": "First Created"
 }

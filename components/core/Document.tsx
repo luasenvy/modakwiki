@@ -68,22 +68,19 @@ export async function Document({
     <TOCProvider toc={toc} single={false}>
       <Viewport>
         <Container as="article" variant="document">
-          <PageHeadline
-            lng={lngParam}
-            title={title}
-            description={description}
-            author={author}
-            created={created}
-            updated={updated}
-            category={category}
-            license={license}
-            tags={tags}
-          />
+          <PageHeadline title={title} description={description} category={category} tags={tags} />
 
           <MdxLoader source={content} />
         </Container>
 
-        <NavToc lng={lngParam} title={title}>
+        <NavToc
+          lng={lngParam}
+          title={title}
+          author={author}
+          license={license}
+          created={created}
+          updated={updated}
+        >
           {(session || doc) && (
             <Remocon
               lng={lngParam}

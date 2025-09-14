@@ -2,7 +2,6 @@ import type { NextConfig } from "next";
 
 export default {
   output: "standalone",
-  experimental: {
-    authInterrupts: true,
-  },
+  allowedDevOrigins: ["modak.wiki"],
+  experimental: { authInterrupts: true },
 } satisfies NextConfig;

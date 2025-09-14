@@ -15,11 +15,12 @@ interface AvatarProfileProps {
     email?: string;
     emailVerified?: boolean;
   };
+  name?: string;
   size?: keyof typeof variants;
   flatten?: boolean;
 }
 
-export function AvatarProfile({ profile, size = "sm", flatten }: AvatarProfileProps) {
+export function AvatarProfile({ profile, name = "", size = "sm", flatten }: AvatarProfileProps) {
   return (
     <div className="flex items-center space-x-1">
       <Avatar className={cn(variants[size], "rounded-full")}>
@@ -38,22 +39,22 @@ export function AvatarProfile({ profile, size = "sm", flatten }: AvatarProfilePr
               target="_blank"
               rel="noreferrer noopener"
             >
-              {profile.name}
+              {name || profile.name}
             </a>
           ) : (
-            <span className="text-muted-foreground">{profile.name}</span>
+            <span className="text-muted-foreground">{name || profile.name}</span>
           )}
           {profile.emailVerified && <CheckCircle className="ml-1 inline size-3 text-green-600" />}
         </p>
       ) : flatten ? (
         <div className="grid flex-1 text-left text-sm leading-tight">
-          <span className="truncate font-medium">{profile.name}</span>
+          <span className="truncate font-medium">{name || profile.name}</span>
           <span className="truncate text-xs">{profile.email}</span>
         </div>
       ) : (
         <div>
           <p className="!my-0 text-sm">
-            {profile.name}
+            {name || profile.name}
             {profile.emailVerified && <CheckCircle className="ml-1 inline size-3 text-green-600" />}
           </p>
           <p className="!my-0 text-xs">{profile.email}</p>

@@ -88,7 +88,7 @@ export default async function DiffPage(ctx: PageProps<"/[lng]/[doctype]/diff">) 
 
         <Viewport className="!justify-start flex-col items-center">
           <Container as="div" variant="wide">
-            <PageHeadline lng={lngParam} title={t("compare changes")} description={title} prose />
+            <PageHeadline title={t("compare changes")} description={title} prose />
 
             <div className="mt-6 mb-2 flex flex-col items-end">
               <p className="!m-0 font-mono text-muted-foreground text-sm">

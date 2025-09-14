@@ -42,6 +42,7 @@ export async function generateMetadata(ctx: PageProps<"/[lng]/[doctype]">) {
               , h.description
               , h.content
               , h.license
+              , h.created
               , u.email
               , u.name
               , u.image
@@ -61,7 +62,7 @@ export async function generateMetadata(ctx: PageProps<"/[lng]/[doctype]">) {
       const {
         rows: [_doc],
       } = await client.query<DocumentType & User>(
-        `SELECT d.title, d.description, d.license, u.name, u.image, u.email, u."emailVerified"
+        `SELECT d.title, d.description, d.license, d.created, d.updated, u.name, u.image, u.email, u."emailVerified"
            FROM ${table} d
            JOIN "user" u
              ON u.id = d."userId"
@@ -112,6 +113,7 @@ export default async function WikiDocPage(ctx: PageProps<"/[lng]/[doctype]">) {
               , h.description
               , h.content
               , h.license
+              , h.created
               , u.email
               , u.name
               , u.image
@@ -131,7 +133,7 @@ export default async function WikiDocPage(ctx: PageProps<"/[lng]/[doctype]">) {
       let sql = ``;
       // 개발모드에서는 조회수 증가 쿼리를 실행하지 않음
       if (isDev) {
-        sql = `SELECT d.id, d.title, d.description, d.content, d.license, d.category, d.tags, u."emailVerified", u.image, u.name, u.email, d."userId"
+        sql = `SELECT d.id, d.title, d.description, d.content, d.license, d.category, d.tags, u."emailVerified", u.image, u.name, u.email, d."userId", d.created, d.updated
                  FROM ${table} d
                 JOIN "user" u
                   ON u.id = d."userId"
@@ -143,9 +145,9 @@ export default async function WikiDocPage(ctx: PageProps<"/[lng]/[doctype]">) {
                                  SET t.view = t.view + 1
                                WHERE t.id = $1
                                  AND t.deleted IS NULL
-                           RETURNING t.id, t.title, t.description, t.content, t.license, t.category, t.tags, t."userId"
+                           RETURNING t.id, t.title, t.description, t.content, t.license, t.category, t.tags, t."userId", t.created, t.updated
                          )
-               SELECT d.id, d.title, d.description, d.content, d.license, d.category, d.tags, u.email, u.name, u.image, u."emailVerified", d."userId"
+               SELECT d.id, d.title, d.description, d.content, d.license, d.category, d.tags, u.email, u.name, u.image, u."emailVerified", d."userId", d.created, d.updated
                  FROM d
                  JOIN "user" u
                    ON u.id = d."userId"`;

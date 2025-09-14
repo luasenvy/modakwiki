@@ -51,7 +51,7 @@ export default async function WritePage(ctx: PageProps<"/[lng]/editor/write">) {
     const {
       rows: [doc],
     } = await client.query<Document>(
-      `SELECT d.id, d.title, d.description, d.content, u.email, d.category, d.tags
+      `SELECT d.id, d.title, d.description, d.content, d.license, d.created, d.updated, d."userId", d.category, d.tags
          FROM ${table} d
          JOIN "user" u
            ON u.id = d."userId"

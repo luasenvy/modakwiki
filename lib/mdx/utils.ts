@@ -178,7 +178,7 @@ export function trailingFootnotes(content: string) {
   const regex = /\[\^[^\]]+]:[^\n|$]+/g;
   const footnotes = content.match(regex);
 
-  if (footnotes) return content.replace(regex, "").concat(`\n\n${footnotes.join("\n")}`);
+  if (footnotes?.length) return content.replace(regex, "").concat(`\n\n${footnotes.join("\n")}`);
 
   return content;
 }
