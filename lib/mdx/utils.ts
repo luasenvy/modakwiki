@@ -183,7 +183,7 @@ export function trailingFootnotes(content: string, sticky: boolean = false) {
   return content
     .replace(regex, "")
     .trim()
-    .concat(`${sticky ? "" : "\n\n"}${footnotes.join("\n")}`);
+    .concat(`${sticky ? "" : "\n"}\n${footnotes.join("\n")}`);
 }
 
 export function clear(content: string) {
