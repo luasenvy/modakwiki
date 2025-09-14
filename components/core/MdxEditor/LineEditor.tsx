@@ -12,7 +12,7 @@ import {
 import { arrayMove, SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import debounce from "lodash.debounce";
 import { ChevronDown, ChevronUp, Pencil, PencilOff, Trash } from "lucide-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { SortableItem } from "@/components/core/MdxEditor/SortableItem";
 import { ImageSelectButton } from "@/components/pages/site/image/ImageSelectButton";
 import { UploadImageButton } from "@/components/pages/site/image/UploadImageButton";
@@ -24,6 +24,7 @@ import { statusMessage } from "@/lib/fetch/react";
 import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/react";
 import { MdxLoader } from "@/lib/mdx/react";
+import { trailingFootnotes } from "@/lib/mdx/utils";
 import { Image as ImageType } from "@/lib/schema/image";
 import { cn } from "@/lib/utils";
 
@@ -47,7 +48,9 @@ export function LineEditor({
   const inputRefs = useRef<Array<HTMLTextAreaElement>>(new Array(lines.length));
 
   const handleChangeSelectedLine = debounce((e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setLines((prev) => prev.toSpliced(selectedLine, 1, e.target.value.trim()));
+    setLines((prev) =>
+      prev.toSpliced(selectedLine, 1, trailingFootnotes(e.target.value.trim(), true)),
+    );
   }, 110);
 
   const handleKeyDownSelectedLine = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -55,7 +58,13 @@ export function LineEditor({
       handleChangeSelectedLine.cancel();
       e.preventDefault();
 
-      setLines(lines.toSpliced(selectedLine, 1, ...e.currentTarget.value.trim().split("\n\n")));
+      setLines(
+        lines.toSpliced(
+          selectedLine,
+          1,
+          ...trailingFootnotes(e.currentTarget.value.trim(), true).split("\n\n"),
+        ),
+      );
       setSelectedLine(-1);
     }
   };
@@ -142,6 +151,10 @@ export function LineEditor({
       uploadImage(files);
     }
   };
+
+  useEffect(() => {
+    inputRefs.current[selectedLine]?.focus();
+  }, [selectedLine]);
 
   return (
     <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>

@@ -174,13 +174,16 @@ export function getHunks(content: string) {
   return lines;
 }
 
-export function trailingFootnotes(content: string) {
+export function trailingFootnotes(content: string, sticky: boolean = false) {
   const regex = /\[\^[^\]]+]:[^\n|$]+/g;
   const footnotes = content.match(regex);
 
-  if (footnotes?.length) return content.replace(regex, "").concat(`\n\n${footnotes.join("\n")}`);
+  if (!footnotes?.length) return content;
 
-  return content;
+  return content
+    .replace(regex, "")
+    .trim()
+    .concat(`${sticky ? "" : "\n\n"}${footnotes.join("\n")}`);
 }
 
 export function clear(content: string) {
