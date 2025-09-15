@@ -15,6 +15,12 @@ import { Remocon } from "@/components/core/MdxEditor/Remocon";
 import { FootnoteHighlighter } from "@/components/core/MdxViewer/FootnoteHighlighter";
 import { NavToc } from "@/components/core/MdxViewer/NavToc";
 import { TOCProvider } from "@/components/fumadocs/toc";
+import {
+  PageTOCPopover,
+  PageTOCPopoverContent,
+  PageTOCPopoverItems,
+  PageTOCPopoverTrigger,
+} from "@/components/fumadocs/toc-popover";
 import { ImageSelectButton } from "@/components/pages/site/image/ImageSelectButton";
 import { UploadImageButton } from "@/components/pages/site/image/UploadImageButton";
 import {
@@ -310,6 +316,13 @@ export default function MdxEditor({
         <form onSubmit={handleSubmit}>
           <TOCProvider toc={toc} single={false}>
             <Viewport>
+              <PageTOCPopover title={title}>
+                <PageTOCPopoverTrigger lng={lngParam} />
+                <PageTOCPopoverContent>
+                  <PageTOCPopoverItems lng={lngParam} />
+                </PageTOCPopoverContent>
+              </PageTOCPopover>
+
               <Container ref={containerRef} as="article" variant="document">
                 <div className="mb-2 flex items-center gap-1">
                   {(!Boolean(doc?.id) || doctypeEnum.document === doctype) && (

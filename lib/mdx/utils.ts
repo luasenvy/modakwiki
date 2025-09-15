@@ -147,7 +147,6 @@ export function getHunks(content: string) {
         const footnoteIdentifiers = hunk.match(/\[\^[^\]]+](?=[^:]|\s|$)/g);
 
         if (footnoteIdentifiers) {
-          hunk += "\n";
           for (const footnoteIdentify of footnoteIdentifiers) {
             const footnoteIndicator = content.search(
               new RegExp(`\n${footnoteIdentify.replace(/(\[|\]|\^)/g, "\\$1")}:[^\n$]+`),

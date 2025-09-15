@@ -7,13 +7,13 @@ type AllowedComponent = "div" | "article";
 const defaultContainerComponent = "div" as const;
 
 const variants = {
-  wide: "relative w-full max-w-full px-4 lg:max-w-[calc(var(--container-3xl)_+_286px)] xl:max-w-[calc(var(--container-4xl)_+_286px)]",
+  wide: "relative w-full max-w-full px-4 lg:max-w-[calc(var(--container-3xl)_+_286px)] xl:max-w-[calc(var(--container-4xl)_+_286px)] pt-8",
   aside:
-    "relative w-full max-w-full lg:max-w-3xl xl:w-[calc(100%_-_286px)] xl:max-w-4xl h-fit pr-2 pl-4 max-lg:pr-4 space-y-14",
+    "relative pt-8 w-full max-w-full lg:max-w-3xl xl:w-[calc(100%_-_286px)] xl:max-w-4xl h-fit pr-2 pl-4 max-lg:pr-4 space-y-14",
   document: cn(
     "relative",
     "w-full h-fit max-w-full lg:max-w-3xl xl:w-[calc(100%_-_286px)] xl:max-w-4xl",
-    "pr-2 pl-4 max-lg:pr-4",
+    "pr-2 pl-4 pt-18 xl:pt-8 max-lg:pr-4",
     "break-keep",
     "prose dark:prose-invert",
     // Sub
@@ -93,7 +93,7 @@ export function Container<T extends AllowedComponent = typeof defaultContainerCo
   ...props
 }: React.ComponentProps<T> & { as?: T; variant?: keyof typeof variants }) {
   return createElement(as ?? defaultContainerComponent, {
-    className: cn("pt-18 xl:pt-8 pb-24", variants[variant], className),
+    className: cn("pb-24", variants[variant], className),
     ...props,
   });
 }
