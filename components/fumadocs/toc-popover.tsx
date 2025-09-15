@@ -52,9 +52,9 @@ export function PageTOCPopover({ title, ...props }: PageTOCPopoverProps) {
           id="nd-tocnav"
           {...props}
           className={cn(
-            "fixed z-10 border-b backdrop-blur-sm transition-all duration-200 ease-linear xl:hidden",
-            { "bg-background/80 shadow-lg": open },
-            { "max-xl:h-[40px]": !open },
+            "fixed z-10 border-b bg-background/80 backdrop-blur-sm transition-all duration-200 ease-linear xl:hidden",
+            { "shadow-lg": open },
+            { "max-xl:h-10": !open },
             props.className,
           )}
           style={{
