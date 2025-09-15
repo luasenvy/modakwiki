@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  BadgeCheck,
   FilePlus2,
   FlameKindling,
   Image,
@@ -10,7 +9,6 @@ import {
   ScrollText,
   SpellCheck,
   Tags,
-  TextSearch,
 } from "lucide-react";
 import { create } from "zustand";
 import { ScopeEnum, scopeEnum } from "@/lib/schema/user";

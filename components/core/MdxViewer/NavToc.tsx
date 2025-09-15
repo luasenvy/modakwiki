@@ -54,7 +54,20 @@ export function NavToc({
       )}
     >
       {author && (
-        <div className="mb-6 flex flex-col items-end gap-1">
+        <div className="mb-6 flex flex-col items-end gap-2">
+          <AvatarProfile profile={author} size="sm" name={`${t("Author")}: ${author.name}`} />
+
+          <div className="space-y-1 text-right">
+            <p className="!my-0 font-mono text-muted-foreground text-xs">
+              {t("First Created")}: {dateFormat.format(created)}
+            </p>
+            {updated && created !== updated && (
+              <p className="!my-0 font-mono text-muted-foreground text-xs">
+                {t("Last Modified")}: {dateFormat.format(updated)}
+              </p>
+            )}
+          </div>
+
           {licenseImage && (
             <a href={licenseLink} target="_blank" rel="noreferrer noopener">
               <Image
@@ -65,15 +78,6 @@ export function NavToc({
                 width={91}
               />
             </a>
-          )}
-          <AvatarProfile profile={author} size="sm" name={`${t("Author")}: ${author.name}`} />
-          <p className="!my-0 font-mono text-muted-foreground text-xs">
-            {t("First Created")}: {dateFormat.format(created)}
-          </p>
-          {updated && created !== updated && (
-            <p className="!my-0 font-mono text-muted-foreground text-xs">
-              {t("Last Modified")}: {dateFormat.format(updated)}
-            </p>
           )}
         </div>
       )}

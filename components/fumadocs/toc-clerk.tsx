@@ -1,4 +1,5 @@
 "use client";
+
 import type { TOCItemType } from "fumadocs-core/server";
 import * as Primitive from "fumadocs-core/toc";
 import { mergeRefs } from "fumadocs-ui/utils/merge-refs";
@@ -27,8 +28,6 @@ export default function ClerkTOCItems({
     width: number;
     height: number;
   }>();
-
-  const { t } = useTranslation(lngParam);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -73,10 +72,11 @@ export default function ClerkTOCItems({
     };
   }, [items]);
 
+  const { t } = useTranslation(lngParam);
   if (items.length === 0)
     return (
       <div className="rounded-lg border bg-card p-3 text-muted-foreground text-xs">
-        {t("No Contents")}
+        {t("No Headings")}
       </div>
     );
 
@@ -105,7 +105,7 @@ export default function ClerkTOCItems({
       <div ref={mergeRefs(containerRef, ref)} className={cn("flex flex-col", className)} {...props}>
         {items.map((item, i) => (
           <TOCItem
-            key={`tocitem-${i}`}
+            key={item.url}
             item={item}
             upper={items[i - 1]?.depth}
             lower={items[i + 1]?.depth}

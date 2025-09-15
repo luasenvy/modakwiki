@@ -6,6 +6,13 @@ import { Container, Viewport } from "@/components/core/Container";
 import { NavToc } from "@/components/core/MdxViewer/NavToc";
 import { PageHeadline } from "@/components/core/PageHeadline";
 import { TOCProvider } from "@/components/fumadocs/toc";
+import {
+  PageTOCPopover,
+  PageTOCPopoverContent,
+  PageTOCPopoverItems,
+  PageTOCPopoverTrigger,
+} from "@/components/fumadocs/toc-popover";
+
 import { Button } from "@/components/ui/button";
 import { Session } from "@/lib/auth/server";
 import { Language } from "@/lib/i18n/config";
@@ -65,8 +72,15 @@ export async function Document({
   const { t } = await useTranslation(lngParam);
 
   return (
-    <TOCProvider toc={toc} single={false}>
-      <Viewport>
+    <Viewport>
+      <TOCProvider toc={toc} single={false}>
+        <PageTOCPopover>
+          <PageTOCPopoverTrigger lng={lngParam} />
+          <PageTOCPopoverContent>
+            <PageTOCPopoverItems lng={lngParam} />
+          </PageTOCPopoverContent>
+        </PageTOCPopover>
+
         <Container as="article" variant="document">
           <PageHeadline title={title} description={description} category={category} tags={tags} />
 
@@ -95,8 +109,8 @@ export async function Document({
             />
           )}
         </NavToc>
-      </Viewport>
-    </TOCProvider>
+      </TOCProvider>
+    </Viewport>
   );
 }
 
