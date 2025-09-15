@@ -74,7 +74,7 @@ export async function Document({
   return (
     <Viewport>
       <TOCProvider toc={toc} single={false}>
-        <PageTOCPopover>
+        <PageTOCPopover title={title}>
           <PageTOCPopoverTrigger lng={lngParam} />
           <PageTOCPopoverContent>
             <PageTOCPopoverItems lng={lngParam} />

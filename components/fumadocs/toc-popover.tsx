@@ -3,6 +3,7 @@
 import { useActiveAnchor } from "fumadocs-core/toc";
 import { useEffectEvent } from "fumadocs-core/utils/use-effect-event";
 import { ChevronDown } from "lucide-react";
+import { useTheme } from "next-themes";
 import { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { TOCScrollArea, useTOCItems } from "@/components/fumadocs/toc";
 import ClerkTOCItems from "@/components/fumadocs/toc-clerk";
@@ -13,48 +14,47 @@ import { useTranslation } from "@/lib/i18n/react";
 import { cn } from "@/lib/utils";
 
 const TocPopoverContext = createContext<{
+  title?: string;
   open: boolean;
   setOpen: (open: boolean) => void;
-}>({ open: false, setOpen: () => {} });
+}>({ title: "", open: false, setOpen: () => {} });
 
-export function PageTOCPopover(props: React.ComponentProps<"div">) {
+interface PageTOCPopoverProps extends React.ComponentProps<"div"> {
+  title?: string;
+}
+
+export function PageTOCPopover({ title, ...props }: PageTOCPopoverProps) {
   const ref = useRef<HTMLElement>(null);
   const [open, setOpen] = useState(false);
   const { state } = useSidebar();
-  // const { isTransparent } = useNav();
 
-  const onClick = useEffectEvent((e: Event) => {
+  const handleClick = useEffectEvent((e: Event) => {
     if (!open) return;
 
     if (ref.current && !ref.current.contains(e.target as HTMLElement)) setOpen(false);
   });
 
   useEffect(() => {
-    window.addEventListener("click", onClick);
+    window.addEventListener("click", handleClick);
 
     return () => {
-      window.removeEventListener("click", onClick);
+      window.removeEventListener("click", handleClick);
     };
-  }, [onClick]);
+  }, [handleClick]);
+
+  const tocPopoverContext = useMemo(() => ({ title, open, setOpen }), [title, open, setOpen]);
 
   return (
-    <TocPopoverContext.Provider
-      value={useMemo(
-        () => ({
-          open,
-          setOpen,
-        }),
-        [setOpen, open],
-      )}
-    >
+    <TocPopoverContext.Provider value={tocPopoverContext}>
       <Collapsible open={open} onOpenChange={setOpen} asChild>
         <header
           ref={ref}
           id="nd-tocnav"
           {...props}
           className={cn(
-            "fixed z-10 border-b backdrop-blur-sm transition-all duration-200 ease-linear max-xl:h-[40px] xl:hidden",
-            open && "bg-background/80 shadow-lg",
+            "fixed z-10 border-b backdrop-blur-sm transition-all duration-200 ease-linear xl:hidden",
+            { "bg-background/80 shadow-lg": open },
+            { "max-xl:h-[40px]": !open },
             props.className,
           )}
           style={{
@@ -75,7 +75,8 @@ export function PageTOCPopoverTrigger({
   ...props
 }: React.ComponentProps<"button"> & { lng: Language }) {
   const { t } = useTranslation(lngParam);
-  const { open } = useContext(TocPopoverContext);
+  const { title, open } = useContext(TocPopoverContext);
+  const { theme } = useTheme();
   const items = useTOCItems();
   const active = useActiveAnchor();
   const selected = useMemo(
@@ -95,7 +96,7 @@ export function PageTOCPopoverTrigger({
       <ProgressCircle
         value={(selected + 1) / Math.max(1, items.length)}
         max={1}
-        className={cn("shrink-0", open && "text-primary")}
+        className={cn("shrink-0", open && (theme === "dark" ? "text-blue-500" : "text-blue-600"))}
       />
       <span className="grid flex-1 *:col-start-1 *:row-start-1 *:my-auto">
         <span
@@ -105,7 +106,7 @@ export function PageTOCPopoverTrigger({
             showItem && "-translate-y-full pointer-events-none opacity-0",
           )}
         >
-          {t("toc")}
+          {title || t("Table of contents")}
         </span>
         <span
           className={cn(
