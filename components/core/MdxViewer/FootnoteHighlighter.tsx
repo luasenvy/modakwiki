@@ -9,16 +9,18 @@ export function FootnoteHighlighter() {
       const footnotes = document.querySelectorAll("section[data-footnotes=true] > ol > li");
       footnotes.forEach((footnote) => footnote.toggleAttribute("data-selected", false));
 
-      const selected = document.querySelector(hash);
-      selected?.toggleAttribute("data-selected", true);
+      document
+        .querySelector(`#${CSS.escape(hash.substring(1))}`)
+        ?.toggleAttribute("data-selected", true);
     };
 
     const footnoteRefHighlighting = (hash: string) => {
       const footnoteRefs = document.querySelectorAll("[data-footnote-ref=true]");
       footnoteRefs.forEach((footnoteRef) => footnoteRef.toggleAttribute("data-selected", false));
 
-      const selected = document.querySelector(hash);
-      selected?.toggleAttribute("data-selected", true);
+      document
+        .querySelector(`#${CSS.escape(hash.substring(1))}`)
+        ?.toggleAttribute("data-selected", true);
     };
 
     const handleHashChange = (e: HashChangeEvent) => {
