@@ -1,9 +1,10 @@
 import { MoveRight } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Breadcrumb, BreadcrumbItem } from "@/components/core/Breadcrumb";
+import { Breadcrumb } from "@/components/core/Breadcrumb";
 import { Container, Viewport } from "@/components/core/Container";
 import { PageHeadline } from "@/components/core/PageHeadline";
+import { BreadcrumbItem } from "@/hooks/use-breadcrumbs";
 import { pool } from "@/lib/db";
 import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/next";

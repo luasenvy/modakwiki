@@ -1,9 +1,10 @@
 import { CheckCircle, Info } from "lucide-react";
 import { headers } from "next/headers";
-import { Breadcrumb, BreadcrumbItem } from "@/components/core/Breadcrumb";
+import { Breadcrumb } from "@/components/core/Breadcrumb";
 import { Advertisement } from "@/components/core/button/Advertisement";
 import { Container, Viewport } from "@/components/core/Container";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { BreadcrumbItem } from "@/hooks/use-breadcrumbs";
 import { auth } from "@/lib/auth/server";
 import { Language } from "@/lib/i18n/config";
 import { localePrefix } from "@/lib/url";

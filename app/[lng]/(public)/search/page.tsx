@@ -1,8 +1,9 @@
 import { Info } from "lucide-react";
-import { Breadcrumb, BreadcrumbItem } from "@/components/core/Breadcrumb";
+import { Breadcrumb } from "@/components/core/Breadcrumb";
 import { Advertisement } from "@/components/core/button/Advertisement";
 import { Container, Viewport } from "@/components/core/Container";
 import { DocumentList } from "@/components/core/DocumentList";
+import { BreadcrumbItem } from "@/hooks/use-breadcrumbs";
 import { pool } from "@/lib/db";
 import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/next";

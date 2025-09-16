@@ -1,8 +1,9 @@
 import { notFound } from "next/navigation";
-import { Breadcrumb, BreadcrumbItem } from "@/components/core/Breadcrumb";
+import { Breadcrumb } from "@/components/core/Breadcrumb";
 import { Container, Viewport } from "@/components/core/Container";
 import { DiffViewer } from "@/components/core/DiffViewer";
 import { PageHeadline } from "@/components/core/PageHeadline";
+import { BreadcrumbItem } from "@/hooks/use-breadcrumbs";
 import { pool } from "@/lib/db";
 import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/next";

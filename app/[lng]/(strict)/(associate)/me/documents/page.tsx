@@ -1,10 +1,11 @@
 import { Info } from "lucide-react";
 import { headers } from "next/headers";
 import Link from "next/link";
-import { Breadcrumb, BreadcrumbItem } from "@/components/core/Breadcrumb";
+import { Breadcrumb } from "@/components/core/Breadcrumb";
 import { Advertisement } from "@/components/core/button/Advertisement";
 import { Container, Viewport } from "@/components/core/Container";
 import { DocumentList } from "@/components/core/DocumentList";
+import { BreadcrumbItem } from "@/hooks/use-breadcrumbs";
 import { auth } from "@/lib/auth/server";
 import { pool } from "@/lib/db";
 import { Language } from "@/lib/i18n/config";

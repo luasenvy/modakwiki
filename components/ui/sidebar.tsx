@@ -1,5 +1,6 @@
 "use client"
 
+import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { cva, VariantProps } from "class-variance-authority"
 import { PanelLeftIcon } from "lucide-react"
@@ -34,10 +35,10 @@ import {
 
 import dynamic from "next/dynamic";
 import Link from "next/link"
-import { BreadcrumbItem as BreadcrumbItemType } from "@/components/core/Breadcrumb"
 import { Toaster } from "@/components/ui/sonner"
 import { useTheme } from "next-themes"
 import { ToasterProps } from "sonner"
+import { useBreadcrumbs } from "@/hooks/use-breadcrumbs"
 
 // Avoid SSR for the ThemeToggler component
 const ThemeToggler = dynamic(() => import("@/components/core/ThemeToggler").then(mod => mod.ThemeToggler), { ssr: false });
@@ -53,8 +54,6 @@ type SidebarContextProps = {
   state: "expanded" | "collapsed"
   open: boolean
   setOpen: (open: boolean) => void
-  breadcrumbs: Array<BreadcrumbItemType>
-  setBreadcrumbs: (breadcrumbs: Array<BreadcrumbItemType>) => void
   openMobile: boolean
   setOpenMobile: (open: boolean) => void
   isMobile: boolean
@@ -107,13 +106,6 @@ function SidebarProvider({
     [setOpenProp, open]
   )
 
-  const [breadcrumbs, _setBreadcrumbs] = useState<Array<BreadcrumbItemType>>([])
-  const setBreadcrumbs = useCallback(
-    (value: Array<BreadcrumbItemType> | ((value: Array<BreadcrumbItemType>) => Array<BreadcrumbItemType>)) =>
-      _setBreadcrumbs(typeof value === "function" ? value(breadcrumbs) : value),
-    [breadcrumbs]
-  )
-
   // Helper to toggle the sidebar.
   const toggleSidebar = useCallback(() => {
     return isMobile ? setOpenMobile((open) => !open) : setOpen((open) => !open)
@@ -142,8 +134,6 @@ function SidebarProvider({
   const contextValue = useMemo<SidebarContextProps>(
     () => ({
       state,
-      breadcrumbs,
-      setBreadcrumbs,
       open,
       setOpen,
       isMobile,
@@ -151,7 +141,7 @@ function SidebarProvider({
       setOpenMobile,
       toggleSidebar,
     }),
-    [state, breadcrumbs, setBreadcrumbs, open, setOpen, isMobile, openMobile, setOpenMobile, toggleSidebar]
+    [state, open, setOpen, isMobile, openMobile, setOpenMobile, toggleSidebar]
   )
 
   return (
@@ -333,22 +323,22 @@ function SidebarRail({ className, ...props }: React.ComponentProps<"button">) {
 }
 
 function SidebarInset({ className, children, ...props }: React.ComponentProps<"main">) {
-  const { state, breadcrumbs, isMobile } = useSidebar()
+  const breadcrumbs = useBreadcrumbs(state => state.breadcrumbs);
+  const { state, isMobile } = useSidebar()
   const { theme } = useTheme();
 
   return (
     <main
       data-slot="sidebar-inset"
       className={cn(
-        "bg-background relative flex flex-1 flex-col w-full overflow-x-hidden overflow-y-auto",
+        "bg-background relative flex w-full flex-1 flex-col",
         "md:peer-data-[variant=inset]:m-2 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:shadow-sm md:peer-data-[variant=inset]:peer-data-[state=collapsed]:ml-2",
-        "max-w-full",
         { "xl:max-w-[calc(100%_-_var(--sidebar-width))] transition-normal delay-200 ease-in-out": !isMobile && state === "expanded" },
-        className,
+        className
       )}
       {...props}
     >
-      <header className="sticky top-0 flex h-12 shrink-0 items-center gap-2 border-b bg-background px-4">
+      <header className="sticky top-0 flex h-10 shrink-0 items-center gap-2 border-b bg-background px-4">
         <SidebarTrigger className="-ml-1" />
         
         <Breadcrumb className="w-full">

@@ -1,8 +1,9 @@
 import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
-import { Breadcrumb, BreadcrumbItem } from "@/components/core/Breadcrumb";
+import { Breadcrumb } from "@/components/core/Breadcrumb";
 import MdxEditor from "@/components/core/MdxEditor";
 import { FootnoteHighlighter } from "@/components/core/MdxViewer/FootnoteHighlighter";
+import { BreadcrumbItem } from "@/hooks/use-breadcrumbs";
 import { auth } from "@/lib/auth/server";
 import { pool } from "@/lib/db";
 import { Language } from "@/lib/i18n/config";

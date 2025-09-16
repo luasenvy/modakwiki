@@ -26,7 +26,7 @@ interface PageTOCPopoverProps extends React.ComponentProps<"div"> {
 export function PageTOCPopover({ title, ...props }: PageTOCPopoverProps) {
   const ref = useRef<HTMLElement>(null);
   const [open, setOpen] = useState(false);
-  const { state } = useSidebar();
+  const { state, isMobile } = useSidebar();
 
   const handleClick = useEffectEvent((e: Event) => {
     if (!open) return;
@@ -59,7 +59,7 @@ export function PageTOCPopover({ title, ...props }: PageTOCPopoverProps) {
           )}
           style={{
             ...props.style,
-            insetInlineStart: state === "collapsed" ? 0 : "256px",
+            insetInlineStart: state === "collapsed" || isMobile ? 0 : "256px",
             insetInlineEnd: 5,
           }}
         >

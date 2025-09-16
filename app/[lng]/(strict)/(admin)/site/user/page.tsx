@@ -1,28 +1,29 @@
-import { Breadcrumb, BreadcrumbItem } from "@/components/core/Breadcrumb";
+import { Breadcrumb } from "@/components/core/Breadcrumb";
 import { Container, Viewport } from "@/components/core/Container";
-import { CategoryList } from "@/components/core/list/CategoryList";
 import { PageHeadline } from "@/components/core/PageHeadline";
+import { UserTable } from "@/components/core/table/UserTable";
+import { BreadcrumbItem } from "@/hooks/use-breadcrumbs";
 import { pool } from "@/lib/db";
 import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/next";
-import { Category } from "@/lib/schema/category";
+import { User } from "@/lib/schema/user";
 import { localePrefix } from "@/lib/url";
 
-export default async function MyDocsPage(ctx: PageProps<"/[lng]/me/documents">) {
+export default async function UserPage(ctx: PageProps<"/[lng]/me/documents">) {
   const lngParam = (await ctx.params).lng as Language;
   const lng = localePrefix(lngParam);
 
   const breadcrumbs: Array<BreadcrumbItem> = [
     { title: "사이트관리" },
-    { title: "태그관리", href: `${lng}/site/tags` },
+    { title: "사용자관리", href: `${lng}/site/user` },
   ];
 
   const client = await pool.connect();
   try {
-    const { rows } = await client.query<Category>(
-      `SELECT id, description, created
-         FROM category
-     ORDER BY category ASC`,
+    const { rows } = await client.query<User>(
+      `SELECT id, name, email, scope, "emailVerified", "createdAt"
+         FROM "user"
+     ORDER BY "createdAt" DESC`,
     );
 
     const { t } = await useTranslation(lngParam);
@@ -33,11 +34,11 @@ export default async function MyDocsPage(ctx: PageProps<"/[lng]/me/documents">) 
           <Container as="div" variant="wide" className="space-y-2">
             <PageHeadline
               prose
-              title={t("Tag Management")}
-              description={t("Manage your tags and categories")}
+              title={t("User Management")}
+              description={t("Manage users in this site")}
             />
 
-            <CategoryList rows={rows} />
+            <UserTable rows={rows} />
           </Container>
         </Viewport>
       </>

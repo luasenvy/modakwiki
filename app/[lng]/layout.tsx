@@ -4,11 +4,17 @@ import { dir } from "i18next";
 
 import type { Metadata } from "next";
 import { Icons } from "next/dist/lib/metadata/types/metadata-types";
-import { Nanum_Gothic_Coding, Ubuntu_Mono } from "next/font/google";
+import { Inter, Nanum_Gothic_Coding, Ubuntu_Mono } from "next/font/google";
 import localFont from "next/font/local";
 import { ThemeProvider } from "next-themes";
 import { logo, site } from "@/config";
 import type { Language } from "@/lib/i18n/config";
+
+const inter = Inter({
+  display: "swap",
+  subsets: ["latin"],
+  variable: "--font-inter",
+});
 
 const pretendard = localFont({
   src: [{ path: "../../public/fonts/pretendard/PretendardVariable.woff2" }],
@@ -48,11 +54,11 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[ln
     <html
       lang={lng}
       dir={dir(lng)}
-      className={`${nanumGothicCoding.variable} ${ubuntuMono.variable}`}
+      className={`${inter.variable} ${pretendard.variable} ${nanumGothicCoding.variable} ${ubuntuMono.variable}`}
       data-scroll-behavior="smooth"
       suppressHydrationWarning
     >
-      <body className={pretendard.className}>
+      <body>
         <ThemeProvider defaultTheme="light" enableSystem disableTransitionOnChange>
           {children}
         </ThemeProvider>

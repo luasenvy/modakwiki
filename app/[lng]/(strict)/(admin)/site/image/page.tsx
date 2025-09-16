@@ -1,6 +1,5 @@
 import { Info } from "lucide-react";
-import Image from "next/image";
-import { Breadcrumb, BreadcrumbItem } from "@/components/core/Breadcrumb";
+import { Breadcrumb } from "@/components/core/Breadcrumb";
 import { Advertisement } from "@/components/core/button/Advertisement";
 import { Container, Viewport } from "@/components/core/Container";
 import { ImageDeleteButton } from "@/components/pages/site/image/ImageDeleteButton";
@@ -13,6 +12,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ImageZoom } from "@/components/ui/shadcn-io/image-zoom";
+import { BreadcrumbItem } from "@/hooks/use-breadcrumbs";
 import { pool } from "@/lib/db";
 import { byteto } from "@/lib/format";
 import type { Language } from "@/lib/i18n/config";

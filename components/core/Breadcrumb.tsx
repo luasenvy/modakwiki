@@ -1,15 +1,10 @@
 "use client";
 
 import { useEffect } from "react";
-import { useSidebar } from "@/components/ui/sidebar";
+import { BreadcrumbItem, useBreadcrumbs } from "@/hooks/use-breadcrumbs";
 import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/react";
 import { localePrefix } from "@/lib/url";
-
-export interface BreadcrumbItem {
-  title: string;
-  href?: string;
-}
 
 interface BreadcrumbProps {
   home?: boolean;
@@ -18,7 +13,7 @@ interface BreadcrumbProps {
 }
 
 export function Breadcrumb({ lng: lngParam, breadcrumbs = [], home }: BreadcrumbProps) {
-  const { setBreadcrumbs } = useSidebar();
+  const setBreadcrumbs = useBreadcrumbs((state) => state.setBreadcrumbs);
 
   const { t } = useTranslation(lngParam);
   const lng = localePrefix(lngParam);

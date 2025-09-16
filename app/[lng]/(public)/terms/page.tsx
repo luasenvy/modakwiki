@@ -1,5 +1,6 @@
-import { Breadcrumb, BreadcrumbItem } from "@/components/core/Breadcrumb";
+import { Breadcrumb } from "@/components/core/Breadcrumb";
 import { Document } from "@/components/core/Document";
+import { BreadcrumbItem } from "@/hooks/use-breadcrumbs";
 import type { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/next";
 import { localePrefix } from "@/lib/url";

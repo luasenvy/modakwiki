@@ -159,5 +159,13 @@
   "file": "file",
   "image": "image",
   "First Created": "First Created",
-  "No Headings": "No Headings"
+  "No Headings": "No Headings",
+  "User Management": "User Management",
+  "Manage users in this site": "Manage users in this site",
+  "scope.sysop": "scope.sysop",
+  "scope.admin": "scope.admin",
+  "scope.editor": "scope.editor",
+  "scope.member": "scope.member",
+  "scope.associate": "scope.associate",
+  "scope.guest": "scope.guest"
 }

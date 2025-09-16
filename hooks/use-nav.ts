@@ -9,6 +9,7 @@ import {
   ScrollText,
   SpellCheck,
   Tags,
+  UserCheck,
 } from "lucide-react";
 import { create } from "zustand";
 import { ScopeEnum, scopeEnum } from "@/lib/schema/user";
@@ -70,8 +71,13 @@ export const mainNavs: Array<NavItem> = [
     items: [
       {
         title: "태그관리",
-        url: "/site/tags",
+        url: "/site/tag",
         icon: Tags,
+      },
+      {
+        title: "사용자관리",
+        url: "/site/user",
+        icon: UserCheck,
       },
       {
         title: "이미지관리",
