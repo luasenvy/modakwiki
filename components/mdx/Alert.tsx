@@ -38,7 +38,15 @@ export function Alert({ children, level, ...props }: BannerProps) {
       {...props}
     >
       {isInfo ? <Info /> : isWarning ? <TriangleAlert /> : isDanger ? <Siren /> : null}
-      <AlertTitle className={cn({ "mb-1": Boolean(descriptions.length) })}>{title}</AlertTitle>
+      <AlertTitle
+        className={cn({
+          "mb-1": Boolean(descriptions.length),
+          "font-bold": level === levels.danger,
+          "font-semibold": level === levels.warning,
+        })}
+      >
+        {title}
+      </AlertTitle>
       {Boolean(descriptions.length) && (
         <AlertDescription>
           {descriptions.map((description, i) => (
