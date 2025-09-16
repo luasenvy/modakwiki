@@ -222,8 +222,11 @@ export function LineEditor({
                       setSelectedLine(i - 1);
 
                       setTimeout(() => {
-                        inputRefs.current[i - 1].value = toLines[i - 1];
-                        inputRefs.current[i].value = toLines[i];
+                        const prev = inputRefs.current[i - 1];
+                        const curr = inputRefs.current[i];
+
+                        if (prev) prev.value = toLines[i - 1];
+                        if (curr) curr.value = toLines[i];
                       });
                     }}
                   >
@@ -242,8 +245,11 @@ export function LineEditor({
                     setLines(toLines);
                     setSelectedLine(i + 1);
                     setTimeout(() => {
-                      inputRefs.current[i].value = toLines[i];
-                      inputRefs.current[i + 1].value = toLines[i + 1];
+                      const prev = inputRefs.current[i];
+                      const curr = inputRefs.current[i + 1];
+
+                      if (prev) prev.value = toLines[i];
+                      if (curr) curr.value = toLines[i + 1];
                     });
                   }}
                 >
@@ -299,7 +305,8 @@ export function LineEditor({
                   title={t("Remove Paragraph")}
                   onClick={(e) => {
                     e.stopPropagation();
-                    setLines((prev) => prev.filter((_, index) => index !== i));
+                    setSelectedLine(-1);
+                    setTimeout(() => setLines((prev) => prev.filter((_, index) => index !== i)));
                   }}
                 >
                   <Trash className="size-4" />

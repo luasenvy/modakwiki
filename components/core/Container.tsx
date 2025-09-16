@@ -16,6 +16,7 @@ const variants = {
     "pr-2 pl-4 pt-18 xl:pt-8 max-lg:pr-4",
     "break-keep",
     "prose dark:prose-invert",
+    "[&>p]:first-letter:ml-3",
     // Sub
     "[&_sub]:text-muted-foreground",
     // Link

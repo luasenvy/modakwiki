@@ -200,10 +200,10 @@ export function humanReadable(content: string) {
   content = content.replace(/\[\^[^\]]+](:[^\n|$]+)?/g, "");
 
   // remove sub
-  content = content.replace(/~([^\n]+)~/g, "$1");
+  content = content.replace(/~([^~]+)~/g, "($1)");
 
   // remove sup
-  content = content.replace(/\^([^\n]+)\^/g, "$1");
+  content = content.replace(/\^([^\^]+)\^/g, "");
 
   // remove blockquotes
   content = content.replace(/(^|\n)> /g, " ");
@@ -215,7 +215,7 @@ export function humanReadable(content: string) {
   content = content.replace(/^(\*|-|\+){3,}(\n|$)/gm, "");
 
   // remove list
-  content = content.replace(/^(\*|-|\+)[^\n]+/g, "");
+  content = content.replace(/^(\*|-|\+|\d(\.|\))) [^\n]+/gm, "");
 
   // unwrap links
   content = content.replace(/\[([^\]]+)]\([^)]+\)/g, "$1");
@@ -225,24 +225,26 @@ export function humanReadable(content: string) {
   let indicator;
   for (const blocktype of blocktypes) {
     while ((indicator = content.indexOf(blocktype)) >= 0) {
-      content = content.substring(
-        indicator,
-        content.indexOf(blocktype, indicator + blocktype.length),
-      );
+      const endOfIndicator = content.indexOf(blocktype, indicator + blocktype.length);
+      if (endOfIndicator < 0) break;
+      content =
+        content.substring(0, indicator) + content.substring(endOfIndicator + blocktype.length);
     }
   }
 
   // remove tables
   while ((indicator = content.search(/(^|\n)\|/)) >= 0) {
     const endOfTable = content.indexOf("|\n\n", indicator + 1);
-
     if (endOfTable < 0) break;
 
     content = content.substring(0, indicator) + content.substring(endOfTable + 1);
   }
 
-  // remove whitespaces
-  content = content.replace(/\s{2,}|\n/g, " ").trim();
+  // remove wildcards
+  content = content.replace(/\*/g, "");
+
+  // remove backticks
+  content = content.replace(/\`/g, "");
 
   return content;
 }

@@ -10,7 +10,6 @@ import { useTranslation } from "@/lib/i18n/next";
 import { Doctype, Document, doctypeEnum } from "@/lib/schema/document";
 import { User } from "@/lib/schema/user";
 import { localePrefix } from "@/lib/url";
-import { cn } from "@/lib/utils";
 
 export default async function SearchPage(ctx: PageProps<"/[lng]/search">) {
   const lngParam = (await ctx.params).lng as Language;
@@ -38,7 +37,7 @@ export default async function SearchPage(ctx: PageProps<"/[lng]/search">) {
     );
 
     const { rows } = await client.query<Document & User & { type: Doctype }>(
-      `SELECT d.id, d.title, d.preview, '${doctypeEnum.document}' AS type, u.name, u.image, u.email, u."emailVerified"
+      `SELECT d.id, d.title, d.preview, '${doctypeEnum.document}' AS type, d.created, d.updated, u.name, u.image, u.email, u."emailVerified"
          FROM document d
          JOIN "user" u
            ON d."userId" = u.id
@@ -46,7 +45,7 @@ export default async function SearchPage(ctx: PageProps<"/[lng]/search">) {
        
        UNION ALL
 
-       SELECT e.id, e.title, e.preview, '${doctypeEnum.essay}' AS type, u.name, u.image, u.email, u."emailVerified"
+       SELECT e.id, e.title, e.preview, '${doctypeEnum.essay}' AS type, e.created, e.updated, u.name, u.image, u.email, u."emailVerified"
          FROM essay e
          JOIN "user" u
            ON e."userId" = u.id

@@ -37,15 +37,15 @@ export async function POST(req: NextRequest) {
       const {
         rows: [{ count }],
       } = await client.query<{ count: number }>(
-        `SELECT COUNT(*)
+        `SELECT COUNT(*) as count
           FROM tag
          WHERE "category" = $1
            AND id IN (${tags?.map((tag) => `'${tag}'`).join(",")})
          `,
-        [category, tags],
+        [category],
       );
 
-      if (count !== tags?.length) return new Response("Bad Request", { status: 400 });
+      if (Number(count) !== tags?.length) return new Response("Bad Request", { status: 400 });
     }
 
     const sql = isEssay
@@ -73,9 +73,9 @@ export async function POST(req: NextRequest) {
     } = await client.query(sql, params);
 
     const historySql = isEssay
-      ? `INSERT INTO ${history} (id, description, content, "userId", license, category, tags)
+      ? `INSERT INTO ${history} ("docId", description, content, "userId", license, category, tags)
                        VALUES ($1, $2, $3, $4, $5, $6, '{${tags?.map((tag) => `"${tag}"`).join(",")}}')`
-      : `INSERT INTO ${history} (id, description, content, license, "userId")
+      : `INSERT INTO ${history} ("docId", description, content, license, "userId")
                        VALUES ($1, $2, $3, $4, $5)`;
     const historyParams = isEssay
       ? [id, description, content, session.user.id, license, category]

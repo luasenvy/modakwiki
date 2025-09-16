@@ -123,7 +123,7 @@ export default async function HistoryPage(ctx: PageProps<"/[lng]/[doctype]/histo
                           >
                             {isChanged ? (
                               <>
-                                변경점 |{" "}
+                                {t("Text changed")} |{" "}
                                 <span className="text-green-600">
                                   +{numberFormat.format(added)}
                                 </span>{" "}

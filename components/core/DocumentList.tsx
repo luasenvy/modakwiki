@@ -1,23 +1,12 @@
-import { CheckCircle, CheckCircleIcon, ChevronRight } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { AvatarProfile } from "@/components/core/AvatarProfile";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  Pill,
-  PillAvatar,
-  PillAvatarGroup,
-  PillButton,
-  PillDelta,
-  PillIcon,
-  PillIndicator,
-  PillStatus,
-} from "@/components/ui/shadcn-io/pill";
+
 import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/next";
 import { Doctype, Document } from "@/lib/schema/document";
 import { User } from "@/lib/schema/user";
 import { localePrefix } from "@/lib/url";
-import { cn } from "@/lib/utils";
 
 interface DocumentListProps {
   lng: Language;
@@ -38,9 +27,22 @@ export async function DocumentList({
   const datetimeFormat = new Intl.DateTimeFormat(lngParam);
 
   return rows.map(
-    ({ id, title, preview, type, name, email, image, emailVerified, category, tags, created }) => {
+    ({
+      id,
+      title,
+      preview,
+      type,
+      name,
+      email,
+      image,
+      emailVerified,
+      category,
+      tags,
+      created,
+      updated,
+    }) => {
       return (
-        <div className="py-0.5 hover:bg-accent" key={id}>
+        <div className="px-2 py-0.5 hover:bg-accent" key={id}>
           {category && (
             <p className="text-xs">
               <span className="font-semibold">{category}</span>
@@ -68,7 +70,7 @@ export async function DocumentList({
             <div className="flex items-center justify-between">
               <AvatarProfile profile={{ name, email, image, emailVerified }} size="sm" />
 
-              <p className="!my-0 text-xs">{datetimeFormat.format(created)}</p>
+              <p className="!my-0 text-xs">{datetimeFormat.format(updated || created)}</p>
             </div>
 
             <p className="mt-3 text-muted-foreground text-sm">{preview}...</p>

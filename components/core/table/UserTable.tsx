@@ -2,6 +2,13 @@
 
 import { Checkbox } from "@/components/ui/checkbox";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   ColumnDef,
   TableBody,
   TableCell,
@@ -26,13 +33,17 @@ const columns: Array<ColumnDef<User>> = [
         aria-label="Select all"
       />
     ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
+    cell: ({ row }) => {
+      if (row.original.scope === scopeEnum.sysop) return null;
+
+      return (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+        />
+      );
+    },
     enableSorting: false,
     enableHiding: false,
   },
@@ -41,9 +52,11 @@ const columns: Array<ColumnDef<User>> = [
   {
     accessorKey: "emailVerified",
     header: "이메일 검증",
-    cell: ({ row }) => (
-      <Checkbox checked={row.original.emailVerified} disabled aria-label="email verified" />
-    ),
+    cell: ({ row }) => {
+      if (row.original.scope === scopeEnum.sysop) return null;
+
+      return <Checkbox checked={row.original.emailVerified} disabled aria-label="email verified" />;
+    },
   },
 ];
 
@@ -53,14 +66,40 @@ interface UserTableProps {
 
 export function UserTable({ rows }: UserTableProps) {
   const { t } = useTranslation();
+
+  const handleChangeScope = (id: string, scope: string) => {
+    console.info(id, scope, "changed");
+  };
+
   const scopeColumns: Array<ColumnDef<User>> = [
     {
       accessorKey: "scope",
       header: "권한",
-      cell: ({ row }) =>
+      cell: ({ row }) => {
         t(
           `scope.${Object.entries(scopeEnum).find(([, scope]) => scope === row.original.scope)?.[0] || "guest"}`,
-        ),
+        );
+
+        return row.original.scope >= scopeEnum.sysop ? (
+          t("scope.sysop")
+        ) : (
+          <Select
+            defaultValue={String(row.original.scope)}
+            onValueChange={(scope: string) => handleChangeScope(row.original.id, scope)}
+          >
+            <SelectTrigger className="rounded-none">
+              <SelectValue placeholder={t("Select a scope")} />
+            </SelectTrigger>
+            <SelectContent>
+              {Object.entries(scopeEnum).map(([key, value]) => (
+                <SelectItem key={value} value={String(value)}>
+                  {t(`scope.${key}`)}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        );
+      },
     },
   ];
 
