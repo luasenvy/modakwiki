@@ -20,25 +20,18 @@ export function Image({
     others.find((item) => /^height-(.+)$/.test(item))?.match(/^height-(.+)$/) || [];
 
   const styles: React.CSSProperties = {};
-  let classes: React.ImgHTMLAttributes<HTMLImageElement>["className"] = "";
 
-  if (width) {
-    if (Number.isFinite(Number(width))) styles.maxWidth = `${width}px`;
-    else classes += ` ${width}`;
-  }
-  if (height) {
-    if (Number.isFinite(Number(height))) styles.maxHeight = `${height}px`;
-    else classes += ` ${height}`;
-  }
+  if (width && Number.isFinite(Number(width))) styles.maxWidth = `${width}px`;
+  if (height && Number.isFinite(Number(height))) styles.maxHeight = `${height}px`;
 
   const altText = [text, otherTexts].join(" ");
   return (
-    <figure className="relative flex w-auto flex-col border shadow-sm">
+    <figure className="flex w-auto flex-col border shadow-sm">
       <img
         {...props}
         alt={altText}
         loading="lazy"
-        className={cn(className, classes, "mx-auto")}
+        className={cn(className, "mx-auto")}
         style={{
           ...style,
           ...styles,
@@ -46,7 +39,6 @@ export function Image({
       />
       <figcaption
         className={cn(
-          "absolute bottom-0 w-full",
           "bg-muted/80 text-muted-foreground",
           "flex items-center",
           "font-light",
