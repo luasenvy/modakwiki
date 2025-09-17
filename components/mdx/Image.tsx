@@ -23,16 +23,15 @@ export function Image({
   let classes: React.ImgHTMLAttributes<HTMLImageElement>["className"] = "";
 
   if (width) {
-    if (Number.isFinite(Number(width))) styles.maxWidth = `calc(var(--spacing) * ${width})`;
+    if (Number.isFinite(Number(width))) styles.maxWidth = `${width}px`;
     else classes += ` ${width}`;
   }
   if (height) {
-    if (Number.isFinite(Number(height))) styles.maxHeight = `calc(var(--spacing) * ${height})`;
+    if (Number.isFinite(Number(height))) styles.maxHeight = `${height}px`;
     else classes += ` ${height}`;
   }
 
   const altText = [text, otherTexts].join(" ");
-  console.info(styles);
   return (
     <figure className="relative flex w-auto flex-col border shadow-sm">
       <img

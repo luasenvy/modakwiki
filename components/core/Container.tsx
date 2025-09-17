@@ -57,7 +57,7 @@ export function Viewport({ className, ...props }: React.ComponentPropsWithRef<"d
   return (
     <SearchParamsScroller
       className={cn(
-        "relative flex h-[calc(100dvh_-_var(--spacing)_*_12)] w-full scroll-pt-18 overflow-auto lg:justify-center xl:scroll-pt-8",
+        "relative flex h-[calc(100dvh_-_var(--spacing)_*_10)] w-full scroll-pt-18 overflow-auto lg:justify-center xl:scroll-pt-8",
         className,
       )}
       {...props}

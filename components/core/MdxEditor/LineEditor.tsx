@@ -112,15 +112,19 @@ export function LineEditor({
 
     if (!res.ok) return toast.error(await statusMessage({ t, res, options }));
 
-    const uris = await res.json();
+    const saves: Array<{ uri: string; name: string; width: number; height: number }> =
+      await res.json();
 
     const textarea = inputRefs.current[selectedLine];
     const line = lines[selectedLine];
     const head = line.substring(0, textarea.selectionStart);
     const tail = line.substring(textarea.selectionEnd);
 
-    const imageMarkdown = uris
-      .map((uri: string) => `![Uploaded Image](/api/image${uri})`)
+    const imageMarkdown = saves
+      .map(
+        ({ uri, name, width, height }) =>
+          `![${name} width-${width} height-${height}](/api/image${uri})`,
+      )
       .join("\n\n");
     const text = `${head}\n\n${imageMarkdown}\n\n${tail}`;
 
@@ -136,7 +140,7 @@ export function LineEditor({
     const head = line.substring(0, textarea.selectionStart);
     const tail = line.substring(textarea.selectionEnd);
 
-    const curr = `${head}\n\n![${image.name}](/api/image${image.uri}-o)\n\n${tail}`;
+    const curr = `${head}\n\n![${image.name} width-${image.width} height-${image.height}](/api/image${image.uri}-o)\n\n${tail}`;
 
     setLines((prev) => prev.toSpliced(selectedLine, 1, curr));
     textarea.value = curr;

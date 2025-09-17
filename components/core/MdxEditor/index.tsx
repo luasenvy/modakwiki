@@ -150,7 +150,7 @@ export default function MdxEditor({
 
     const { selectionStart, selectionEnd } = lineRef.current;
 
-    const curr = `${hunk.substring(0, selectionStart)}\n\n![${image.name}](/api/image${image.uri}-o)\n\n${hunk.substring(selectionEnd)}`;
+    const curr = `${hunk.substring(0, selectionStart)}\n\n![${image.name} width-${image.width} height-${image.height}](/api/image${image.uri}-o)\n\n${hunk.substring(selectionEnd)}`;
 
     setHunk(curr);
     lineRef.current.value = curr;
@@ -171,9 +171,10 @@ export default function MdxEditor({
 
       if (!res.ok) return toast.error(await statusMessage({ t, res, options }));
 
-      const uris = await res.json();
+      const saves: Array<{ uri: string; name: string; width: number; height: number }> =
+        await res.json();
 
-      const curr = `${hunk}\n\n${uris.map((uri: string) => `![Uploaded Image](/api/image${uri})`).join("\n\n")}`;
+      const curr = `${hunk}\n\n${saves.map(({ uri, name, width, height }) => `![${name} width-${width} height-${height}](/api/image${uri})`).join("\n\n")}`;
       setHunk(curr);
 
       lineRef.current!.value = curr;
@@ -608,7 +609,7 @@ export default function MdxEditor({
           />
 
           <Banner
-            className="absolute top-0 right-0 left-0"
+            className="absolute top-0 right-0 left-0 h-10"
             style={
               {
                 "--primary": "var(--color-orange-400)",

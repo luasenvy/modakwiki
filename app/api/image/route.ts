@@ -25,6 +25,8 @@ export async function GET(req: NextRequest) {
             , uri
             , portrait
             , size
+            , width
+            , height
             , name
             , "userId"
             , created
@@ -48,7 +50,7 @@ export async function POST(req: NextRequest) {
 
   const files = formData.getAll("files") || [];
 
-  const uris = [];
+  const saves = [];
   const values = [];
   const images = [];
 
@@ -57,38 +59,43 @@ export async function POST(req: NextRequest) {
 
     const buff = await file.arrayBuffer();
     const filetype = await fileTypeFromBuffer(buff);
+
     if (!filetype) continue;
 
-    images.push({ mime: filetype.mime, buff, name: file.name });
+    // for moderation
+    const openai = new OpenAI(openaiConfig);
+    const { results } = await openai.moderations.create({
+      model: "omni-moderation-latest",
+      input: [
+        {
+          type: "image_url",
+          image_url: {
+            url: `data:${filetype.mime};base64,${Buffer.from(buff).toString("base64")}`,
+          },
+        },
+      ],
+    });
+
+    if (results.some(({ flagged }) => flagged)) {
+      const categories = results.reduce(
+        (acc, { categories }) =>
+          new Set(
+            Array.from(acc).concat(
+              Object.entries(categories)
+                .filter(([, value]) => value)
+                .map(([name]) => name),
+            ),
+          ),
+        new Set<string>(),
+      );
+
+      return Response.json(Array.from(categories), { status: 415 });
+    }
+
+    images.push({ buff, name: file.name });
   }
 
   if (!images.length) return new Response("Bad Request", { status: 400 });
-
-  // for moderation
-  const openai = new OpenAI(openaiConfig);
-  const { results } = await openai.moderations.create({
-    model: "omni-moderation-latest",
-    input: images.map<ModerationMultiModalInput>(({ mime, buff }) => ({
-      type: "image_url",
-      image_url: { url: `data:${mime};base64,${Buffer.from(buff).toString("base64")}` },
-    })),
-  });
-
-  if (results.some(({ flagged }) => flagged)) {
-    const categories = results.reduce(
-      (acc, { categories }) =>
-        new Set(
-          Array.from(acc).concat(
-            Object.entries(categories)
-              .filter(([, value]) => value)
-              .map(([name]) => name),
-          ),
-        ),
-      new Set<string>(),
-    );
-
-    return Response.json(Array.from(categories), { status: 415 });
-  }
 
   for (const { buff, name } of images) {
     const original = sharp(buff);
@@ -102,7 +109,7 @@ export async function POST(req: NextRequest) {
     } = await optimization(filepath, original);
 
     const uri = filepath.replace(docroot, "");
-    uris.push(uri);
+    saves.push({ name, uri, width, height });
     values.push(
       `('ccbysa', '${uri}', ${isPortrait}, ${size}, ${width}, ${height}, '${name.replace(/\.[^.]+$/, ".webp")}', '${session.user.id}')`,
     );
@@ -114,7 +121,7 @@ export async function POST(req: NextRequest) {
       `INSERT INTO image (license, uri, portrait, size, width, height, name, "userId") VALUES ${values.join(",")}`,
     );
 
-    return Response.json(uris, { status: 201 });
+    return Response.json(saves, { status: 201 });
   } finally {
     client.release();
   }
