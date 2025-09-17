@@ -13,6 +13,7 @@ import { arrayMove, SortableContext, verticalListSortingStrategy } from "@dnd-ki
 import debounce from "lodash.debounce";
 import { ChevronDown, ChevronUp, Pencil, PencilOff, Trash } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 import { SortableItem } from "@/components/core/MdxEditor/SortableItem";
 import { ImageSelectButton } from "@/components/pages/site/image/ImageSelectButton";
 import { UploadImageButton } from "@/components/pages/site/image/UploadImageButton";
@@ -109,7 +110,7 @@ export function LineEditor({
     const res = await fetch("/api/image", options);
     setUploading(false);
 
-    if (!res.ok) return statusMessage({ t, status: res.status, options });
+    if (!res.ok) return toast.error(await statusMessage({ t, res, options }));
 
     const uris = await res.json();
 

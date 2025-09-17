@@ -4,7 +4,7 @@ import debounce from "lodash.debounce";
 import { ChevronsDown, Edit, Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
-
+import { toast } from "sonner";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -63,7 +63,7 @@ export function CategoryList({ rows }: CategoryListProps) {
     setLoadingTags(true);
     const res = await fetch(`/api/tag?category=${selectedCategory}`);
 
-    if (!res.ok) return statusMessage({ t, status: res.status });
+    if (!res.ok) return toast.error(await statusMessage({ t, res }));
 
     setTags(await res.json());
     setLoadingTags(false);
@@ -85,7 +85,7 @@ export function CategoryList({ rows }: CategoryListProps) {
 
     const res = await fetch("/api/category", options);
 
-    if (!res.ok) return statusMessage({ t, status: res.status, options });
+    if (!res.ok) return await statusMessage({ t, res, options });
 
     setInputCategory("");
     router.refresh();
@@ -103,7 +103,7 @@ export function CategoryList({ rows }: CategoryListProps) {
 
     const res = await fetch(`/api/tag`, options);
 
-    if (!res.ok) return statusMessage({ t, status: res.status, options });
+    if (!res.ok) return await statusMessage({ t, res, options });
 
     setInputTag("");
     getTags();
@@ -117,7 +117,7 @@ export function CategoryList({ rows }: CategoryListProps) {
     };
     const res = await fetch("/api/tag", options);
 
-    if (!res.ok) return statusMessage({ t, status: res.status, options });
+    if (!res.ok) return await statusMessage({ t, res, options });
 
     const index = tags.findIndex(({ id: _id }) => id === _id);
     if (index < 0) return router.refresh();
@@ -133,7 +133,7 @@ export function CategoryList({ rows }: CategoryListProps) {
     };
     const res = await fetch("/api/category", options);
 
-    if (!res.ok) return statusMessage({ t, status: res.status, options });
+    if (!res.ok) return await statusMessage({ t, res, options });
 
     const index = categories.findIndex(({ id: _id }) => id === _id);
     if (index < 0) return router.refresh();
@@ -147,7 +147,7 @@ export function CategoryList({ rows }: CategoryListProps) {
 
     const res = await fetch(`/api/category?${new URLSearchParams({ id })}`, options);
 
-    if (!res.ok) return statusMessage({ t, status: res.status, options });
+    if (!res.ok) return await statusMessage({ t, res, options });
 
     if (id === selectedCategory) setSelectedCategory("");
     router.refresh();
@@ -164,7 +164,7 @@ export function CategoryList({ rows }: CategoryListProps) {
       options,
     );
 
-    if (!res.ok) return statusMessage({ t, status: res.status, options });
+    if (!res.ok) return await statusMessage({ t, res, options });
 
     setInputTag("");
     getTags();

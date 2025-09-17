@@ -11,7 +11,7 @@ export const image = z.object({
   userId: user.shape.id,
   size: z.number(),
   uri: z.string().min(47).max(47),
-  license: z.enum(licenseEnum).optional(),
+  license: z.nativeEnum(licenseEnum).optional(),
   created: z.number(),
   updated: z.number().optional(),
   deleted: z.number().optional(),
@@ -19,17 +19,9 @@ export const image = z.object({
 
 export type Image = z.infer<typeof image>;
 
-export const imageForm = image
-  .pick({
-    content: true,
-    tags: true,
-    license: true,
-  })
-  .extend(
-    z.object({
-      id: z.number().optional(),
-      cover: z.custom<FileList>().optional(), // filename for input
-    }),
-  );
+export const imageForm = image.pick({
+  tags: true,
+  license: true,
+});
 
 export type ImageForm = z.infer<typeof imageForm>;

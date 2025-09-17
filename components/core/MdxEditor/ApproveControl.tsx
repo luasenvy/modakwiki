@@ -40,7 +40,7 @@ export function ApproveControl({ lng: lngParam }: ApproveControlProps) {
     };
     const res = await fetch("/api/document/approval", options);
 
-    if (!res.ok) return toast.error(statusMessage({ t, status: res.status, options }));
+    if (!res.ok) return toast.error(await statusMessage({ t, res, options }));
 
     router.refresh();
   };

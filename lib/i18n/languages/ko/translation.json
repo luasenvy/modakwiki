@@ -154,5 +154,20 @@
   "scope.editor": "편집자",
   "scope.member": "정회원",
   "scope.associate": "준회원",
-  "scope.guest": "손님"
+  "scope.guest": "손님",
+  "sexual": "선정적",
+  "sexual/minors": "선정적/미성년자",
+  "harassment": "괴롭힘",
+  "harassment/threatening": "괴롭힘/위협",
+  "hate": "혐오",
+  "hate/threatening": "혐오/위협",
+  "illicit": "불법적",
+  "illicit/violent": "불법적/폭력적",
+  "self-harm": "자해",
+  "self-harm/intent": "자해/의도",
+  "self-harm/instructions": "자해/지시",
+  "violence": "폭력적",
+  "violence/graphic": "폭력적/노골적",
+  "Inappropriate content has been detected.": "부적절한 콘텐츠가 감지되었습니다.",
+  "Select a scope": "권한 선택"
 }

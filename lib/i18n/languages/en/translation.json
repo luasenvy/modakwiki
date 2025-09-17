@@ -167,5 +167,21 @@
   "scope.editor": "scope.editor",
   "scope.member": "scope.member",
   "scope.associate": "scope.associate",
-  "scope.guest": "scope.guest"
+  "scope.guest": "scope.guest",
+  "sexual": "sexual",
+  "sexual/minors": "sexual/minors",
+  "harassment": "harassment",
+  "harassment/threatening": "harassment/threatening",
+  "hate": "hate",
+  "hate/threatening": "hate/threatening",
+  "illicit": "illicit",
+  "illicit/violent": "illicit/violent",
+  "self-harm": "self-harm",
+  "self-harm/intent": "self-harm/intent",
+  "self-harm/instructions": "self-harm/instructions",
+  "violence": "violence",
+  "violence/graphic": "violence/graphic",
+  "Inappropriate content has been detected.": "Inappropriate content has been detected.",
+  "Select a scope": "Select a scope",
+  "Text changed": "Text changed"
 }

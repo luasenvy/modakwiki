@@ -1,9 +1,12 @@
+import { fileTypeFromBuffer } from "file-type";
 import { existsSync } from "fs";
 import { mkdir, rename } from "fs/promises";
 import type { NextRequest } from "next/server";
+import OpenAI from "openai";
+import { ModerationMultiModalInput } from "openai/resources/moderations.mjs";
 import { dirname, join } from "path";
 import sharp from "sharp";
-import { storage } from "@/config";
+import { openai as openaiConfig, storage } from "@/config";
 import { auth } from "@/lib/auth/server";
 import { pool } from "@/lib/db";
 import { getCurrentFilename } from "@/lib/file";
@@ -47,10 +50,48 @@ export async function POST(req: NextRequest) {
 
   const uris = [];
   const values = [];
+  const images = [];
+
   for (const file of files) {
     if (!(file instanceof File)) continue;
 
-    const original = sharp(await file.arrayBuffer());
+    const buff = await file.arrayBuffer();
+    const filetype = await fileTypeFromBuffer(buff);
+    if (!filetype) continue;
+
+    images.push({ mime: filetype.mime, buff, name: file.name });
+  }
+
+  if (!images.length) return new Response("Bad Request", { status: 400 });
+
+  // for moderation
+  const openai = new OpenAI(openaiConfig);
+  const { results } = await openai.moderations.create({
+    model: "omni-moderation-latest",
+    input: images.map<ModerationMultiModalInput>(({ mime, buff }) => ({
+      type: "image_url",
+      image_url: { url: `data:${mime};base64,${Buffer.from(buff).toString("base64")}` },
+    })),
+  });
+
+  if (results.some(({ flagged }) => flagged)) {
+    const categories = results.reduce(
+      (acc, { categories }) =>
+        new Set(
+          Array.from(acc).concat(
+            Object.entries(categories)
+              .filter(([, value]) => value)
+              .map(([name]) => name),
+          ),
+        ),
+      new Set<string>(),
+    );
+
+    return Response.json(Array.from(categories), { status: 415 });
+  }
+
+  for (const { buff, name } of images) {
+    const original = sharp(buff);
     const filepath = await getCurrentFilename(docroot);
 
     const { isPortrait, originalSize: size } = await optimization(filepath, original);
@@ -58,7 +99,7 @@ export async function POST(req: NextRequest) {
     const uri = filepath.replace(docroot, "");
     uris.push(uri);
     values.push(
-      `('ccbysa', '${uri}', ${isPortrait}, ${size}, '${file.name.replace(/\.[^.]+$/, ".webp")}', '${session.user.id}')`,
+      `('ccbysa', '${uri}', ${isPortrait}, ${size}, '${name.replace(/\.[^.]+$/, ".webp")}', '${session.user.id}')`,
     );
   }
 

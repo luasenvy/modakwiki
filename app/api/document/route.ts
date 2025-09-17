@@ -1,6 +1,9 @@
 import { diffChars } from "diff";
 import kebabcase from "lodash.kebabcase";
 import { NextRequest } from "next/server";
+
+import OpenAI from "openai";
+import { openai as openaiConfig } from "@/config";
 import { auth } from "@/lib/auth/server";
 import { pool } from "@/lib/db";
 import { clear as clearMarkdown, humanReadable } from "@/lib/mdx/utils";
@@ -106,6 +109,29 @@ export async function PATCH(req: NextRequest) {
       tags,
     }: DocumentForm & { type: Doctype } = await req.json();
 
+    // moderation
+    const openai = new OpenAI(openaiConfig);
+    const { results } = await openai.moderations.create({
+      model: "omni-moderation-latest",
+      input: content,
+    });
+
+    if (results.some(({ flagged }) => flagged)) {
+      const categories = results.reduce(
+        (acc, { categories }) =>
+          new Set(
+            Array.from(acc).concat(
+              Object.entries(categories)
+                .filter(([, value]) => value)
+                .map(([name]) => name),
+            ),
+          ),
+        new Set<string>(),
+      );
+
+      return Response.json(Array.from(categories), { status: 415 });
+    }
+
     const { table, history } = getTablesByDoctype(type);
     if (!table) return new Response("Bad Request", { status: 400 });
 
@@ -133,6 +159,32 @@ export async function PATCH(req: NextRequest) {
 
     // Nothing to changed
     if (!isDocumentChange && !isMetadataChange) return new Response(null, { status: 409 });
+
+    if (isDocumentChange) {
+      // moderation
+      const openai = new OpenAI(openaiConfig);
+      const { results } = await openai.moderations.create({
+        model: "text-moderation-stable",
+        input: content,
+      });
+
+      if (results.some(({ flagged }) => flagged)) {
+        const categories = results.reduce(
+          (acc, { categories }) =>
+            new Set(
+              Array.from(acc).concat(
+                Object.entries(categories)
+                  .filter(([, value]) => value)
+                  .map(([name]) => name),
+              ),
+            ),
+          new Set<string>(),
+        );
+
+        console.info(results, "<<<<<<<<<<<< text moderation");
+        return Response.json(Array.from(categories), { status: 400 });
+      }
+    }
 
     await client.query(
       `UPDATE ${table}

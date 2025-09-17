@@ -166,17 +166,20 @@ export default function MdxEditor({
     const options = { method: "POST", body: formData };
 
     setUploading(true);
-    const res = await fetch("/api/image", options);
-    setUploading(false);
+    try {
+      const res = await fetch("/api/image", options);
 
-    if (!res.ok) return statusMessage({ t, status: res.status, options });
+      if (!res.ok) return toast.error(await statusMessage({ t, res, options }));
 
-    const uris = await res.json();
+      const uris = await res.json();
 
-    const curr = `${hunk}\n\n${uris.map((uri: string) => `![Uploaded Image](/api/image${uri})`).join("\n\n")}`;
-    setHunk(curr);
+      const curr = `${hunk}\n\n${uris.map((uri: string) => `![Uploaded Image](/api/image${uri})`).join("\n\n")}`;
+      setHunk(curr);
 
-    lineRef.current!.value = curr;
+      lineRef.current!.value = curr;
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handlePaste = async (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
@@ -198,7 +201,11 @@ export default function MdxEditor({
     form.setValue("description", e.target.value);
   }, 110);
 
-  const handleSubmit = form.handleSubmit(async (values: DocumentForm) => {
+  const handleSubmit = form.handleSubmit(async (values?: DocumentForm) => {
+    if (!canSave) return toast.warning(t("Content is empty or title is missing."));
+
+    if (!values) values = form.getValues();
+
     const options = {
       method: values.id ? "PATCH" : "POST",
       headers: { "Content-Type": "application/json" },
@@ -207,11 +214,11 @@ export default function MdxEditor({
 
     const res = await fetch("/api/document", options);
 
-    if (!res.ok) return toast.error(statusMessage({ t, status: res.status, options }));
+    if (!res.ok) return toast.error(await statusMessage({ t, res, options }));
 
     const { id } = await res.json();
 
-    toast.success(statusMessage({ t, status: res.status, options }), { description: values.title });
+    toast.success(await statusMessage({ t, res, options }), { description: values.title });
     router.push(`${lng}/${values.type}?${new URLSearchParams({ id })}`);
   });
 
@@ -224,9 +231,9 @@ export default function MdxEditor({
       options,
     );
 
-    if (!res.ok) return toast.error(statusMessage({ t, status: res.status, options }));
+    if (!res.ok) return toast.error(await statusMessage({ t, res, options }));
 
-    toast.success(statusMessage({ t, status: res.status, options }));
+    toast.success(await statusMessage({ t, res, options }));
     router.push(`${lng}/me/documents`);
   };
 
@@ -260,7 +267,7 @@ export default function MdxEditor({
 
     const res = await fetch(`/api/tag?${new URLSearchParams({ category })}`);
 
-    if (!res.ok) return toast.error(statusMessage({ t, status: res.status }));
+    if (!res.ok) return toast.error(await statusMessage({ t, res }));
 
     setTags(await res.json());
   }, [category]);
@@ -288,7 +295,7 @@ export default function MdxEditor({
       (async () => {
         const res = await fetch("/api/category");
 
-        if (!res.ok) return toast.error(statusMessage({ t, status: res.status }));
+        if (!res.ok) return toast.error(await statusMessage({ t, res }));
 
         setCategories(await res.json());
       })();
@@ -305,11 +312,7 @@ export default function MdxEditor({
 
   return (
     <>
-      <KeyboardShortcuts
-        onSave={() =>
-          canSave ? handleSubmit() : toast.warning(t("Content is empty or title is missing."))
-        }
-      />
+      <KeyboardShortcuts onSave={handleSubmit} />
       <FootnoteHighlighter />
 
       <Form {...form}>

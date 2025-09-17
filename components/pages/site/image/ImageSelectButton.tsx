@@ -42,7 +42,7 @@ export function ImageSelectButton({
       const res = await fetch(`/api/image`);
       setLoading(false);
 
-      if (!res.ok) return toast.error(statusMessage({ t, status: res.status }));
+      if (!res.ok) return toast.error(await statusMessage({ t, res }));
 
       setImages(await res.json());
     })();

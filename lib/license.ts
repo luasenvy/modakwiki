@@ -21,7 +21,7 @@ export const licenseEnum = {
   kogl3: "kogl3",
   kogl4: "kogl4",
   koglopen: "koglopen",
-};
+} as const;
 
 export type License = (typeof licenseEnum)[keyof typeof licenseEnum];
 

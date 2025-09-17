@@ -33,7 +33,7 @@ export function ImageDeleteButton({ lng: lngParam, imageId }: ImageDeleteButtonP
 
     const res = await fetch(`/api/image?${new URLSearchParams({ id: String(imageId) })}`, options);
 
-    if (!res.ok) return toast.error(statusMessage({ t, status: res.status, options }));
+    if (!res.ok) return toast.error(await statusMessage({ t, res, options }));
 
     router.refresh();
   };

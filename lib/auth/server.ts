@@ -22,13 +22,7 @@ export const auth = betterAuth({
   },
   user: {
     additionalFields: {
-      scope: {
-        type: "number",
-        validator: {
-          input: user.shape.scope,
-          output: user.shape.scope,
-        },
-      },
+      scope: { type: "number" },
     },
   },
   session: {
