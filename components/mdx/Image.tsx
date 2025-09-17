@@ -3,26 +3,46 @@
 import { Info } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export function Image({ alt = "", style, ...props }: React.ImgHTMLAttributes<HTMLImageElement>) {
+export function Image({
+  alt = "",
+  style,
+  className,
+  ...props
+}: React.ImgHTMLAttributes<HTMLImageElement>) {
   const [text, ...others] = alt?.split(" ") ?? [];
 
   const otherTexts = others
-    .filter((item) => !/^width-(\d+)$/.test(item) && !/^height-(\d+)$/.test(item))
+    .filter((item) => !/^width-(.+)$/.test(item) && !/^height-(.+)$/.test(item))
     .join(" ");
-  const width = Number(others.find((item) => /^width-(\d+)$/.test(item))?.replace("width-", ""));
-  const height = Number(others.find((item) => /^height-(\d+)$/.test(item))?.replace("height-", ""));
+
+  const [, width] = others.find((item) => /^width-(.+)$/.test(item))?.match(/^width-(.+)$/) || [];
+  const [, height] =
+    others.find((item) => /^height-(.+)$/.test(item))?.match(/^height-(.+)$/) || [];
+
+  const styles: React.CSSProperties = {};
+  let classes: React.ImgHTMLAttributes<HTMLImageElement>["className"] = "";
+
+  if (width) {
+    if (Number.isFinite(Number(width))) styles.maxWidth = `calc(var(--spacing) * ${width})`;
+    else classes += ` ${width}`;
+  }
+  if (height) {
+    if (Number.isFinite(Number(height))) styles.maxHeight = `calc(var(--spacing) * ${height})`;
+    else classes += ` ${height}`;
+  }
 
   const altText = [text, otherTexts].join(" ");
+  console.info(styles);
   return (
-    <figure className="relative w-auto border shadow-sm">
+    <figure className="relative flex w-auto flex-col border shadow-sm">
       <img
         {...props}
         alt={altText}
         loading="lazy"
+        className={cn(className, classes, "mx-auto")}
         style={{
           ...style,
-          width: Number.isFinite(width) ? width : undefined,
-          height: Number.isFinite(height) ? height : undefined,
+          ...styles,
         }}
       />
       <figcaption
