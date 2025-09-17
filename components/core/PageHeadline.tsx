@@ -20,7 +20,7 @@ export async function PageHeadline({
   return (
     <>
       {category && (
-        <p className="!my-0 text-xs">
+        <p className="!my-0 first-letter:!ml-0 text-xs">
           <span className="font-semibold">{category}</span>
           {Boolean(tags?.length) && (
             <>
