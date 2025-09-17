@@ -94,19 +94,24 @@ export async function POST(req: NextRequest) {
     const original = sharp(buff);
     const filepath = await getCurrentFilename(docroot);
 
-    const { isPortrait, originalSize: size } = await optimization(filepath, original);
+    const {
+      isPortrait,
+      originalSize: size,
+      originalWidth: width,
+      originalHeight: height,
+    } = await optimization(filepath, original);
 
     const uri = filepath.replace(docroot, "");
     uris.push(uri);
     values.push(
-      `('ccbysa', '${uri}', ${isPortrait}, ${size}, '${name.replace(/\.[^.]+$/, ".webp")}', '${session.user.id}')`,
+      `('ccbysa', '${uri}', ${isPortrait}, ${size}, ${width}, ${height}, '${name.replace(/\.[^.]+$/, ".webp")}', '${session.user.id}')`,
     );
   }
 
   const client = await pool.connect();
   try {
     await client.query(
-      `INSERT INTO image (license, uri, portrait, size, name, "userId") VALUES ${values.join(",")}`,
+      `INSERT INTO image (license, uri, portrait, size, width, height, name, "userId") VALUES ${values.join(",")}`,
     );
 
     return Response.json(uris, { status: 201 });

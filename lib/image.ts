@@ -13,10 +13,11 @@ export async function optimization(
 ) {
   if (!original) original = sharp(await readFile(filepath));
 
-  const { size: originalSize } = await original
-    .withMetadata()
-    .webp({ quality: 80 })
-    .toFile(filepath);
+  const {
+    size: originalSize,
+    width: originalWidth,
+    height: originalHeight,
+  } = await original.withMetadata().webp({ quality: 80 }).toFile(filepath);
 
   const ename = extname(filepath);
   const bname = basename(filepath, ename);
@@ -54,5 +55,5 @@ export async function optimization(
     .webp({ quality: 80 })
     .toFile(join(dirname(filepath), `${bname}-t${options?.ext ? ename : ""}`));
 
-  return { isPortrait, originalSize };
+  return { isPortrait, originalSize, originalWidth, originalHeight };
 }

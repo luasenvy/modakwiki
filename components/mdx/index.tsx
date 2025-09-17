@@ -2,6 +2,7 @@ import { MDXComponents } from "mdx/types";
 import { Children } from "react";
 import { Alert } from "@/components/mdx/Alert";
 import { AutoLink } from "@/components/mdx/AutoLink";
+import { Image as MdxImage } from "@/components/mdx/Image";
 import { Youtube } from "@/components/mdx/Youtube";
 import { cn } from "@/lib/utils";
 
@@ -16,13 +17,9 @@ export default {
     ) : (
       <p {...props} />
     ),
-  // img: (props: React.ImgHTMLAttributes<HTMLImageElement>) => {
-  //   return (
-  //     <ImageZoom>
-  //       <img {...props} loading="lazy" />
-  //     </ImageZoom>
-  //   );
-  // },
+  img: (props: React.ImgHTMLAttributes<HTMLImageElement>) => {
+    return <MdxImage {...props} />;
+  },
   sub: ({ children, ...props }: React.DelHTMLAttributes<HTMLElement>) => {
     return <sub {...props}>({children})</sub>;
   },
