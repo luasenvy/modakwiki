@@ -1,5 +1,6 @@
 import { Breadcrumb } from "@/components/core/Breadcrumb";
 import { Document } from "@/components/core/Document";
+import { FootnoteHighlighter } from "@/components/core/MdxViewer/FootnoteHighlighter";
 import { BreadcrumbItem } from "@/hooks/use-breadcrumbs";
 import type { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/next";
@@ -108,7 +109,7 @@ H^2^O
 [^각주설명]: 그리고 해당 각주에 대한 설명은 이렇게 작성합니다.
 [^문법설명]: 각주의 문법을 설명합니다.
 
-각주의 설명은 문서 어디에 어떤 순서로 작성하든 영향을 받지 않고 본문에 표시한 순서대로 문서의 최하단에 순서대로 나열됩니다. 관리편의를 위해 각주의 설명을 작성할 때에는 위 예제처럼 각주를 사용한 문단과 가까운 곳에 작성해두거나 최하단에 모아두는 형식을 취하는 것이 좋습니다.
+각주를 클릭하면 해당하는 내용으로 페이지가 스크롤되고 깜빡이며 강조 됩니다. 각주의 설명은 문서 어디에 어떤 순서로 작성하든 영향을 받지 않고 본문에 작성한 순서대로 최하단에 나열됩니다. 관리 편의를 위해 각주의 설명은 문서가 저장된 이후에 모두 최하단으로 이동하여 저장됩니다. 편집시에는 다시 각 문단의 위치로 배치되어 쉽게 편집할 수 있습니다.
 
 ## 특수 문법: Github 스타일 체크리스트
 
@@ -270,6 +271,7 @@ function sayHello(x: number) {
   return (
     <>
       <Breadcrumb lng={lngParam} breadcrumbs={breadcrumbs} />
+      <FootnoteHighlighter />
       <Document lng={lngParam} title={t("wiki syntax")} content={content.trim()} />
     </>
   );

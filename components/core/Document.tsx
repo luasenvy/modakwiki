@@ -12,7 +12,6 @@ import {
   PageTOCPopoverItems,
   PageTOCPopoverTrigger,
 } from "@/components/fumadocs/toc-popover";
-
 import { Button } from "@/components/ui/button";
 import { Session } from "@/lib/auth/server";
 import { Language } from "@/lib/i18n/config";

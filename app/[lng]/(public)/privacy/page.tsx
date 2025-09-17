@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { Breadcrumb } from "@/components/core/Breadcrumb";
 import { Document } from "@/components/core/Document";
+import { FootnoteHighlighter } from "@/components/core/MdxViewer/FootnoteHighlighter";
 import { isDev } from "@/config";
 import { BreadcrumbItem } from "@/hooks/use-breadcrumbs";
 import type { Language } from "@/lib/i18n/config";
@@ -144,6 +145,7 @@ export default async function HowToPage(ctx: PageProps<"/[lng]/privacy">) {
   return (
     <>
       <Breadcrumb lng={lngParam} breadcrumbs={breadcrumbs} />
+      <FootnoteHighlighter />
       <Document lng={lngParam} title="개인정보 처리방침" content={content.trim()} />
     </>
   );

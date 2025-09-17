@@ -176,6 +176,7 @@ export default async function WikiDocPage(ctx: PageProps<"/[lng]/[doctype]">) {
       return (
         <>
           <Breadcrumb lng={lngParam} breadcrumbs={breadcrumbs} />
+          <FootnoteHighlighter />
           <Document lng={lngParam} content={content.trim()} />
         </>
       );

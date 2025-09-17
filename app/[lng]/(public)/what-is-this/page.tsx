@@ -1,6 +1,7 @@
 import { FlameKindling } from "lucide-react";
 import { Breadcrumb } from "@/components/core/Breadcrumb";
 import { Document } from "@/components/core/Document";
+import { FootnoteHighlighter } from "@/components/core/MdxViewer/FootnoteHighlighter";
 import { site } from "@/config";
 import { BreadcrumbItem } from "@/hooks/use-breadcrumbs";
 import type { Language } from "@/lib/i18n/config";
@@ -62,6 +63,7 @@ export default async function HowToPage(ctx: PageProps<"/[lng]/what-is-this">) {
   return (
     <>
       <Breadcrumb lng={lngParam} breadcrumbs={breadcrumbs} />
+      <FootnoteHighlighter />
       <Document lng={lngParam} content={content.trim()} title={t(site.name)} />
     </>
   );

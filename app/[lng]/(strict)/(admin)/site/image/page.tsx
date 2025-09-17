@@ -43,10 +43,13 @@ export default async function HowToPage(ctx: PageProps<"/[lng]/editor/syntax">) 
             , uri
             , portrait
             , size
+            , width
+            , height
             , name
             , "userId"
          FROM image
-        WHERE deleted IS NULL`,
+        WHERE deleted IS NULL
+     ORDER BY created DESC`,
     );
 
     const { t } = await useTranslation(lngParam);
@@ -61,12 +64,15 @@ export default async function HowToPage(ctx: PageProps<"/[lng]/editor/syntax">) 
         <Breadcrumb lng={lngParam} breadcrumbs={breadcrumbs} />
         <Viewport>
           <Container as="div" variant="aside" className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-            {rows.map(({ id, uri, name, size }) => (
+            {rows.map(({ id, uri, name, width, height, size }) => (
               <Card className="!mb-0 gap-1 rounded-none hover:bg-accent" key={`image-${id}`}>
                 <CardHeader>
                   <CardTitle>{name}</CardTitle>
                   <CardDescription>
-                    <p className="text-sm">{byteto(size)}</p>
+                    <p className="text-sm">
+                      {width}x{height}
+                      <sub className="ml-1">( {byteto(size)} )</sub>
+                    </p>
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -74,7 +80,7 @@ export default async function HowToPage(ctx: PageProps<"/[lng]/editor/syntax">) 
                     <div
                       aria-label={name}
                       role="img"
-                      className="h-[400px] w-full bg-center bg-cover bg-no-repeat sm:h-[150px]"
+                      className="h-[400px] w-full border bg-center bg-cover bg-no-repeat shadow-sm sm:h-[150px]"
                       style={{ backgroundImage: `url('/api/image${uri}-t')` }}
                     />
                   </ImageZoom>
