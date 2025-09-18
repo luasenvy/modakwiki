@@ -17,6 +17,9 @@ export const image = z.object({
   created: z.number(),
   updated: z.number().optional(),
   deleted: z.number().optional(),
+
+  // when to use join with user table
+  userName: user.shape.name.optional(),
 });
 
 export type Image = z.infer<typeof image>;

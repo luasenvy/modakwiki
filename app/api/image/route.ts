@@ -3,7 +3,6 @@ import { existsSync } from "fs";
 import { mkdir, rename } from "fs/promises";
 import type { NextRequest } from "next/server";
 import OpenAI from "openai";
-import { ModerationMultiModalInput } from "openai/resources/moderations.mjs";
 import { dirname, join } from "path";
 import sharp from "sharp";
 import { openai as openaiConfig, storage } from "@/config";
@@ -17,22 +16,29 @@ const docroot = join(storage.root, "images");
 const trashDocroot = join(storage.root, "images_trash");
 
 export async function GET(req: NextRequest) {
+  const uri = req.nextUrl.searchParams.get("uri");
+
   const client = await pool.connect();
   try {
     const { rows } = await client.query(
-      `SELECT id
-            , license
-            , uri
-            , portrait
-            , size
-            , width
-            , height
-            , name
-            , "userId"
-            , created
-         FROM image
-        WHERE deleted IS NULL
-     ORDER BY created DESC`,
+      `SELECT i.id
+            , i.license
+            , i.uri
+            , i.portrait
+            , i.size
+            , i.width
+            , i.height
+            , i.name
+            , i."userId"
+            , u.name AS "userName"
+            , i.created
+         FROM image i
+        JOIN "user" u
+          ON i."userId" = u.id
+        WHERE i.deleted IS NULL
+          ${uri ? "AND i.uri = $1" : ""}
+     ORDER BY i.created DESC`,
+      [uri],
     );
 
     return Response.json(rows);
