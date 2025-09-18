@@ -14,7 +14,7 @@ import {
 import { ImageZoom } from "@/components/ui/shadcn-io/image-zoom";
 import { BreadcrumbItem } from "@/hooks/use-breadcrumbs";
 import { pool } from "@/lib/db";
-import { byteto } from "@/lib/format";
+import { byteto, fromNow } from "@/lib/format";
 import type { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/next";
 import { Image as ImageType } from "@/lib/schema/image";
@@ -35,21 +35,24 @@ export default async function HowToPage(ctx: PageProps<"/[lng]/editor/syntax">) 
     );
 
     const { rows } = await client.query<ImageType>(
-      `SELECT id
-            , updated
-            , deleted
-            , created
-            , license
-            , uri
-            , portrait
-            , size
-            , width
-            , height
-            , name
-            , "userId"
-         FROM image
-        WHERE deleted IS NULL
-     ORDER BY created DESC`,
+      `SELECT i.id
+            , i.updated
+            , i.deleted
+            , i.created
+            , i.license
+            , i.uri
+            , i.portrait
+            , i.size
+            , i.width
+            , i.height
+            , i.name
+            , i."userId"
+            , u.name AS "userName"
+         FROM image i
+         JOIN "user" u
+           ON u.id = i."userId"
+        WHERE i.deleted IS NULL
+     ORDER BY i.created DESC`,
     );
 
     const { t } = await useTranslation(lngParam);
@@ -64,7 +67,7 @@ export default async function HowToPage(ctx: PageProps<"/[lng]/editor/syntax">) 
         <Breadcrumb lng={lngParam} breadcrumbs={breadcrumbs} />
         <Viewport>
           <Container as="div" variant="aside" className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-            {rows.map(({ id, uri, name, width, height, size }) => (
+            {rows.map(({ id, uri, name, width, height, size, userName, created }) => (
               <Card className="!mb-0 gap-1 rounded-none hover:bg-accent" key={`image-${id}`}>
                 <CardHeader>
                   <CardTitle>{name}</CardTitle>
@@ -84,6 +87,22 @@ export default async function HowToPage(ctx: PageProps<"/[lng]/editor/syntax">) 
                       style={{ backgroundImage: `url('/api/image${uri}-t')` }}
                     />
                   </ImageZoom>
+
+                  <div className="mt-3 space-y-3">
+                    <div className="space-y-2 text-xs">
+                      <div className="flex items-center justify-between">
+                        <span className="text-muted-foreground">{t("Copyrighter")}</span>
+                        <span className="font-medium">-----</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-muted-foreground">{t("Uploader")}</span>
+                        <span className="font-medium">{userName}</span>
+                      </div>
+                    </div>
+                    <div className="border-t pt-2 text-right text-muted-foreground text-xs">
+                      {t("Created")}: {fromNow(created)}
+                    </div>
+                  </div>
                 </CardContent>
                 <CardFooter className="flex items-center justify-end gap-2 py-1">
                   <ImageDeleteButton lng={lngParam} imageId={id} />
