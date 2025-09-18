@@ -1,7 +1,7 @@
 "use client";
 
 import debounce from "lodash.debounce";
-import { ChevronsDown, Edit, Trash } from "lucide-react";
+import { ChevronsDown, ChevronsRight, Edit, Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/command";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
+import { useBreakpoints } from "@/hooks/use-breakpoints";
 import { statusMessage } from "@/lib/fetch/react";
 import { useTranslation } from "@/lib/i18n/react";
 import { Category } from "@/lib/schema/category";
@@ -170,9 +171,10 @@ export function CategoryList({ rows }: CategoryListProps) {
     getTags();
   };
 
+  const isLg = useBreakpoints("lg");
   return (
-    <div className="flex flex-col items-center gap-4">
-      <Command className="max-h-[calc(40dvh_-_(var(--spacing)_*_20))] rounded-lg border shadow-md">
+    <div className="flex flex-col items-center gap-4 lg:flex-row">
+      <Command className="rounded-lg border shadow-md max-lg:max-h-[calc(40dvh_-_(var(--spacing)_*_20))] lg:h-[calc(100dvh_-_(var(--spacing)_*_60))]">
         <CommandInput
           ref={firstInputRef}
           value={inputCategory}
@@ -226,11 +228,11 @@ export function CategoryList({ rows }: CategoryListProps) {
                     </div>
 
                     <AlertDialogFooter>
-                      <AlertDialogCancel onClick={(e) => e.stopPropagation()}>
+                      <AlertDialogCancel onClick={(e: React.MouseEvent) => e.stopPropagation()}>
                         {t("Cancel")}
                       </AlertDialogCancel>
                       <AlertDialogAction
-                        onClick={(e) => {
+                        onClick={(e: React.MouseEvent) => {
                           e.stopPropagation();
                           handleClickEditNameCategory(id, changeCategoryName);
                         }}
@@ -255,11 +257,11 @@ export function CategoryList({ rows }: CategoryListProps) {
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                      <AlertDialogCancel onClick={(e) => e.stopPropagation()}>
+                      <AlertDialogCancel onClick={(e: React.MouseEvent) => e.stopPropagation()}>
                         {t("Cancel")}
                       </AlertDialogCancel>
                       <AlertDialogAction
-                        onClick={(e) => {
+                        onClick={(e: React.MouseEvent) => {
                           e.stopPropagation();
                           handleClickDeleteCategory(id);
                         }}
@@ -275,18 +277,21 @@ export function CategoryList({ rows }: CategoryListProps) {
         </CommandList>
       </Command>
 
-      {selectedCategory && (
-        <>
-          <ChevronsDown className="size-4" />
-          {loadingTags ? (
-            <Spinner className="m-auto" variant="ring" size={32} />
-          ) : (
-            <Command className="max-h-[calc(40dvh_-_(var(--spacing)_*_20))] rounded-lg border shadow-md">
-              <CommandInput
-                value={inputTag}
-                onValueChange={setInputTag}
-                placeholder={t("Type a tag or search...")}
-              />
+      <div className="shrink-0">
+        {isLg ? <ChevronsRight className="size-4" /> : <ChevronsDown className="size-4" />}
+      </div>
+
+      <Command className="rounded-lg border shadow-md max-lg:max-h-[calc(40dvh_-_(var(--spacing)_*_20))] lg:h-[calc(100dvh_-_(var(--spacing)_*_60))]">
+        {selectedCategory ? (
+          <>
+            <CommandInput
+              value={inputTag}
+              onValueChange={setInputTag}
+              placeholder={t("Type a tag or search...")}
+            />
+            {loadingTags ? (
+              <Spinner className="mx-auto my-6" variant="ring" size={32} />
+            ) : (
               <CommandList>
                 <CommandEmpty className="flex flex-col items-center space-y-2 p-4">
                   {inputTag ? (
@@ -330,11 +335,13 @@ export function CategoryList({ rows }: CategoryListProps) {
                           </div>
 
                           <AlertDialogFooter>
-                            <AlertDialogCancel onClick={(e) => e.stopPropagation()}>
+                            <AlertDialogCancel
+                              onClick={(e: React.MouseEvent) => e.stopPropagation()}
+                            >
                               {t("Cancel")}
                             </AlertDialogCancel>
                             <AlertDialogAction
-                              onClick={(e) => {
+                              onClick={(e: React.MouseEvent) => {
                                 e.stopPropagation();
                                 handleClickEditNameTag(id, category, changeTagName);
                               }}
@@ -361,11 +368,13 @@ export function CategoryList({ rows }: CategoryListProps) {
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
-                            <AlertDialogCancel onClick={(e) => e.stopPropagation()}>
+                            <AlertDialogCancel
+                              onClick={(e: React.MouseEvent) => e.stopPropagation()}
+                            >
                               {t("Cancel")}
                             </AlertDialogCancel>
                             <AlertDialogAction
-                              onClick={(e) => {
+                              onClick={(e: React.MouseEvent) => {
                                 e.stopPropagation();
                                 handleClickDeleteTag(category, id);
                               }}
@@ -379,10 +388,14 @@ export function CategoryList({ rows }: CategoryListProps) {
                   </CommandItem>
                 ))}
               </CommandList>
-            </Command>
-          )}
-        </>
-      )}
+            )}
+          </>
+        ) : (
+          <p className="my-6 text-center font-semibold text-muted-foreground">
+            {t("Please select category first.")}
+          </p>
+        )}
+      </Command>
     </div>
   );
 }

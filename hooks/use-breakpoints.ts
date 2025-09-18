@@ -15,11 +15,11 @@ export function useBreakpoints(breakpoint: Breakpoints) {
   const [isReached, setIsReached] = useState<boolean | undefined>(undefined);
 
   useEffect(() => {
-    setIsReached(window.innerWidth < breakpoints[breakpoint]);
+    setIsReached(window.innerWidth >= breakpoints[breakpoint]);
 
-    const onChange = () => setIsReached(window.innerWidth < breakpoints[breakpoint]);
+    const onChange = () => setIsReached(window.innerWidth >= breakpoints[breakpoint]);
 
-    const mql = window.matchMedia(`(max-width: ${breakpoints[breakpoint] - 1}px)`);
+    const mql = window.matchMedia(`(min-width: ${breakpoints[breakpoint]}px)`);
     mql.addEventListener("change", onChange);
 
     return () => mql.removeEventListener("change", onChange);
