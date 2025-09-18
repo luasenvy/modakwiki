@@ -169,5 +169,10 @@
   "violence": "폭력적",
   "violence/graphic": "폭력적/노골적",
   "Inappropriate content has been detected.": "부적절한 콘텐츠가 감지되었습니다.",
-  "Select a scope": "권한 선택"
+  "Select a scope": "권한 선택",
+  "Copyrighter": "저작권자",
+  "Resolution": "해상도",
+  "Size": "크기",
+  "Uploader": "업로더",
+  "Please select category first.": "분류를 먼저 선택해주세요."
 }
