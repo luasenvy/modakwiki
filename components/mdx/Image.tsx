@@ -54,7 +54,7 @@ export function Image({
       >
         <p className="!m-0 !mr-auto text-center font-light">{altText}</p>
 
-        <HoverCard>
+        <HoverCard openDelay={100} closeDelay={100}>
           <HoverCardTrigger asChild>
             <Button variant="link" className="shrink-0 text-blue-600">
               <Info className="size-4" />
