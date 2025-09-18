@@ -337,7 +337,7 @@ export default function MdxEditor({
                         "!border-blue-200 !bg-blue-50 !text-blue-800":
                           doctype === doctypeEnum.document,
                       })}
-                      onPressedChange={(pressed) =>
+                      onPressedChange={(pressed: boolean) =>
                         pressed && form.setValue("type", doctypeEnum.document)
                       }
                       aria-label="Toggle wkdoc"
@@ -355,7 +355,7 @@ export default function MdxEditor({
                         "!border-rose-200 !bg-rose-50 !text-rose-800":
                           doctype === doctypeEnum.essay,
                       })}
-                      onPressedChange={(pressed) =>
+                      onPressedChange={(pressed: boolean) =>
                         pressed && form.setValue("type", doctypeEnum.essay)
                       }
                       aria-label="Toggle essay"

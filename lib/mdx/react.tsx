@@ -33,7 +33,16 @@ export function MdxLoader({ source }: MdxLoaderProps) {
   ));
 
   useEffect(() => {
-    evaluate(escapeTextForBrowser(source), runtime).then((mod) => setMdxContent(() => mod.default));
+    const isPre = ((source) => {
+      if (source.startsWith("```") && source.endsWith("```")) return true;
+      if (source.startsWith("~~~") && source.endsWith("~~~")) return true;
+      if (source.startsWith("$$") && source.endsWith("$$")) return true;
+
+      return false;
+    })(source);
+    evaluate(isPre ? source : escapeTextForBrowser(source), runtime).then((mod) =>
+      setMdxContent(() => mod.default),
+    );
   }, [source]);
 
   return <MdxContent components={MDXComponents} />;
