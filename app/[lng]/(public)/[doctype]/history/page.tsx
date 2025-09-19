@@ -119,7 +119,7 @@ export default async function HistoryPage(ctx: PageProps<"/[lng]/[doctype]/histo
                                 ? `${lng}/${doctype}/diff?${new URLSearchParams({ id, created: String(created) })}`
                                 : `${lng}/${doctype}?${new URLSearchParams({ id, created: String(created) })}`
                             }
-                            className="text-blue-500 no-underline hover:underline"
+                            className="text-blue-600 no-underline hover:underline"
                           >
                             {isChanged ? (
                               <>
@@ -196,7 +196,7 @@ export default async function HistoryPage(ctx: PageProps<"/[lng]/[doctype]/histo
                             href={`mailto:${email}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-blue-500 no-underline hover:underline"
+                            className="text-blue-600 no-underline hover:underline"
                           >
                             {name}
                           </a>

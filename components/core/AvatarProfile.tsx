@@ -35,7 +35,7 @@ export function AvatarProfile({ profile, name = "", size = "sm", flatten }: Avat
           {profile.email ? (
             <a
               href={`mailto:${profile.email}`}
-              className="text-blue-500 text-xs no-underline hover:underline"
+              className="text-blue-600 text-xs no-underline hover:underline"
               target="_blank"
               rel="noreferrer noopener"
             >

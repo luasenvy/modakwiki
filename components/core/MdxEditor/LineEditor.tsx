@@ -219,7 +219,7 @@ export function LineEditor({
                     size="icon"
                     type="button"
                     title={t("한 문단 위로")}
-                    className="!bg-transparent !text-blue-500 hover:!text-blue-600 hover:!bg-accent !rounded-none"
+                    className="!bg-transparent !text-blue-600 hover:!bg-accent !rounded-none"
                     onClick={(e) => {
                       e.stopPropagation();
                       const toLines = lines.toSpliced(i - 1, 2, lines[i], lines[i - 1]);
@@ -243,7 +243,7 @@ export function LineEditor({
                   size="icon"
                   type="button"
                   title={t("한 문단 아래로")}
-                  className="!bg-transparent !text-blue-500 hover:!text-blue-600 hover:!bg-accent !rounded-none"
+                  className="!bg-transparent !text-blue-600 hover:!bg-accent !rounded-none"
                   onClick={(e) => {
                     e.stopPropagation();
                     const toLines = lines.toSpliced(i, 2, lines[i + 1], lines[i]);

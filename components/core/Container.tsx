@@ -20,7 +20,7 @@ const variants = {
     // Sub
     "[&_sub]:text-muted-foreground",
     // Link
-    "prose-a:text-blue-600 prose-a:no-underline prose-a:hover:underline dark:prose-a:text-blue-500",
+    "prose-a:text-blue-600 prose-a:no-underline prose-a:hover:underline",
     // Code
     "prose-pre:max-h-[calc(var(--spacing)_*_100)]",
     // Image

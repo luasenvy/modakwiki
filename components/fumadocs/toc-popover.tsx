@@ -3,7 +3,6 @@
 import { useActiveAnchor } from "fumadocs-core/toc";
 import { useEffectEvent } from "fumadocs-core/utils/use-effect-event";
 import { ChevronDown } from "lucide-react";
-import { useTheme } from "next-themes";
 import { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { TOCScrollArea, useTOCItems } from "@/components/fumadocs/toc";
 import ClerkTOCItems from "@/components/fumadocs/toc-clerk";
@@ -76,7 +75,6 @@ export function PageTOCPopoverTrigger({
 }: React.ComponentProps<"button"> & { lng: Language }) {
   const { t } = useTranslation(lngParam);
   const { title, open } = useContext(TocPopoverContext);
-  const { theme } = useTheme();
   const items = useTOCItems();
   const active = useActiveAnchor();
   const selected = useMemo(
@@ -96,7 +94,7 @@ export function PageTOCPopoverTrigger({
       <ProgressCircle
         value={(selected + 1) / Math.max(1, items.length)}
         max={1}
-        className={cn("shrink-0", open && (theme === "dark" ? "text-blue-500" : "text-blue-600"))}
+        className={cn("shrink-0", { "text-blue-600": open })}
       />
       <span className="grid flex-1 *:col-start-1 *:row-start-1 *:my-auto">
         <span

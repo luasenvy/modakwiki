@@ -352,7 +352,7 @@ function SidebarInset({ className, children, ...props }: React.ComponentProps<"m
                     "text-muted-foreground": !isCurrent,
                   })} title={title}>
                     {(href && breadcrumbs.length - 1 > i) ? (
-                      <Link href={href} className="text-muted-foreground hover:text-blue-500 hover:underline">{title}</Link>
+                      <Link href={href} className="text-muted-foreground hover:text-blue-600 hover:underline">{title}</Link>
                     ) : (
                       title
                     )}

@@ -17,6 +17,7 @@ import { pool } from "@/lib/db";
 import { byteto, fromNow } from "@/lib/format";
 import type { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/next";
+import { licenseLinkEnum } from "@/lib/license";
 import { Image as ImageType } from "@/lib/schema/image";
 import { localePrefix } from "@/lib/url";
 
@@ -67,7 +68,7 @@ export default async function HowToPage(ctx: PageProps<"/[lng]/editor/syntax">) 
         <Breadcrumb lng={lngParam} breadcrumbs={breadcrumbs} />
         <Viewport>
           <Container as="div" variant="aside" className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-            {rows.map(({ id, uri, name, width, height, size, userName, created }) => (
+            {rows.map(({ id, uri, name, width, height, size, license, userName, created }) => (
               <Card className="!mb-0 gap-1 rounded-none hover:bg-accent" key={`image-${id}`}>
                 <CardHeader>
                   <CardTitle>{name}</CardTitle>
@@ -93,6 +94,17 @@ export default async function HowToPage(ctx: PageProps<"/[lng]/editor/syntax">) 
                       <div className="flex items-center justify-between">
                         <span className="text-muted-foreground">{t("Copyrighter")}</span>
                         <span className="font-medium">-----</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-muted-foreground">{t("License")}</span>
+                        <a
+                          href={licenseLinkEnum[license]}
+                          className="text-blue-600 hover:underline"
+                          target="_blank"
+                          rel="noreferrer noopener"
+                        >
+                          <span className="font-medium">{t(license as string)}</span>
+                        </a>
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="text-muted-foreground">{t("Uploader")}</span>
