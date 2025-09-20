@@ -47,6 +47,8 @@ export default async function HowToPage(ctx: PageProps<"/[lng]/editor/syntax">) 
             , i.width
             , i.height
             , i.name
+            , i.author
+            , i.ref
             , i."userId"
             , u.name AS "userName"
          FROM image i
@@ -68,59 +70,72 @@ export default async function HowToPage(ctx: PageProps<"/[lng]/editor/syntax">) 
         <Breadcrumb lng={lngParam} breadcrumbs={breadcrumbs} />
         <Viewport>
           <Container as="div" variant="aside" className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-            {rows.map(({ id, uri, name, width, height, size, license, userName, created }) => (
-              <Card className="!mb-0 gap-1 rounded-none hover:bg-accent" key={`image-${id}`}>
-                <CardHeader>
-                  <CardTitle>{name}</CardTitle>
-                  <CardDescription>
-                    <p className="text-sm">
-                      {width}x{height}
-                      <sub className="ml-1">( {byteto(size)} )</sub>
-                    </p>
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ImageZoom zoomMargin={40} zoomImg={{ src: `/api/image${uri}` }}>
-                    <div
-                      aria-label={name}
-                      role="img"
-                      className="h-[400px] w-full border bg-center bg-cover bg-no-repeat shadow-sm sm:h-[150px]"
-                      style={{ backgroundImage: `url('/api/image${uri}-t')` }}
-                    />
-                  </ImageZoom>
+            {rows.map(
+              ({ id, uri, name, width, height, size, license, author, ref, userName, created }) => (
+                <Card className="!mb-0 gap-1 rounded-none hover:bg-accent" key={`image-${id}`}>
+                  <CardHeader>
+                    <CardTitle>{name}</CardTitle>
+                    <CardDescription>
+                      <p className="text-sm">
+                        {width}x{height}
+                        <sub className="ml-1">( {byteto(size)} )</sub>
+                      </p>
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <ImageZoom zoomMargin={40} zoomImg={{ src: `/api/image${uri}` }}>
+                      <div
+                        aria-label={name}
+                        role="img"
+                        className="h-[400px] w-full border bg-center bg-cover bg-no-repeat shadow-sm sm:h-[150px]"
+                        style={{ backgroundImage: `url('/api/image${uri}-t')` }}
+                      />
+                    </ImageZoom>
 
-                  <div className="mt-3 space-y-3">
-                    <div className="space-y-2 text-xs">
-                      <div className="flex items-center justify-between">
-                        <span className="text-muted-foreground">{t("Copyrighter")}</span>
-                        <span className="font-medium">-----</span>
+                    <div className="mt-3 space-y-3">
+                      <div className="space-y-2 text-xs">
+                        <div className="flex items-center justify-between">
+                          <span className="text-muted-foreground">{t("Copyrighter")}</span>
+                          {ref ? (
+                            <a
+                              href={ref}
+                              className="text-blue-600 hover:underline"
+                              target="_blank"
+                              rel="noreferrer noopener"
+                            >
+                              <span className="font-medium">{author}</span>
+                            </a>
+                          ) : (
+                            <span className="font-medium">{author}</span>
+                          )}
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-muted-foreground">{t("License")}</span>
+                          <a
+                            href={licenseLinkEnum[license]}
+                            className="text-blue-600 hover:underline"
+                            target="_blank"
+                            rel="noreferrer noopener"
+                          >
+                            <span className="font-medium">{t(license as string)}</span>
+                          </a>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-muted-foreground">{t("Uploader")}</span>
+                          <span className="font-medium">{userName}</span>
+                        </div>
                       </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-muted-foreground">{t("License")}</span>
-                        <a
-                          href={licenseLinkEnum[license]}
-                          className="text-blue-600 hover:underline"
-                          target="_blank"
-                          rel="noreferrer noopener"
-                        >
-                          <span className="font-medium">{t(license as string)}</span>
-                        </a>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-muted-foreground">{t("Uploader")}</span>
-                        <span className="font-medium">{userName}</span>
+                      <div className="border-t pt-2 text-right text-muted-foreground text-xs">
+                        {t("Created")}: {fromNow(created)}
                       </div>
                     </div>
-                    <div className="border-t pt-2 text-right text-muted-foreground text-xs">
-                      {t("Created")}: {fromNow(created)}
-                    </div>
-                  </div>
-                </CardContent>
-                <CardFooter className="flex items-center justify-end gap-2 py-1">
-                  <ImageDeleteButton lng={lngParam} imageId={id} />
-                </CardFooter>
-              </Card>
-            ))}
+                  </CardContent>
+                  <CardFooter className="flex items-center justify-end gap-2 py-1">
+                    <ImageDeleteButton lng={lngParam} imageId={id} />
+                  </CardFooter>
+                </Card>
+              ),
+            )}
           </Container>
 
           <div className="sticky top-0 flex h-[calc(100dvh_-_var(--spacing)_*_12)] w-[286px] shrink-0 flex-col pt-8 pr-4 pl-2 [mask-image:linear-gradient(to_bottom,transparent,white_16px,white_calc(100%-16px),transparent)] max-xl:hidden">

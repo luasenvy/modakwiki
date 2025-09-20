@@ -16,7 +16,7 @@ import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { SortableItem } from "@/components/core/MdxEditor/SortableItem";
 import { ImageSelectButton } from "@/components/pages/site/image/ImageSelectButton";
-import { UploadImageButton } from "@/components/pages/site/image/UploadImageButton";
+import { ImageUploadAPI, ImageUploadButton } from "@/components/pages/site/image/ImageUploadButton";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
@@ -26,7 +26,7 @@ import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/react";
 import { MdxLoader } from "@/lib/mdx/react";
 import { trailingFootnotes } from "@/lib/mdx/utils";
-import { Image as ImageType } from "@/lib/schema/image";
+import { Image, Image as ImageType } from "@/lib/schema/image";
 import { cn } from "@/lib/utils";
 
 interface LineEditorProps {
@@ -46,7 +46,9 @@ export function LineEditor({
 }: LineEditorProps) {
   const { t } = useTranslation(lngParam);
   const [uploading, setUploading] = useState<boolean>(false);
+
   const inputRefs = useRef<Array<HTMLTextAreaElement>>(new Array(lines.length));
+  const imageUploadRef = useRef<ImageUploadAPI>(null);
 
   const handleChangeSelectedLine = debounce((e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setLines((prev) =>
@@ -97,23 +99,12 @@ export function LineEditor({
     useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 6 } }),
   );
 
-  const uploadImage = async (files: FileList) => {
+  const handleSave = async (res: Response) => {
     handleChangeSelectedLine.cancel();
 
-    const formData = new FormData();
+    if (!res.ok) return toast.error(await res.text());
 
-    for (const file of files) formData.append("files", file);
-
-    const options = { method: "POST", body: formData };
-
-    setUploading(true);
-    const res = await fetch("/api/image", options);
-    setUploading(false);
-
-    if (!res.ok) return toast.error(await statusMessage({ t, res, options }));
-
-    const saves: Array<{ uri: string; name: string; width: number; height: number }> =
-      await res.json();
+    const saves: Image[] = await res.json();
 
     const textarea = inputRefs.current[selectedLine];
     const line = lines[selectedLine];
@@ -148,13 +139,30 @@ export function LineEditor({
 
   const handlePasteChangeLine = async (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
     const files = e.clipboardData.files;
-    if (files.length) {
-      e.preventDefault();
+    if (!files.length) return;
 
-      if (uploading) return;
+    e.preventDefault();
 
-      uploadImage(files);
-    }
+    const res = await imageUploadRef.current!.upload(files);
+
+    if (!res.ok) return toast.error(await res.text());
+    const saves: Image[] = await res.json();
+
+    const textarea = inputRefs.current[selectedLine];
+    const line = lines[selectedLine];
+    const head = line.substring(0, textarea.selectionStart);
+    const tail = line.substring(textarea.selectionEnd);
+
+    const imageMarkdown = saves
+      .map(
+        ({ uri, name, width, height }) =>
+          `![${name} width-${width} height-${height}](/api/image${uri})`,
+      )
+      .join("\n\n");
+    const text = `${head}\n\n${imageMarkdown}\n\n${tail}`;
+
+    setLines((prev) => prev.toSpliced(selectedLine, 1, text));
+    textarea.value = text;
   };
 
   useEffect(() => {
@@ -195,8 +203,12 @@ export function LineEditor({
                 />
 
                 <div className="mt-1 flex items-center justify-end gap-1">
-                  <UploadImageButton lng={lngParam} uploading={uploading} onSelect={uploadImage} />
-
+                  <ImageUploadButton
+                    ref={imageUploadRef}
+                    lng={lngParam}
+                    uploading={uploading}
+                    onSave={handleSave}
+                  />
                   <ImageSelectButton lng={lngParam} onSelect={handleSelectImage} />
                 </div>
 

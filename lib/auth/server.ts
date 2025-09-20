@@ -1,8 +1,8 @@
 import { betterAuth } from "better-auth";
-import { captcha } from "better-auth/plugins";
+import { captcha, oneTap } from "better-auth/plugins";
 import { betterAuth as authConfig } from "@/config";
 import { pool as database } from "@/lib/db";
-import { scopeEnum, user } from "@/lib/schema/user";
+import { scopeEnum } from "@/lib/schema/user";
 
 export const auth = betterAuth({
   database,
@@ -40,6 +40,7 @@ export const auth = betterAuth({
       secretKey: authConfig.providers.hcaptcha.secretKey,
       endpoints: ["/api/auth/hcaptcha"],
     }),
+    oneTap(),
   ],
 });
 

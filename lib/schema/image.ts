@@ -13,6 +13,8 @@ export const image = z.object({
   width: z.number().min(1),
   height: z.number().min(1),
   uri: z.string().min(47).max(47),
+  author: z.string().min(1),
+  ref: z.string().optional(),
   license: z.nativeEnum(licenseEnum),
   created: z.number(),
   updated: z.number().optional(),
@@ -30,3 +32,11 @@ export const imageForm = image.pick({
 });
 
 export type ImageForm = z.infer<typeof imageForm>;
+
+export const imageDescriptionForm = image.pick({
+  license: true,
+  author: true,
+  ref: true,
+});
+
+export type ImageDescriptionForm = z.infer<typeof imageDescriptionForm>;

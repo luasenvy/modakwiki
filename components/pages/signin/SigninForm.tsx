@@ -17,6 +17,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { Spinner } from "@/components/ui/shadcn-io/spinner";
 import { isDev } from "@/config";
 import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/react";
@@ -36,13 +37,14 @@ export function SigninForm({ lng: lngParam, referer, siteKey }: SigninFormProps)
   const { t } = useTranslation(lngParam);
 
   const [token, setToken] = useState<string>();
+  const [loaded, setLoaded] = useState<boolean>(false);
 
   const handleClickGoogleSignin = useCallback(async () => {
     if (!token) return toast.error(t("Please verify you are human before signin"));
 
     const { error } = await authClient.signIn.social({
       provider: "google",
-      callbackURL: referer,
+      callbackURL: referer || "/",
       fetchOptions: {
         headers: new Headers({ "x-captcha-response": token }),
       },
@@ -62,7 +64,9 @@ export function SigninForm({ lng: lngParam, referer, siteKey }: SigninFormProps)
           <div className="flex flex-col items-center gap-2">
             {!token ? (
               <>
+                {!loaded && <Spinner className="mx-auto my-6" variant="ring" size={32} />}
                 <HCaptcha
+                  onLoad={() => setLoaded(true)}
                   sitekey={siteKey}
                   // for animate
                   onVerify={(token) => setTimeout(() => setToken(token), 1000)}

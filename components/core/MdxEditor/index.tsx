@@ -22,7 +22,7 @@ import {
   PageTOCPopoverTrigger,
 } from "@/components/fumadocs/toc-popover";
 import { ImageSelectButton } from "@/components/pages/site/image/ImageSelectButton";
-import { UploadImageButton } from "@/components/pages/site/image/UploadImageButton";
+import { ImageUploadAPI, ImageUploadButton } from "@/components/pages/site/image/ImageUploadButton";
 import {
   Form,
   FormControl,
@@ -73,7 +73,7 @@ import {
   doctypeEnum,
   documentForm,
 } from "@/lib/schema/document";
-import { Image as ImageType } from "@/lib/schema/image";
+import { Image, Image as ImageType } from "@/lib/schema/image";
 import { Tag } from "@/lib/schema/tag";
 import { localePrefix } from "@/lib/url";
 import { cn } from "@/lib/utils";
@@ -106,6 +106,7 @@ export default function MdxEditor({
   const [selectedLine, setSelectedLine] = useState<number>(-1);
 
   const containerRef = useRef<HTMLElement>(null);
+  const imageUploadRef = useRef<ImageUploadAPI>(null);
   const lineRef = useRef<HTMLTextAreaElement>(null);
   const titleRef = useRef<HTMLInputElement>(null);
 
@@ -156,31 +157,17 @@ export default function MdxEditor({
     lineRef.current.value = curr;
   };
 
-  const uploadImage = async (files: FileList) => {
+  const handleImageSave = async (res: Response) => {
     handleChangeHunk.cancel();
 
-    const formData = new FormData();
+    if (!res.ok) return toast.error(await res.text());
 
-    for (const file of files) formData.append("files", file);
+    const saves: Image[] = await res.json();
 
-    const options = { method: "POST", body: formData };
+    const curr = `${hunk}\n\n${saves.map(({ uri, name, width, height }) => `![${name} width-${width} height-${height}](/api/image${uri})`).join("\n\n")}`;
+    setHunk(curr);
 
-    setUploading(true);
-    try {
-      const res = await fetch("/api/image", options);
-
-      if (!res.ok) return toast.error(await statusMessage({ t, res, options }));
-
-      const saves: Array<{ uri: string; name: string; width: number; height: number }> =
-        await res.json();
-
-      const curr = `${hunk}\n\n${saves.map(({ uri, name, width, height }) => `![${name} width-${width} height-${height}](/api/image${uri})`).join("\n\n")}`;
-      setHunk(curr);
-
-      lineRef.current!.value = curr;
-    } finally {
-      setUploading(false);
-    }
+    lineRef.current!.value = curr;
   };
 
   const handlePaste = async (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
@@ -189,9 +176,16 @@ export default function MdxEditor({
 
     e.preventDefault();
 
-    if (uploading) return toast.error(t("An upload is already in progress."));
+    const res = await imageUploadRef.current!.upload(files);
 
-    uploadImage(files);
+    if (!res.ok) return toast.error(await res.text());
+
+    const saves: Image[] = await res.json();
+
+    const curr = `${hunk}\n\n${saves.map(({ uri, name, width, height }) => `![${name} width-${width} height-${height}](/api/image${uri})`).join("\n\n")}`;
+    setHunk(curr);
+
+    lineRef.current!.value = curr;
   };
 
   const handleChangeTitle = debounce((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -549,10 +543,11 @@ export default function MdxEditor({
                   />
 
                   <div className="mt-1 flex items-center justify-end gap-1">
-                    <UploadImageButton
+                    <ImageUploadButton
+                      ref={imageUploadRef}
                       lng={lngParam}
                       uploading={uploading}
-                      onSelect={uploadImage}
+                      onSave={handleImageSave}
                     />
 
                     <ImageSelectButton lng={lngParam} onSelect={handleSelectImage} />

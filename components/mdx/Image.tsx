@@ -1,12 +1,14 @@
 "use client";
 
 import { Info } from "lucide-react";
+import NextImage from "next/image";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
 import { byteto, fromNow } from "@/lib/format";
 import { useTranslation } from "@/lib/i18n/react";
+import { licenseImageEnum, licenseLinkEnum } from "@/lib/license";
 import { Image as ImageType } from "@/lib/schema/image";
 import { cn } from "@/lib/utils";
 
@@ -91,10 +93,21 @@ function HoverCardContentImageDetail({ src }: HoverCardContentImageDetailProps) 
   return image ? (
     <div className="space-y-3">
       <h4 className="font-semibold text-green-600">{image.name}</h4>
-      <div className="space-y-2 text-xs">
+      <div className="space-y-1 text-xs">
         <div className="flex items-center justify-between">
           <span className="text-muted-foreground">{t("Copyrighter")}</span>
-          <span className="font-medium">-----</span>
+          {image.ref ? (
+            <a
+              href={image.ref}
+              className="text-blue-600 hover:underline"
+              target="_blank"
+              rel="noreferrer noopener"
+            >
+              <span className="font-medium">{image.author}</span>
+            </a>
+          ) : (
+            <span className="font-medium">{image.author}</span>
+          )}
         </div>
         <div className="flex items-center justify-between">
           <span className="text-muted-foreground">{t("Resolution")}</span>
@@ -107,6 +120,17 @@ function HoverCardContentImageDetail({ src }: HoverCardContentImageDetailProps) 
         <div className="flex items-center justify-between">
           <span className="text-muted-foreground">{t("Uploader")}</span>
           <span className="font-medium">{image.userName}</span>
+        </div>
+        <div className="flex items-center justify-between">
+          <span className="text-muted-foreground">{t("license")}</span>
+          <a href={licenseLinkEnum[image.license]} target="_blank" rel="noreferrer noopener">
+            <NextImage
+              alt={image.license}
+              src={licenseImageEnum[image.license]}
+              height={25}
+              width={71}
+            />
+          </a>
         </div>
       </div>
       <div className="border-t pt-2 text-right text-muted-foreground text-xs">

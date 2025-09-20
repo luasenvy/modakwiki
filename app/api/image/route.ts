@@ -29,6 +29,8 @@ export async function GET(req: NextRequest) {
             , i.width
             , i.height
             , i.name
+            , i.author
+            , i.ref
             , i."userId"
             , u.name AS "userName"
             , i.created
@@ -38,7 +40,7 @@ export async function GET(req: NextRequest) {
         WHERE i.deleted IS NULL
           ${uri ? "AND i.uri = $1" : ""}
      ORDER BY i.created DESC`,
-      [uri],
+      uri ? [uri] : undefined,
     );
 
     return Response.json(rows);
@@ -54,15 +56,19 @@ export async function POST(req: NextRequest) {
 
   const formData = await req.formData();
 
-  const files = formData.getAll("files") || [];
+  const files = (formData.getAll("files") || []) as Array<File>;
+  const authors = formData.getAll("author") || [];
+  const licenses = formData.getAll("license") || [];
+  const refs = formData.getAll("ref") || [];
 
   const saves = [];
   const values = [];
   const images = [];
 
-  for (const file of files) {
-    if (!(file instanceof File)) continue;
+  if (Array.from(files).some((file) => !(file instanceof File)))
+    return new Response("Bad Request", { status: 400 });
 
+  for (const file of files) {
     const buff = await file.arrayBuffer();
     const filetype = await fileTypeFromBuffer(buff);
 
@@ -103,7 +109,18 @@ export async function POST(req: NextRequest) {
 
   if (!images.length) return new Response("Bad Request", { status: 400 });
 
-  for (const { buff, name } of images) {
+  if (authors.some((v) => !v)) return new Response("Author is required", { status: 400 });
+  if (licenses.some((v) => !v)) return new Response("License is required", { status: 400 });
+
+  if (authors.length !== files.length) return new Response("Bad Request", { status: 400 });
+  if (licenses.length !== files.length) return new Response("Bad Request", { status: 400 });
+
+  for (let i = 0, ilen = images.length; i < ilen; i++) {
+    const { buff, name } = images[i];
+    const author = authors[i] as string;
+    const license = licenses[i] as string;
+
+    const ref = (refs[i] as string | undefined)?.slice(0, 200) || null;
     const original = sharp(buff);
     const filepath = await getCurrentFilename(docroot);
 
@@ -115,16 +132,16 @@ export async function POST(req: NextRequest) {
     } = await optimization(filepath, original);
 
     const uri = filepath.replace(docroot, "");
-    saves.push({ name, uri, width, height });
+    saves.push({ name, uri, width, height, author, ref });
     values.push(
-      `('ccbysa', '${uri}', ${isPortrait}, ${size}, ${width}, ${height}, '${name.replace(/\.[^.]+$/, ".webp")}', '${session.user.id}')`,
+      `('${uri}', ${isPortrait}, ${size}, ${width}, ${height}, '${author}', '${license}', '${ref}', '${name.replace(/\.[^.]+$/, ".webp")}', '${session.user.id}')`,
     );
   }
 
   const client = await pool.connect();
   try {
     await client.query(
-      `INSERT INTO image (license, uri, portrait, size, width, height, name, "userId") VALUES ${values.join(",")}`,
+      `INSERT INTO image (uri, portrait, size, width, height, author, license, ref, name, "userId") VALUES ${values.join(",")}`,
     );
 
     return Response.json(saves, { status: 201 });
