@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import { ImageZoom } from "@/components/ui/shadcn-io/image-zoom";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
 import { statusMessage } from "@/lib/fetch/react";
 import { byteto, fromNow } from "@/lib/format";
@@ -36,18 +37,26 @@ export function Image({
   if (height && Number.isFinite(Number(height))) styles.maxHeight = `${height}px`;
 
   const altText = [text, otherTexts].join(" ");
+
+  let zoomImg;
+  if ("string" === typeof props.src && props.src.endsWith("-t"))
+    zoomImg = { src: props.src.slice(0, -1).concat("o") };
+
   return (
     <figure className="group relative w-fit border shadow-sm">
-      <img
-        {...props}
-        alt={altText}
-        loading="lazy"
-        className={cn(className, "mx-auto")}
-        style={{
-          ...style,
-          ...styles,
-        }}
-      />
+      <ImageZoom zoomImg={zoomImg} zoomMargin={40}>
+        <img
+          {...props}
+          alt={altText}
+          loading="lazy"
+          className={cn(className, "mx-auto")}
+          style={{
+            ...style,
+            ...styles,
+          }}
+        />
+      </ImageZoom>
+
       <figcaption
         className={cn(
           "absolute bottom-0 w-full",

@@ -181,5 +181,6 @@
   "Image description": "이미지 설명",
   "You must input a description for the image before uploading.": "이미지를 업로드하기 전에 설명을 입력해야 합니다.",
   "reference url": "연결링크",
-  "used": "인용중"
+  "used": "인용중",
+  "Saving...": "저장중..."
 }

@@ -100,6 +100,7 @@ export default function MdxEditor({
 
   const [hunk, setHunk] = useState<string>("");
   const [lines, setLines] = useState<string[]>(getHunks(doc?.content || ""));
+  const [saving, setSaving] = useState<boolean>(false);
   const uploadingState = useState<boolean>(false);
   const [uploading] = uploadingState;
   const [categories, setCategories] = useState<string[]>([]);
@@ -165,7 +166,7 @@ export default function MdxEditor({
 
     const saves: Image[] = await res.json();
 
-    const curr = `${hunk}\n\n${saves.map(({ uri, name, width, height }) => `![${name} width-${width} height-${height}](/api/image${uri})`).join("\n\n")}`;
+    const curr = `${hunk}\n\n${saves.map(({ uri, name, width, height }) => `![${name} width-${width} height-${height}](/api/image${uri}-o)`).join("\n\n")}`;
     setHunk(curr);
 
     lineRef.current!.value = curr;
@@ -208,14 +209,17 @@ export default function MdxEditor({
       body: JSON.stringify(values),
     };
 
-    const res = await fetch("/api/document", options);
+    try {
+      setSaving(true);
 
-    if (!res.ok) return toast.error(await statusMessage({ t, res, options }));
+      const res = await fetch("/api/document", options);
 
-    const { id } = await res.json();
+      if (!res.ok) return toast.error(await statusMessage({ t, res, options }));
 
-    toast.success(await statusMessage({ t, res, options }), { description: values.title });
-    router.push(`${lng}/${values.type}?${new URLSearchParams({ id })}`);
+      toast.success(await statusMessage({ t, res, options }), { description: values.title });
+    } finally {
+      setSaving(false);
+    }
   });
 
   const handleDelete = async () => {
@@ -563,6 +567,17 @@ export default function MdxEditor({
                     </div>
                   )}
                 </div>
+
+                {saving && (
+                  <div className="absolute inset-0 bg-accent/80">
+                    <div className="fixed inset-0 flex flex-col">
+                      <div className="m-auto">
+                        <Spinner variant="bars" size={64} />
+                        <p className="font-bold text-lg">{t("Saving...")}</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </Container>
 
               <NavToc lng={lngParam} title={title}>

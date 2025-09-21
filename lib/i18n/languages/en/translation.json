@@ -199,5 +199,6 @@
   "Image description": "Image description",
   "You must input a description for the image before uploading.": "You must input a description for the image before uploading.",
   "reference url": "reference url",
-  "used": "used"
+  "used": "used",
+  "Saving...": "Saving..."
 }

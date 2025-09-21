@@ -231,11 +231,9 @@ function ImagePreview({ file, className, ...props }: ImagePreviewProps) {
     <div
       {...props}
       className={cn("group flex items-end border bg-center bg-cover shadow-sm", className)}
-      style={{
-        backgroundImage: `url(${imageData})`,
-      }}
+      style={{ backgroundImage: `url(${imageData})` }}
     >
-      <p className="bg-muted py-1 font-semibold text-muted-foreground text-shadow-sm text-xs opacity-40 transition-opacity duration-200 ease-linear group-hover:opacity-100">
+      <p className="w-full bg-muted py-1 text-center font-semibold text-muted-foreground text-shadow-sm text-xs opacity-40 transition-opacity duration-200 ease-linear group-hover:opacity-100">
         {file.name}
       </p>
     </div>

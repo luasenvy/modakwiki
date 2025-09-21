@@ -16,7 +16,11 @@ const variants = {
     "pr-2 pl-4 pt-18 xl:pt-8 max-lg:pr-4",
     "break-keep",
     "prose dark:prose-invert",
-    "[&>p]:first-letter:ml-3",
+    "[&_p]:first-letter:ml-3",
+    // Italic
+    "[&_em]:font-semibold",
+    // Bold
+    "[&_strong]:font-bold",
     // Sub
     "[&_sub]:text-muted-foreground",
     // Link
@@ -30,10 +34,10 @@ const variants = {
     "prose-ul:[&.contains-task-list]:[&_[type=checkbox]]:mr-2",
     // Table
     "prose-table:m-0",
-    "prose-td:[&>img]:m-auto",
+    "prose-td:[&>figure]:m-auto",
     // footnote
     "[&_section.footnotes]:mt-24 [&_section.footnotes]:border-t",
-    "[&_section.footnotes>ol_li_p]:!my-1 [&_section.footnotes>ol_li]:text-sm",
+    "[&_section.footnotes>ol_li_p]:first-letter:!ml-0 [&_section.footnotes>ol_li_p]:!my-1 [&_section.footnotes>ol_li]:text-sm",
     "[&_section.footnotes>ol_li[data-selected]]:repeat-3 [&_section.footnotes>ol_li[data-selected]]:animate-caret-blink [&_section.footnotes>ol_li[data-selected]]:text-rose-500",
     "[&_[data-footnote-ref=true][data-selected]]:repeat-3 [&_[data-footnote-ref=true][data-selected]]:animate-caret-blink [&_[data-footnote-ref=true][data-selected]]:text-rose-500",
     "prose-a:[&[data-footnote-ref]]:before:content-['[']",
