@@ -188,5 +188,16 @@
   "Resolution": "Resolution",
   "Size": "Size",
   "Uploader": "Uploader",
-  "Please select category first.": "Please select category first."
+  "Please select category first.": "Please select category first.",
+  "copyrighter": "copyrighter",
+  "resolution": "resolution",
+  "size": "size",
+  "uploader": "uploader",
+  "Get started": "Get started",
+  "Learn more": "Learn more",
+  "No files to upload.": "No files to upload.",
+  "Image description": "Image description",
+  "You must input a description for the image before uploading.": "You must input a description for the image before uploading.",
+  "reference url": "reference url",
+  "used": "used"
 }

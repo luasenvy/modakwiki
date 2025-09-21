@@ -1,4 +1,5 @@
 import { Info } from "lucide-react";
+import Image from "next/image";
 import { Breadcrumb } from "@/components/core/Breadcrumb";
 import { Advertisement } from "@/components/core/button/Advertisement";
 import { Container, Viewport } from "@/components/core/Container";
@@ -11,13 +12,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { ImageZoom } from "@/components/ui/shadcn-io/image-zoom";
 import { BreadcrumbItem } from "@/hooks/use-breadcrumbs";
 import { pool } from "@/lib/db";
 import { byteto, fromNow } from "@/lib/format";
 import type { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/next";
-import { licenseLinkEnum } from "@/lib/license";
+import { licenseImageEnum, licenseLinkEnum } from "@/lib/license";
 import { Image as ImageType } from "@/lib/schema/image";
 import { localePrefix } from "@/lib/url";
 
@@ -35,7 +37,7 @@ export default async function HowToPage(ctx: PageProps<"/[lng]/editor/syntax">) 
         WHERE deleted IS NULL`,
     );
 
-    const { rows } = await client.query<ImageType>(
+    const { rows } = await client.query<ImageType & { usedCount: number }>(
       `SELECT i.id
             , i.updated
             , i.deleted
@@ -51,6 +53,20 @@ export default async function HowToPage(ctx: PageProps<"/[lng]/editor/syntax">) 
             , i.ref
             , i."userId"
             , u.name AS "userName"
+            , (
+                SELECT SUM(u.count) as count
+                FROM (
+                     SELECT COUNT(*) as count
+                       FROM essay e
+                      WHERE e.deleted IS NULL
+                        AND e.content LIKE '%' || i.uri || '%'
+                     UNION ALL
+                     SELECT COUNT(*) as count
+                       FROM document d
+                      WHERE d.deleted IS NULL
+                        AND d.content LIKE '%' || i.uri || '%'
+                ) as u
+              ) AS "usedCount"
          FROM image i
          JOIN "user" u
            ON u.id = i."userId"
@@ -71,10 +87,25 @@ export default async function HowToPage(ctx: PageProps<"/[lng]/editor/syntax">) 
         <Viewport>
           <Container as="div" variant="aside" className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
             {rows.map(
-              ({ id, uri, name, width, height, size, license, author, ref, userName, created }) => (
+              ({
+                id,
+                uri,
+                name,
+                width,
+                height,
+                size,
+                license,
+                author,
+                ref,
+                usedCount,
+                userName,
+                created,
+              }) => (
                 <Card className="!mb-0 gap-1 rounded-none hover:bg-accent" key={`image-${id}`}>
                   <CardHeader>
-                    <CardTitle>{name}</CardTitle>
+                    <CardTitle className="truncate" title={name}>
+                      {name}
+                    </CardTitle>
                     <CardDescription>
                       <p className="text-sm">
                         {width}x{height}
@@ -95,7 +126,7 @@ export default async function HowToPage(ctx: PageProps<"/[lng]/editor/syntax">) 
                     <div className="mt-3 space-y-3">
                       <div className="space-y-2 text-xs">
                         <div className="flex items-center justify-between">
-                          <span className="text-muted-foreground">{t("Copyrighter")}</span>
+                          <span className="text-muted-foreground">{t("copyrighter")}</span>
                           {ref ? (
                             <a
                               href={ref}
@@ -110,7 +141,7 @@ export default async function HowToPage(ctx: PageProps<"/[lng]/editor/syntax">) 
                           )}
                         </div>
                         <div className="flex items-center justify-between">
-                          <span className="text-muted-foreground">{t("License")}</span>
+                          <span className="text-muted-foreground">{t("license")}</span>
                           <a
                             href={licenseLinkEnum[license]}
                             className="text-blue-600 hover:underline"
@@ -121,8 +152,27 @@ export default async function HowToPage(ctx: PageProps<"/[lng]/editor/syntax">) 
                           </a>
                         </div>
                         <div className="flex items-center justify-between">
-                          <span className="text-muted-foreground">{t("Uploader")}</span>
+                          <span className="text-muted-foreground">{t("used")}</span>
+                          <span className="font-medium">{usedCount}</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-muted-foreground">{t("uploader")}</span>
                           <span className="font-medium">{userName}</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-muted-foreground">{t("license")}</span>
+                          <a
+                            href={licenseLinkEnum[license]}
+                            target="_blank"
+                            rel="noreferrer noopener"
+                          >
+                            <Image
+                              alt={license}
+                              src={licenseImageEnum[license]}
+                              height={25}
+                              width={71}
+                            />
+                          </a>
                         </div>
                       </div>
                       <div className="border-t pt-2 text-right text-muted-foreground text-xs">

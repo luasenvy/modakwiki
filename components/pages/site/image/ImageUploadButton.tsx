@@ -26,7 +26,7 @@ import { cn } from "@/lib/utils";
 
 interface ImageUploadButtonProps {
   lng: Language;
-  uploading: boolean;
+  uploadingState: [boolean, (uploading: boolean) => void];
   onSave: (res: Response) => void;
 }
 
@@ -45,15 +45,17 @@ export interface ImageUploadAPI {
 }
 
 export const ImageUploadButton = forwardRef(function (
-  { lng: lngParam, uploading, onSave: handleSave }: ImageUploadButtonProps,
+  { lng: lngParam, uploadingState, onSave: handleSave }: ImageUploadButtonProps,
   ref: ForwardedRef<ImageUploadAPI>,
 ) {
   const uploadRef = useRef<HTMLInputElement>(null);
   const [open, setOpen] = useState<boolean>(false);
+  const [uploading, setUploading] = uploadingState;
 
   const filesRef = useRef<FileList | null>(null);
   const filesFormRef = useRef<ImageDescriptionForm[]>([]);
   const uploadResolver = useRef<((value: Response) => void) | null>(null);
+  const uploadRejector = useRef<((err: Error) => void) | null>(null);
 
   const { t } = useTranslation(lngParam);
 
@@ -89,16 +91,23 @@ export const ImageUploadButton = forwardRef(function (
 
     const options = { method: "POST", body: formData };
 
-    const res = await fetch("/api/image", options);
-    if (!res.ok) {
-      const message = await statusMessage({ t, res, options });
-      toast.error(message);
-      throw new Error(message);
+    try {
+      setUploading(true);
+      const res = await fetch("/api/image", options);
+      if (!res.ok) {
+        const message = await statusMessage({ t, res, options });
+        toast.error(message);
+        throw new Error(message);
+      }
+      setOpen(false);
+
+      uploadResolver.current!(res);
+    } catch (err) {
+      uploadRejector.current!(err as Error);
+      throw err;
+    } finally {
+      setUploading(false);
     }
-
-    setOpen(false);
-
-    uploadResolver.current!(res);
   };
 
   const upload = (files: FileList): Promise<Response> => {
@@ -115,6 +124,7 @@ export const ImageUploadButton = forwardRef(function (
       setOpen(true);
 
       uploadResolver.current = resolve;
+      uploadRejector.current = reject;
     });
   };
 
@@ -164,7 +174,7 @@ export const ImageUploadButton = forwardRef(function (
                     <Input
                       className="rounded-none"
                       type="text"
-                      placeholder={t("Copyrighter")}
+                      placeholder={t("copyrighter")}
                       defaultValue={filesFormRef.current![i].author || ""}
                       onChange={debounce((e) => {
                         filesFormRef.current![i].author = e.target.value;
@@ -180,7 +190,7 @@ export const ImageUploadButton = forwardRef(function (
                     <Input
                       className="rounded-none"
                       type="text"
-                      placeholder={t("Reference URL")}
+                      placeholder={t("reference url")}
                       defaultValue={filesFormRef.current![i].ref || ""}
                       onChange={debounce((e) => {
                         filesFormRef.current![i].ref = e.target.value;

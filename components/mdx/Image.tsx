@@ -3,9 +3,11 @@
 import { Info } from "lucide-react";
 import NextImage from "next/image";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
+import { statusMessage } from "@/lib/fetch/react";
 import { byteto, fromNow } from "@/lib/format";
 import { useTranslation } from "@/lib/i18n/react";
 import { licenseImageEnum, licenseLinkEnum } from "@/lib/license";
@@ -35,7 +37,7 @@ export function Image({
 
   const altText = [text, otherTexts].join(" ");
   return (
-    <figure className="flex w-auto flex-col border shadow-sm">
+    <figure className="group relative w-fit border shadow-sm">
       <img
         {...props}
         alt={altText}
@@ -48,25 +50,34 @@ export function Image({
       />
       <figcaption
         className={cn(
-          "bg-muted/80 text-muted-foreground",
-          "flex items-center",
-          "font-light",
+          "absolute bottom-0 w-full",
+          "opacity-0 transition-opacity duration-200 ease-linear group-hover:opacity-100",
+          "bg-muted/95",
+          "text-center font-light text-muted-foreground",
           "!m-0 p-2",
         )}
       >
         <p className="!m-0 !mr-auto text-center font-light">{altText}</p>
-
-        <HoverCard openDelay={100} closeDelay={100}>
-          <HoverCardTrigger asChild>
-            <Button variant="link" className="shrink-0 text-blue-600">
-              <Info className="size-4" />
-            </Button>
-          </HoverCardTrigger>
-          <HoverCardContent className="w-64">
-            <HoverCardContentImageDetail src={props.src as string} />
-          </HoverCardContent>
-        </HoverCard>
       </figcaption>
+
+      <HoverCard openDelay={100} closeDelay={100}>
+        <HoverCardTrigger asChild>
+          <Button
+            variant="outline"
+            size="icon"
+            className={cn(
+              "absolute top-1 right-1 size-5 shadow-md",
+              "!border-amber-600 rounded-full",
+              "shrink-0 text-amber-600",
+            )}
+          >
+            <Info className="size-4" />
+          </Button>
+        </HoverCardTrigger>
+        <HoverCardContent className="w-64">
+          <HoverCardContentImageDetail src={props.src as string} />
+        </HoverCardContent>
+      </HoverCard>
     </figure>
   );
 }
@@ -85,6 +96,8 @@ function HoverCardContentImageDetail({ src }: HoverCardContentImageDetailProps) 
         `/api/image?${new URLSearchParams({ uri: src.replace(/^\/api\/image/, "") })}`,
       );
 
+      if (!res.ok) return toast.error(statusMessage({ t, res }));
+
       const [item] = await res.json();
       setImage(item);
     })();
@@ -95,7 +108,7 @@ function HoverCardContentImageDetail({ src }: HoverCardContentImageDetailProps) 
       <h4 className="font-semibold text-green-600">{image.name}</h4>
       <div className="space-y-1 text-xs">
         <div className="flex items-center justify-between">
-          <span className="text-muted-foreground">{t("Copyrighter")}</span>
+          <span className="text-muted-foreground">{t("copyrighter")}</span>
           {image.ref ? (
             <a
               href={image.ref}
@@ -110,15 +123,15 @@ function HoverCardContentImageDetail({ src }: HoverCardContentImageDetailProps) 
           )}
         </div>
         <div className="flex items-center justify-between">
-          <span className="text-muted-foreground">{t("Resolution")}</span>
+          <span className="text-muted-foreground">{t("resolution")}</span>
           <span className="font-medium">{`${image.width} x ${image.height}`}</span>
         </div>
         <div className="flex items-center justify-between">
-          <span className="text-muted-foreground">{t("Size")}</span>
+          <span className="text-muted-foreground">{t("size")}</span>
           <span className="font-medium">{byteto(image.size)}</span>
         </div>
         <div className="flex items-center justify-between">
-          <span className="text-muted-foreground">{t("Uploader")}</span>
+          <span className="text-muted-foreground">{t("uploader")}</span>
           <span className="font-medium">{image.userName}</span>
         </div>
         <div className="flex items-center justify-between">

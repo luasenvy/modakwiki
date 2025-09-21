@@ -1,9 +1,11 @@
+import type { FileTypeResult } from "file-type";
 import { readFile } from "fs/promises";
 import { basename, dirname, extname, join } from "path";
 import sharp, { Sharp } from "sharp";
 
 export interface OptimizationOptions {
   ext?: boolean;
+  mime?: FileTypeResult["mime"];
 }
 
 export async function optimization(
@@ -13,11 +15,14 @@ export async function optimization(
 ) {
   if (!original) original = sharp(await readFile(filepath));
 
+  original.withMetadata();
+  if ("image/webp" !== options?.mime) original.webp({ quality: 80 });
+
   const {
     size: originalSize,
     width: originalWidth,
     height: originalHeight,
-  } = await original.withMetadata().webp({ quality: 80 }).toFile(filepath);
+  } = await original.toFile(filepath);
 
   const ename = extname(filepath);
   const bname = basename(filepath, ename);

@@ -170,9 +170,16 @@
   "violence/graphic": "폭력적/노골적",
   "Inappropriate content has been detected.": "부적절한 콘텐츠가 감지되었습니다.",
   "Select a scope": "권한 선택",
-  "Copyrighter": "저작권자",
-  "Resolution": "해상도",
-  "Size": "크기",
-  "Uploader": "업로더",
-  "Please select category first.": "분류를 먼저 선택해주세요."
+  "copyrighter": "저작권자",
+  "resolution": "해상도",
+  "size": "크기",
+  "uploader": "업로더",
+  "Please select category first.": "분류를 먼저 선택해주세요.",
+  "Get started": "시작하기",
+  "Learn more": "자세히 알아보기",
+  "No files to upload.": "업로드할 파일이 없습니다.",
+  "Image description": "이미지 설명",
+  "You must input a description for the image before uploading.": "이미지를 업로드하기 전에 설명을 입력해야 합니다.",
+  "reference url": "연결링크",
+  "used": "인용중"
 }

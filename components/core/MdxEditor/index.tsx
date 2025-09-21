@@ -100,7 +100,8 @@ export default function MdxEditor({
 
   const [hunk, setHunk] = useState<string>("");
   const [lines, setLines] = useState<string[]>(getHunks(doc?.content || ""));
-  const [uploading, setUploading] = useState<boolean>(false);
+  const uploadingState = useState<boolean>(false);
+  const [uploading] = uploadingState;
   const [categories, setCategories] = useState<string[]>([]);
   const [tags, setTags] = useState<Tag[]>([]);
   const [selectedLine, setSelectedLine] = useState<number>(-1);
@@ -546,7 +547,7 @@ export default function MdxEditor({
                     <ImageUploadButton
                       ref={imageUploadRef}
                       lng={lngParam}
-                      uploading={uploading}
+                      uploadingState={uploadingState}
                       onSave={handleImageSave}
                     />
 

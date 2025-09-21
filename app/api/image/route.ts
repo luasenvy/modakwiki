@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
 
   const client = await pool.connect();
   try {
-    const { rows } = await client.query(
+    const { rows, rowCount } = await client.query(
       `SELECT i.id
             , i.license
             , i.uri
@@ -42,6 +42,8 @@ export async function GET(req: NextRequest) {
      ORDER BY i.created DESC`,
       uri ? [uri] : undefined,
     );
+
+    if (!rowCount) return new Response(null, { status: 404 });
 
     return Response.json(rows);
   } finally {
@@ -121,6 +123,7 @@ export async function POST(req: NextRequest) {
     const license = licenses[i] as string;
 
     const ref = (refs[i] as string | undefined)?.slice(0, 200) || null;
+    const filetype = await fileTypeFromBuffer(buff);
     const original = sharp(buff);
     const filepath = await getCurrentFilename(docroot);
 
@@ -129,7 +132,7 @@ export async function POST(req: NextRequest) {
       originalSize: size,
       originalWidth: width,
       originalHeight: height,
-    } = await optimization(filepath, original);
+    } = await optimization(filepath, original, { mime: filetype?.mime });
 
     const uri = filepath.replace(docroot, "");
     saves.push({ name, uri, width, height, author, ref });

@@ -45,7 +45,8 @@ export function LineEditor({
   setSelectedLine,
 }: LineEditorProps) {
   const { t } = useTranslation(lngParam);
-  const [uploading, setUploading] = useState<boolean>(false);
+  const uploadingState = useState<boolean>(false);
+  const [uploading] = uploadingState;
 
   const inputRefs = useRef<Array<HTMLTextAreaElement>>(new Array(lines.length));
   const imageUploadRef = useRef<ImageUploadAPI>(null);
@@ -206,7 +207,7 @@ export function LineEditor({
                   <ImageUploadButton
                     ref={imageUploadRef}
                     lng={lngParam}
-                    uploading={uploading}
+                    uploadingState={uploadingState}
                     onSave={handleSave}
                   />
                   <ImageSelectButton lng={lngParam} onSelect={handleSelectImage} />
