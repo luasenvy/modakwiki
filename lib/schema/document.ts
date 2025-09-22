@@ -26,6 +26,7 @@ export const document = z.object({
   preview: z.string().max(120).optional(),
   category: category.shape.id,
   tags: z.array(tag.shape.id).optional(),
+  images: z.array(z.string().min(1)).optional(),
   view: z.number(),
   userId: z.string().min(1),
   license: z.nativeEnum(licenseEnum).optional(),

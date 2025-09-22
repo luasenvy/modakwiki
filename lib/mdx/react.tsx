@@ -40,9 +40,24 @@ export function MdxLoader({ source }: MdxLoaderProps) {
 
       return false;
     })(source);
-    evaluate(isPre ? source : escapeTextForBrowser(source), runtime).then((mod) =>
-      setMdxContent(() => mod.default),
-    );
+
+    if (!isPre) {
+      let escapes = "";
+      let cursor;
+      while ((cursor = source.indexOf("`")) >= 0) {
+        const endCursor = source.indexOf("`", cursor + 1) + 1;
+
+        escapes += escapeTextForBrowser(source.substring(0, cursor));
+        escapes += source.substring(cursor, endCursor);
+
+        source = source.substring(endCursor);
+      }
+
+      escapes += source;
+      source = escapes;
+    }
+
+    evaluate(source, runtime).then((mod) => setMdxContent(() => mod.default));
   }, [source]);
 
   return <MdxContent components={MDXComponents} />;

@@ -51,12 +51,46 @@ export async function POST(req: NextRequest) {
       if (Number(count) !== tags?.length) return new Response("Bad Request", { status: 400 });
     }
 
+    // moderation
+    const openai = new OpenAI(openaiConfig);
+    const { results } = await openai.moderations.create({
+      model: "omni-moderation-latest",
+      input: content,
+    });
+
+    if (results.some(({ flagged }) => flagged)) {
+      const categories = results.reduce(
+        (acc, { categories }) =>
+          new Set(
+            Array.from(acc).concat(
+              Object.entries(categories)
+                .filter(([, value]) => value)
+                .map(([name]) => name),
+            ),
+          ),
+        new Set<string>(),
+      );
+
+      return Response.json(Array.from(categories), { status: 415 });
+    }
+
+    let images: string[] = [];
+    const matches = content.match(/!\[[^\]]+?\]\(([^\)]+?)\)/g);
+    if (matches?.length) {
+      images = matches.slice(0, 5).map((img) =>
+        img
+          .replace(/!\[[^\]]+?\]\(([^\)]+?)\)/, "$1")
+          .replace(/-(o|t)$/, "")
+          .concat("-t"),
+      );
+    }
+
     const sql = isEssay
-      ? `INSERT INTO ${table} (id, title, description, content, "userId", preview, license, category, tags)
-                       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, '{${tags?.map((tag) => `"${tag}"`).join(",")}}')
+      ? `INSERT INTO ${table} (id, title, description, content, "userId", preview, license, category, tags, images)
+                       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, '{${tags?.map((tag) => `"${tag}"`).join(",")}}', '{${images?.map((img) => `"${img}"`).join(",")}}')
           RETURNING id`
-      : `INSERT INTO ${table} (id, title, description, content, "userId", preview, license)
-                VALUES ($1, $2, $3, $4, $5, $6, $7)
+      : `INSERT INTO ${table} (id, title, description, content, "userId", preview, license, images)
+                VALUES ($1, $2, $3, $4, $5, $6, $7, '{${images?.map((img) => `"${img}"`).join(",")}}')
           RETURNING id`;
 
     const params: Array<string | string[] | undefined | null> = [
@@ -151,6 +185,7 @@ export async function PATCH(req: NextRequest) {
       { added: 0, removed: 0 },
     );
 
+    let images: string[] = [];
     const isDocumentChange = added > 0 || removed > 0;
     const isMetadataChange =
       description !== prev.description ||
@@ -181,8 +216,17 @@ export async function PATCH(req: NextRequest) {
           new Set<string>(),
         );
 
-        console.info(results, "<<<<<<<<<<<< text moderation");
         return Response.json(Array.from(categories), { status: 400 });
+      }
+
+      const matches = content.match(/!\[[^\]]+?\]\(([^\)]+?)\)/g);
+      if (matches?.length) {
+        images = matches.slice(0, 5).map((img) =>
+          img
+            .replace(/!\[[^\]]+?\]\(([^\)]+?)\)/, "$1")
+            .replace(/-(o|t)$/, "")
+            .concat("-t"),
+        );
       }
     }
 
@@ -194,8 +238,9 @@ export async function PATCH(req: NextRequest) {
             , license = $4
             , category = $5
             , tags = $6
+            , images = $7
             , updated = extract(epoch FROM current_timestamp) * 1000
-        WHERE id = $7`,
+        WHERE id = $8`,
       [
         content,
         clearMarkdown(humanReadable(content).substring(0, 150)),
@@ -203,6 +248,7 @@ export async function PATCH(req: NextRequest) {
         license,
         category,
         tags,
+        images,
         id,
       ],
     );

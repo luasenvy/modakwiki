@@ -38,25 +38,26 @@ export async function DocumentList({
       emailVerified,
       category,
       tags,
+      images,
       created,
       updated,
     }) => {
       return (
-        <div className="px-2 py-0.5 hover:bg-accent" key={id}>
+        <div className="space-y-2 p-2 hover:bg-accent" key={id}>
           {category && (
-            <p className="text-xs">
-              <span className="font-semibold">{category}</span>
+            <div className="mb-0 flex items-center">
+              <span className="font-semibold text-xs">{category}</span>
               {Boolean(tags?.length) && (
                 <>
                   <ChevronRight className="inline size-2.5" />
-                  {tags?.join(", ")}
+                  <span className="text-xs">{tags?.join(", ")}</span>
                 </>
               )}
-            </p>
+            </div>
           )}
 
-          <div className="prose dark:prose-invert max-w-none">
-            <h2 className="mt-0 mb-1 font-semibold text-xl">
+          <div className="prose dark:prose-invert max-w-none space-y-1">
+            <h2 className="!my-0 font-semibold text-xl">
               <Link
                 key={id}
                 href={`${lng}/${type || doctype}?${new URLSearchParams({ id })}`}
@@ -73,7 +74,19 @@ export async function DocumentList({
               <p className="!my-0 text-xs">{datetimeFormat.format(updated || created)}</p>
             </div>
 
-            <p className="mt-3 text-muted-foreground text-sm">{preview}...</p>
+            <p className="!my-0 text-muted-foreground text-sm">{preview}...</p>
+
+            {Boolean(images?.length) && (
+              <div className="mt-2 flex flex-wrap items-center gap-2">
+                {images!.map((src, index) => (
+                  <div
+                    key={index}
+                    className="relative size-20 overflow-hidden rounded-md border bg-center bg-cover bg-no-repeat shadow-sm"
+                    style={{ backgroundImage: `url('${src}')` }}
+                  ></div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       );

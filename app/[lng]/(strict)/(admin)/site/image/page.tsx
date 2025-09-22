@@ -118,7 +118,7 @@ export default async function HowToPage(ctx: PageProps<"/[lng]/editor/syntax">) 
                       <div
                         aria-label={name}
                         role="img"
-                        className="h-[400px] w-full border bg-center bg-cover bg-no-repeat shadow-sm sm:h-[150px]"
+                        className="h-[400px] w-full border bg-center bg-cover bg-no-repeat bg-no-repeat shadow-sm sm:h-[150px]"
                         style={{ backgroundImage: `url('/api/image${uri}-t')` }}
                       />
                     </ImageZoom>

@@ -29,6 +29,10 @@ const variants = {
     "prose-pre:max-h-[calc(var(--spacing)_*_100)]",
     // Image
     "prose-img:w-full",
+    // Inline code
+    "prose-p:[&_code]:before:hidden",
+    "prose-p:[&_code]:after:hidden",
+    "prose-p:[&_code]:bg-muted prose-p:[&_code]:border prose-p:[&_code]:rounded-sm prose-p:[&_code]:px-1 prose-p:[&_code]:py-0.5 prose-p:[&_code]:text-sm prose-p:[&_code]:font-mono prose-p:[&_code]:font-normal",
     // Task
     "prose-ol:[&.contains-task-list]:[&_[type=checkbox]]:mr-2",
     "prose-ul:[&.contains-task-list]:[&_[type=checkbox]]:mr-2",
