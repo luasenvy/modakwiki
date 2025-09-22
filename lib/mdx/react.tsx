@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 import { Fragment, jsx, jsxs } from "react/jsx-runtime";
 import MDXComponents from "@/components/mdx";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
-import { escapeTextForBrowser } from "@/lib/html";
+import { escapeTextForMarkdown } from "@/lib/html";
 import { rehypePlugins, remarkPlugins } from "@/lib/mdx/utils";
 
 interface MdxLoaderProps {
@@ -44,16 +44,19 @@ export function MdxLoader({ source }: MdxLoaderProps) {
     if (!isPre) {
       let escapes = "";
       let cursor;
-      while ((cursor = source.indexOf("`")) >= 0) {
-        const endCursor = source.indexOf("`", cursor + 1) + 1;
+      while ((cursor = source.indexOf("`")) > -1) {
+        const endCursor = source.indexOf("`", cursor + 1);
 
-        escapes += escapeTextForBrowser(source.substring(0, cursor));
-        escapes += source.substring(cursor, endCursor);
+        // No ending backtick found, break the loop
+        if (endCursor < 0) break;
 
-        source = source.substring(endCursor);
+        escapes += escapeTextForMarkdown(source.substring(0, cursor));
+        escapes += source.substring(cursor, endCursor + 1);
+
+        source = source.substring(endCursor + 1);
       }
 
-      escapes += source;
+      escapes += escapeTextForMarkdown(source);
       source = escapes;
     }
 

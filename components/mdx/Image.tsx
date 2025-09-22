@@ -102,7 +102,7 @@ function HoverCardContentImageDetail({ src }: HoverCardContentImageDetailProps) 
   useEffect(() => {
     (async () => {
       const res = await fetch(
-        `/api/image?${new URLSearchParams({ uri: src.replace(/^\/api\/image/, "") })}`,
+        `/api/image?${new URLSearchParams({ uri: src.replace(/(^\/api\/image|-(o|t)$)/g, "") })}`,
       );
 
       if (!res.ok) return toast.error(statusMessage({ t, res }));
@@ -114,7 +114,9 @@ function HoverCardContentImageDetail({ src }: HoverCardContentImageDetailProps) 
 
   return image ? (
     <div className="space-y-3">
-      <h4 className="font-semibold text-green-600">{image.name}</h4>
+      <h4 className="truncate font-semibold text-green-600" title={image.name}>
+        {image.name}
+      </h4>
       <div className="space-y-1 text-xs">
         <div className="flex items-center justify-between">
           <span className="text-muted-foreground">{t("copyrighter")}</span>

@@ -47,10 +47,9 @@ const matchHtmlRegExp = /["'&<>]/;
  * @return {string}
  * @public
  */
-
-export function escapeHtml(string: string) {
+export function escapeHtml(string: string, regexp: RegExp = matchHtmlRegExp): string {
   const str = "" + string;
-  const match = matchHtmlRegExp.exec(str);
+  const match = regexp.exec(str);
 
   if (!match) return str;
 
@@ -73,10 +72,9 @@ export function escapeHtml(string: string) {
       case 60: // <
         escape = "&lt;";
         break;
-      // for blockquote
-      // case 62: // >
-      //   escape = "&gt;";
-      //   break;
+      case 62: // >
+        escape = "&gt;";
+        break;
       default:
         continue;
     }
@@ -105,4 +103,14 @@ export function escapeTextForBrowser(text: string | number | boolean): string {
     return "" + text;
 
   return escapeHtml(text);
+}
+
+export function escapeTextForMarkdown(text: string | number | boolean): string {
+  // this shortcircuit helps perf for types that we know will never have
+  // special characters, especially given that this function is used often
+  // for numeric dom ids.
+  if (typeof text === "boolean" || typeof text === "number" || typeof text === "bigint")
+    return String(text);
+
+  return escapeHtml(text, /[&<]/);
 }
