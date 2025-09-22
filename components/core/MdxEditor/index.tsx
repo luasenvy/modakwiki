@@ -133,6 +133,9 @@ export default function MdxEditor({
   const content = form.watch("content");
   const selectedTags = form.watch("tags") || [];
 
+  const toc = useMemo(() => getToc(content), [content]);
+  const canSave = useMemo(() => Boolean(lines.length) && Boolean(title.length), [lines, title]);
+
   const handleChangeHunk = debounce((e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setHunk(e.target.value);
   }, 110);
@@ -142,7 +145,7 @@ export default function MdxEditor({
       handleChangeHunk.cancel();
       e.preventDefault();
 
-      setLines(lines.concat(getHunks(e.currentTarget.value.trim())));
+      setLines(Array.from(lines).concat(getHunks(e.currentTarget.value.trim())));
       setHunk("");
       lineRef.current!.value = "";
     }
@@ -184,7 +187,7 @@ export default function MdxEditor({
 
     const saves: Image[] = await res.json();
 
-    const curr = `${hunk}\n\n${saves.map(({ uri, name, width, height }) => `![${name} width-${width} height-${height}](/api/image${uri})`).join("\n\n")}`;
+    const curr = `${hunk}\n\n${saves.map(({ uri, name, width, height }) => `![${name} width-${width} height-${height}](/api/image${uri}-o)`).join("\n\n")}`;
     setHunk(curr);
 
     lineRef.current!.value = curr;
@@ -199,9 +202,10 @@ export default function MdxEditor({
   }, 110);
 
   const handleSubmit = form.handleSubmit(async (values?: DocumentForm) => {
-    if (!canSave) return toast.warning(t("Content is empty or title is missing."));
-
     if (!values) values = form.getValues();
+
+    if (!Boolean(values.title.length) || !Boolean(values.content.length))
+      return toast.warning(t("Content is empty or title is missing."));
 
     const options = {
       method: values.id ? "PATCH" : "POST",
@@ -217,6 +221,15 @@ export default function MdxEditor({
       if (!res.ok) return toast.error(await statusMessage({ t, res, options }));
 
       toast.success(await statusMessage({ t, res, options }), { description: values.title });
+
+      if ("POST" === options.method) {
+        const { id } = await res.json();
+        setTimeout(
+          () =>
+            router.push(`${lng}/editor/write?${new URLSearchParams({ id, type: values.type })}`),
+          1000,
+        );
+      }
     } finally {
       setSaving(false);
     }
@@ -305,10 +318,6 @@ export default function MdxEditor({
   useEffect(() => {
     form.setValue("category", doc?.category || categories[0] || "");
   }, [categories]);
-
-  const toc = useMemo(() => getToc(content), [content]);
-
-  const canSave = useMemo(() => Boolean(lines.length) && Boolean(title.length), [lines, title]);
 
   return (
     <>
@@ -536,6 +545,7 @@ export default function MdxEditor({
                   </div>
                 )}
                 <div className="relative">
+                  {" "}
                   <Textarea
                     ref={lineRef}
                     name="hunk"
@@ -546,7 +556,6 @@ export default function MdxEditor({
                     onKeyDown={handleKeyDownHunk}
                     onPaste={handlePaste}
                   />
-
                   <div className="mt-1 flex items-center justify-end gap-1">
                     <ImageUploadButton
                       ref={imageUploadRef}
@@ -557,7 +566,6 @@ export default function MdxEditor({
 
                     <ImageSelectButton lng={lngParam} onSelect={handleSelectImage} />
                   </div>
-
                   {uploading && (
                     <div className="absolute inset-0 flex bg-muted/80">
                       <div className="m-auto space-y-1 text-center">

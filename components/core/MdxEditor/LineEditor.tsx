@@ -21,7 +21,6 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
 import { Textarea } from "@/components/ui/textarea";
-import { statusMessage } from "@/lib/fetch/react";
 import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/react";
 import { MdxLoader } from "@/lib/mdx/react";
@@ -89,7 +88,7 @@ export function LineEditor({
       const newIndex = parseIndex(over.id);
 
       if (oldIndex >= 0 && newIndex >= 0 && oldIndex !== newIndex)
-        setLines((prev) => arrayMove(prev, oldIndex, newIndex));
+        setLines((prev) => arrayMove(Array.from(prev), oldIndex, newIndex));
     }
   };
 
@@ -115,7 +114,7 @@ export function LineEditor({
     const imageMarkdown = saves
       .map(
         ({ uri, name, width, height }) =>
-          `![${name} width-${width} height-${height}](/api/image${uri})`,
+          `![${name} width-${width} height-${height}](/api/image${uri}-o)`,
       )
       .join("\n\n");
     const text = `${head}\n\n${imageMarkdown}\n\n${tail}`;
@@ -157,7 +156,7 @@ export function LineEditor({
     const imageMarkdown = saves
       .map(
         ({ uri, name, width, height }) =>
-          `![${name} width-${width} height-${height}](/api/image${uri})`,
+          `![${name} width-${width} height-${height}](/api/image${uri}-o)`,
       )
       .join("\n\n");
     const text = `${head}\n\n${imageMarkdown}\n\n${tail}`;
@@ -286,11 +285,8 @@ export function LineEditor({
                     title={t("Cancel Edit")}
                     className="hover:!bg-accent !rounded-none !bg-transparent !text-orange-500 hover:!text-orange-600"
                     onClick={() => {
-                      // return prev
-                      setLines(
-                        Array.from(
-                          lines.toSpliced(selectedLine, 1, prevSelectedLineContent.current),
-                        ),
+                      setLines((prev) =>
+                        prev.toSpliced(selectedLine, 1, prevSelectedLineContent.current),
                       );
                       setSelectedLine(-1);
                     }}
@@ -324,7 +320,9 @@ export function LineEditor({
                   onClick={(e) => {
                     e.stopPropagation();
                     setSelectedLine(-1);
-                    setTimeout(() => setLines((prev) => prev.filter((_, index) => index !== i)));
+                    setTimeout(() =>
+                      setLines((prev) => Array.from(prev).filter((_, index) => index !== i)),
+                    );
                   }}
                 >
                   <Trash className="size-4" />
