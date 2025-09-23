@@ -55,7 +55,7 @@ export const ImageUploadButton = forwardRef(function (
   const filesRef = useRef<FileList | null>(null);
   const filesFormRef = useRef<ImageDescriptionForm[]>([]);
   const uploadResolver = useRef<((value: Response) => void) | null>(null);
-  const uploadRejector = useRef<((err: Error) => void) | null>(null);
+  const uploadRejector = useRef<((err: Error | unknown) => void) | null>(null);
 
   const { t } = useTranslation(lngParam);
 
@@ -68,11 +68,27 @@ export const ImageUploadButton = forwardRef(function (
     const files = e.target.files;
     if (!files?.length) return;
 
-    const promise = handleSave(await upload(files));
+    try {
+      handleSave(await upload(files));
+    } catch (err) {
+      if (err instanceof Error) {
+        toast.error(err.message);
+        throw err;
+      }
 
-    e.target.value = "";
+      toast.error(err as string);
+    } finally {
+      e.target.value = "";
+    }
+  };
 
-    return promise;
+  const handleClickCancel = async () => {
+    uploadRef.current!.value = "";
+    filesRef.current = null;
+    filesFormRef.current = [];
+    uploadResolver.current = null;
+    uploadRejector.current!(t("Upload cancelled."));
+    uploadRejector.current = null;
   };
 
   const handleClickSave = async () => {
@@ -145,18 +161,18 @@ export const ImageUploadButton = forwardRef(function (
         {t("Upload Image")}
       </Button>
 
-      <input
+      <Input
         ref={uploadRef}
         name="upload"
         type="file"
-        className="hidden"
         multiple
+        className="h-8 rounded-none py-0.5"
         accept="image/*"
         onChange={handleChangeUploadImage}
       />
 
       <AlertDialog open={open} onOpenChange={setOpen}>
-        <AlertDialogContent>
+        <AlertDialogContent className="lg:max-w-2xl">
           <AlertDialogHeader>
             <AlertDialogTitle>{t("Image description")}</AlertDialogTitle>
             <AlertDialogDescription>
@@ -202,7 +218,12 @@ export const ImageUploadButton = forwardRef(function (
           </div>
 
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={(e: React.MouseEvent) => e.stopPropagation()}>
+            <AlertDialogCancel
+              onClick={(e: React.MouseEvent) => {
+                e.stopPropagation();
+                handleClickCancel();
+              }}
+            >
               {t("Cancel")}
             </AlertDialogCancel>
             <AlertDialogAction

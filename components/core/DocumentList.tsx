@@ -1,12 +1,16 @@
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Info } from "lucide-react";
 import Link from "next/link";
 import { AvatarProfile } from "@/components/core/AvatarProfile";
-
+import { HoverCardContentImageDetail } from "@/components/mdx/Image";
+import { Button } from "@/components/ui/button";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import { ImageZoom } from "@/components/ui/shadcn-io/image-zoom";
 import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/next";
 import { Doctype, Document } from "@/lib/schema/document";
 import { User } from "@/lib/schema/user";
 import { localePrefix } from "@/lib/url";
+import { cn } from "@/lib/utils";
 
 interface DocumentListProps {
   lng: Language;
@@ -79,11 +83,34 @@ export async function DocumentList({
             {Boolean(images?.length) && (
               <div className="mt-2 flex flex-wrap items-center gap-2">
                 {images!.map((src, index) => (
-                  <div
-                    key={index}
-                    className="relative size-20 overflow-hidden rounded-md border bg-center bg-cover bg-no-repeat shadow-sm"
-                    style={{ backgroundImage: `url('${src}')` }}
-                  ></div>
+                  <figure key={index} className="!m-0 relative w-fit rounded-md border shadow-sm">
+                    <ImageZoom zoomImg={{ src: src.replace(/-t$/, "-o") }} zoomMargin={40}>
+                      <div
+                        role="img"
+                        className="relative size-20 rounded-md bg-center bg-cover bg-no-repeat"
+                        style={{ backgroundImage: `url('${src}')` }}
+                      ></div>
+                    </ImageZoom>
+
+                    <HoverCard openDelay={100} closeDelay={100}>
+                      <HoverCardTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          className={cn(
+                            "absolute top-1 right-1 size-5 shadow-md",
+                            "!border-amber-600 rounded-full",
+                            "shrink-0 text-amber-600",
+                          )}
+                        >
+                          <Info className="size-4" />
+                        </Button>
+                      </HoverCardTrigger>
+                      <HoverCardContent className="w-64">
+                        <HoverCardContentImageDetail src={src} />
+                      </HoverCardContent>
+                    </HoverCard>
+                  </figure>
                 ))}
               </div>
             )}

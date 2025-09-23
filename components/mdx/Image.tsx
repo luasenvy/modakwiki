@@ -95,7 +95,7 @@ interface HoverCardContentImageDetailProps {
   src: string;
 }
 
-function HoverCardContentImageDetail({ src }: HoverCardContentImageDetailProps) {
+export function HoverCardContentImageDetail({ src }: HoverCardContentImageDetailProps) {
   const { t } = useTranslation();
   const [image, setImage] = useState<ImageType>();
 

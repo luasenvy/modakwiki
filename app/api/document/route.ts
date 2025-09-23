@@ -37,13 +37,15 @@ export async function POST(req: NextRequest) {
     const isEssay = doctypeEnum.essay === doctype;
 
     if (isEssay) {
+      if (!tags?.length) return new Response("There is no tags", { status: 400 });
+
       const {
         rows: [{ count }],
       } = await client.query<{ count: number }>(
         `SELECT COUNT(*) as count
           FROM tag
          WHERE "category" = $1
-           AND id IN (${tags?.map((tag) => `'${tag}'`).join(",")})
+           AND id IN (${tags.map((tag) => `'${tag}'`).join(",")})
          `,
         [category],
       );
@@ -135,13 +137,58 @@ export async function PATCH(req: NextRequest) {
   try {
     const {
       id,
-      type,
+      type: doctype,
       content,
       description,
       license,
       category,
       tags,
     }: DocumentForm & { type: Doctype } = await req.json();
+
+    const { table, history } = getTablesByDoctype(doctype);
+    if (!table) return new Response("Bad Request", { status: 400 });
+
+    const isEssay = doctypeEnum.essay === doctype;
+    if (isEssay) {
+      if (!tags?.length) return new Response("There is no tags", { status: 400 });
+
+      const {
+        rows: [{ count }],
+      } = await client.query<{ count: number }>(
+        `SELECT COUNT(*) as count
+          FROM tag
+         WHERE "category" = $1
+           AND id IN (${tags.map((tag) => `'${tag}'`).join(",")})
+         `,
+        [category],
+      );
+
+      if (Number(count) !== tags?.length) return new Response("Bad Request", { status: 400 });
+    }
+
+    const {
+      rows: [prev],
+    } = await client.query<DocumentType>(
+      `SELECT description, content FROM ${table} WHERE id = $1`,
+      [id],
+    );
+
+    const { added, removed } = diffChars(prev.content, content).reduce(
+      (acc, { added, removed, count }) => {
+        if (added) acc.added += count;
+        if (removed) acc.removed += count;
+        return acc;
+      },
+      { added: 0, removed: 0 },
+    );
+    const isDocumentChange = added > 0 || removed > 0;
+    const isMetadataChange =
+      description !== prev.description ||
+      category !== prev.category ||
+      JSON.stringify(tags) !== JSON.stringify(prev.tags);
+
+    // Nothing to changed
+    if (!isDocumentChange && !isMetadataChange) return new Response(null, { status: 409 });
 
     // moderation
     const openai = new OpenAI(openaiConfig);
@@ -166,35 +213,7 @@ export async function PATCH(req: NextRequest) {
       return Response.json(Array.from(categories), { status: 415 });
     }
 
-    const { table, history } = getTablesByDoctype(type);
-    if (!table) return new Response("Bad Request", { status: 400 });
-
-    const {
-      rows: [prev],
-    } = await client.query<DocumentType>(
-      `SELECT description, content FROM ${table} WHERE id = $1`,
-      [id],
-    );
-
-    const { added, removed } = diffChars(prev.content, content).reduce(
-      (acc, { added, removed, count }) => {
-        if (added) acc.added += count;
-        if (removed) acc.removed += count;
-        return acc;
-      },
-      { added: 0, removed: 0 },
-    );
-
     let images: string[] = [];
-    const isDocumentChange = added > 0 || removed > 0;
-    const isMetadataChange =
-      description !== prev.description ||
-      category !== prev.category ||
-      JSON.stringify(tags) !== JSON.stringify(prev.tags);
-
-    // Nothing to changed
-    if (!isDocumentChange && !isMetadataChange) return new Response(null, { status: 409 });
-
     if (isDocumentChange) {
       // moderation
       const openai = new OpenAI(openaiConfig);

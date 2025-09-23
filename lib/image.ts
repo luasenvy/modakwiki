@@ -42,7 +42,7 @@ export async function optimization(
 
   await optimize
     .withMetadata()
-    .webp({ quality: 80 })
+    // .webp({ quality: 80 }) don't need to re-encode
     .toFile(join(dirname(filepath), `${bname}-o${options?.ext ? ename : ""}`));
 
   // thumbnail from original
@@ -57,7 +57,7 @@ export async function optimization(
 
   await thumbnail
     .withMetadata()
-    .webp({ quality: 80 })
+    // .webp({ quality: 80 }) don't need to re-encode
     .toFile(join(dirname(filepath), `${bname}-t${options?.ext ? ename : ""}`));
 
   return { isPortrait, originalSize, originalWidth, originalHeight };
