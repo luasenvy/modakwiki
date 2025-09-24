@@ -3,6 +3,7 @@ import Image from "next/image";
 import { Breadcrumb } from "@/components/core/Breadcrumb";
 import { Advertisement } from "@/components/core/button/Advertisement";
 import { Container, Viewport } from "@/components/core/Container";
+import { Pagination } from "@/components/core/Pagination";
 import { ImageDeleteButton } from "@/components/pages/site/image/ImageDeleteButton";
 import {
   Card,
@@ -12,7 +13,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
 import { ImageZoom } from "@/components/ui/shadcn-io/image-zoom";
 import { BreadcrumbItem } from "@/hooks/use-breadcrumbs";
 import { pool } from "@/lib/db";
@@ -23,8 +23,13 @@ import { licenseImageEnum, licenseLinkEnum } from "@/lib/license";
 import { Image as ImageType } from "@/lib/schema/image";
 import { localePrefix } from "@/lib/url";
 
+const pageSize = 6;
 export default async function HowToPage(ctx: PageProps<"/[lng]/editor/syntax">) {
   const lngParam = (await ctx.params).lng as Language;
+  const searchParams = await ctx.searchParams;
+
+  const page = Number(searchParams.page ?? "1");
+
   const lng = localePrefix(lngParam);
 
   const client = await pool.connect();
@@ -55,7 +60,7 @@ export default async function HowToPage(ctx: PageProps<"/[lng]/editor/syntax">) 
             , u.name AS "userName"
             , (
                 SELECT SUM(u.count) as count
-                FROM (
+                  FROM (
                      SELECT COUNT(*) as count
                        FROM essay e
                       WHERE e.deleted IS NULL
@@ -65,13 +70,14 @@ export default async function HowToPage(ctx: PageProps<"/[lng]/editor/syntax">) 
                        FROM document d
                       WHERE d.deleted IS NULL
                         AND d.content LIKE '%' || i.uri || '%'
-                ) as u
+                  ) as u
               ) AS "usedCount"
          FROM image i
          JOIN "user" u
            ON u.id = i."userId"
         WHERE i.deleted IS NULL
-     ORDER BY i.created DESC`,
+     ORDER BY i.created DESC
+        OFFSET ${(page - 1) * pageSize} LIMIT ${pageSize}`,
     );
 
     const { t } = await useTranslation(lngParam);
@@ -118,7 +124,7 @@ export default async function HowToPage(ctx: PageProps<"/[lng]/editor/syntax">) 
                       <div
                         aria-label={name}
                         role="img"
-                        className="h-[400px] w-full border bg-center bg-cover bg-no-repeat bg-no-repeat shadow-sm sm:h-[150px]"
+                        className="h-[400px] w-full border bg-center bg-cover bg-no-repeat shadow-sm sm:h-[150px]"
                         style={{ backgroundImage: `url('/api/image${uri}-t')` }}
                       />
                     </ImageZoom>
@@ -186,6 +192,14 @@ export default async function HowToPage(ctx: PageProps<"/[lng]/editor/syntax">) 
                 </Card>
               ),
             )}
+
+            <Pagination
+              className="mt-6 sm:col-span-2 lg:col-span-3"
+              page={page}
+              pageSize={pageSize}
+              total={count}
+              searchParams={searchParams}
+            />
           </Container>
 
           <div className="sticky top-0 flex h-[calc(100dvh_-_var(--spacing)_*_12)] w-[286px] shrink-0 flex-col pt-8 pr-4 pl-2 [mask-image:linear-gradient(to_bottom,transparent,white_16px,white_calc(100%-16px),transparent)] max-xl:hidden">

@@ -1,3 +1,4 @@
+import { SearchParams } from "next/dist/server/request/search-params";
 import { Language } from "@/lib/i18n/config";
 
 /**
@@ -70,4 +71,29 @@ export function unwrap(url: string): string {
 
 export function localePrefix(lng?: Language): string {
   return lng ? `/${lng}` : "";
+}
+
+export function pickSearchParams(searchParams: URLSearchParams | SearchParams, keys: string[]) {
+  return keys.reduce((acc, key) => {
+    if (key in searchParams) {
+      let value;
+      if (searchParams instanceof URLSearchParams) value = searchParams.getAll(key);
+      else value = [searchParams[key]].flat().filter(Boolean);
+
+      value.forEach((v) => acc.append(key, String(v)));
+    }
+
+    return acc;
+  }, new URLSearchParams());
+}
+
+export function getSearchParamsFromObject(searchParams: SearchParams): URLSearchParams {
+  const baseSearchParams = new URLSearchParams();
+
+  Object.entries(searchParams).forEach(([key, value]) => {
+    if (Array.isArray(value)) value.forEach((v) => baseSearchParams.append(key, v));
+    else baseSearchParams.set(key, String(value));
+  });
+
+  return baseSearchParams;
 }

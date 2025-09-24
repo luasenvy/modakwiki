@@ -131,7 +131,7 @@ export const TagsTrigger = ({
       variant="outline"
       {...props}
     >
-      <div className="flex flex-wrap items-center gap-1">
+      <div className="flex flex-wrap items-center gap-1 truncate">
         {children}
         <span className="px-2 py-px text-muted-foreground">
           {i18n.selectATag}

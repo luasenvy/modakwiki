@@ -185,5 +185,6 @@
   "Saving...": "저장중...",
   "Upload cancelled.": "업로드가 취소되었습니다.",
   "Select Document": "문서 선택",
-  "You can select a document": "문서를 선택할 수 있습니다."
+  "You can select a document": "문서를 선택할 수 있습니다.",
+  "Please input search keywords": "검색어를 입력해주세요"
 }

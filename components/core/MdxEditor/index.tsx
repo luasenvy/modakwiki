@@ -85,6 +85,8 @@ interface MdxEditorProps {
   doctype?: Doctype;
   title?: string;
   deletable?: boolean;
+  category?: string;
+  tags?: string[];
 }
 
 export default function MdxEditor({
@@ -93,6 +95,8 @@ export default function MdxEditor({
   doctype: defaultDoctype,
   title: defaultTitle,
   deletable,
+  category: defaultCategory,
+  tags: defaultTags,
 }: MdxEditorProps) {
   const router = useRouter();
 
@@ -118,9 +122,9 @@ export default function MdxEditor({
     defaultValues: {
       id: doc?.id,
       description: doc?.description,
-      category: doc?.category || "",
+      category: doc?.category || defaultCategory || "",
       license: doc?.license || licenseEnum.ccbysa,
-      tags: doc?.tags || [],
+      tags: doc?.tags || defaultTags || [],
       type: defaultDoctype || doctypeEnum.document,
       title: doc?.title || defaultTitle || "",
       content: doc?.content || "",
@@ -301,6 +305,9 @@ export default function MdxEditor({
     if (doc?.tags?.length && tags.some((t) => doc!.tags!.includes(t.id)))
       return form.setValue("tags", doc!.tags!);
 
+    if (defaultTags && tags.some((t) => defaultTags.includes(t.id)))
+      return form.setValue("tags", defaultTags);
+
     form.setValue("tags", []);
   }, [tags]);
 
@@ -328,7 +335,7 @@ export default function MdxEditor({
   }, [doctype]);
 
   useEffect(() => {
-    form.setValue("category", doc?.category || categories[0] || "");
+    form.setValue("category", doc?.category || defaultCategory || categories[0] || "");
   }, [categories]);
 
   return (
@@ -425,7 +432,7 @@ export default function MdxEditor({
                             </SelectTrigger>
                             <SelectContent>
                               {Object.values(licenseEnum).map((value) => (
-                                <SelectItem key={value} value={value}>
+                                <SelectItem key={`license-${value}`} value={value}>
                                   {t(value)}
                                 </SelectItem>
                               ))}
@@ -453,7 +460,7 @@ export default function MdxEditor({
                             </SelectTrigger>
                             <SelectContent>
                               {categories.map((id) => (
-                                <SelectItem key={id} value={id}>
+                                <SelectItem key={`category-${id}`} value={id}>
                                   {id}
                                 </SelectItem>
                               ))}
@@ -482,7 +489,10 @@ export default function MdxEditor({
                                 i18n={{ selectATag: t("Select a tag") }}
                               >
                                 {value?.map((tag) => (
-                                  <TagsValue key={tag} onRemove={() => handleRemoveTag(tag)}>
+                                  <TagsValue
+                                    key={`tag-value-${tag}`}
+                                    onRemove={() => handleRemoveTag(tag)}
+                                  >
                                     {tag}
                                   </TagsValue>
                                 ))}
@@ -495,7 +505,11 @@ export default function MdxEditor({
                                     {tags
                                       .filter((tag) => !value?.includes(tag.id))
                                       .map(({ id }) => (
-                                        <TagsItem key={id} onSelect={handleSelectTag} value={id}>
+                                        <TagsItem
+                                          key={`tag-${id}`}
+                                          onSelect={handleSelectTag}
+                                          value={id}
+                                        >
                                           {id}
                                           {selectedTags.includes(id) && (
                                             <CheckIcon

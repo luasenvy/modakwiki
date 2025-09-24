@@ -34,6 +34,7 @@ export async function DocumentList({
     ({
       id,
       title,
+      description,
       preview,
       type,
       name,
@@ -49,7 +50,7 @@ export async function DocumentList({
       return (
         <div className="p-2 hover:bg-accent" key={id}>
           {category && (
-            <div className="mb-0 flex items-center">
+            <div className="flex items-center">
               <span className="font-semibold text-xs">{category}</span>
               {Boolean(tags?.length) && (
                 <>
@@ -60,28 +61,34 @@ export async function DocumentList({
             </div>
           )}
 
-          <div className="prose dark:prose-invert max-w-none">
-            <h2 className="!my-0.5 font-semibold text-xl">
-              <Link
-                key={id}
-                href={`${lng}/${type || doctype}?${new URLSearchParams({ id })}`}
-                className="text-blue-600 no-underline hover:underline"
-              >
-                {title}
-                {showDoctype && type && <sub> ({t(type)})</sub>}
-              </Link>
-            </h2>
+          <div className="prose dark:prose-invert max-w-none space-y-2">
+            <div>
+              <h2 className="!my-0.5 font-semibold text-xl">
+                <Link
+                  key={id}
+                  href={`${lng}/${type || doctype}?${new URLSearchParams({ id })}`}
+                  className="text-blue-600 no-underline hover:underline"
+                >
+                  {title}
+                  {showDoctype && type && <sub> ({t(type)})</sub>}
+                </Link>
+              </h2>
 
-            <div className="!my-0.5 flex items-center justify-between">
-              <AvatarProfile profile={{ name, email, image, emailVerified }} size="sm" />
-
-              <p className="!my-0.5 text-xs">{datetimeFormat.format(updated || created)}</p>
+              <p className="!my-0.5 text-muted-foreground text-sm">{description}</p>
             </div>
 
-            <p className="!my-2 text-muted-foreground text-sm">{preview}...</p>
+            <div className="flex items-center justify-between">
+              <AvatarProfile profile={{ name, email, image, emailVerified }} size="sm" />
+
+              <p className="!my-0 text-xs">{datetimeFormat.format(updated || created)}</p>
+            </div>
+
+            <div>
+              <p className="!my-0 text-muted-foreground text-sm">{preview}...</p>
+            </div>
 
             {Boolean(images?.length) && (
-              <div className="mt-2 flex flex-wrap items-center gap-2">
+              <div className="mt-4 flex flex-wrap items-center gap-2">
                 {images!.map((src, index) => (
                   <figure key={index} className="!m-0 relative w-fit rounded-md border shadow-sm">
                     <ImageZoom zoomImg={{ src: src.replace(/-t$/, "-o") }} zoomMargin={40}>

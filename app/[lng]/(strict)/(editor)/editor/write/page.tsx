@@ -22,6 +22,10 @@ export default async function WritePage(ctx: PageProps<"/[lng]/editor/write">) {
 
   const doctype = searchParams.type as Doctype;
   const title = searchParams.title as string;
+  const category = searchParams.category as string;
+  const tags = Array.isArray(searchParams.tags)
+    ? searchParams.tags
+    : [searchParams.tags as string].flat().filter(Boolean);
 
   // 신규 문서 생성
   if (!id) {
@@ -36,7 +40,14 @@ export default async function WritePage(ctx: PageProps<"/[lng]/editor/write">) {
       <>
         <Breadcrumb lng={lngParam} breadcrumbs={breadcrumbs} />
         <FootnoteHighlighter />
-        <MdxEditor key="new" lng={lngParam} title={title} doctype={doctype} />
+        <MdxEditor
+          key="new"
+          lng={lngParam}
+          title={title}
+          doctype={doctype}
+          category={category}
+          tags={tags}
+        />
       </>
     );
   }
