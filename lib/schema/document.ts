@@ -2,7 +2,6 @@ import z from "zod";
 import { licenseEnum } from "@/lib/license";
 import { category } from "@/lib/schema/category";
 import { tag } from "@/lib/schema/tag";
-import { user } from "@/lib/schema/user";
 
 export const doctypeEnum = {
   document: "w",

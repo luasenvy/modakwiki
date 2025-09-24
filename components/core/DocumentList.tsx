@@ -47,7 +47,7 @@ export async function DocumentList({
       updated,
     }) => {
       return (
-        <div className="space-y-2 p-2 hover:bg-accent" key={id}>
+        <div className="p-2 hover:bg-accent" key={id}>
           {category && (
             <div className="mb-0 flex items-center">
               <span className="font-semibold text-xs">{category}</span>
@@ -60,8 +60,8 @@ export async function DocumentList({
             </div>
           )}
 
-          <div className="prose dark:prose-invert max-w-none space-y-1">
-            <h2 className="!my-0 font-semibold text-xl">
+          <div className="prose dark:prose-invert max-w-none">
+            <h2 className="!my-0.5 font-semibold text-xl">
               <Link
                 key={id}
                 href={`${lng}/${type || doctype}?${new URLSearchParams({ id })}`}
@@ -72,13 +72,13 @@ export async function DocumentList({
               </Link>
             </h2>
 
-            <div className="flex items-center justify-between">
+            <div className="!my-0.5 flex items-center justify-between">
               <AvatarProfile profile={{ name, email, image, emailVerified }} size="sm" />
 
-              <p className="!my-0 text-xs">{datetimeFormat.format(updated || created)}</p>
+              <p className="!my-0.5 text-xs">{datetimeFormat.format(updated || created)}</p>
             </div>
 
-            <p className="!my-0 text-muted-foreground text-sm">{preview}...</p>
+            <p className="!my-2 text-muted-foreground text-sm">{preview}...</p>
 
             {Boolean(images?.length) && (
               <div className="mt-2 flex flex-wrap items-center gap-2">

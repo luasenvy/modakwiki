@@ -14,7 +14,7 @@ export function DiffViewer({ curr, prev }: DiffViewerProps) {
           "!text-muted-foreground [&_del]:text-rose-600 [&_ins]:text-green-600",
           "!text-sm",
           "!bg-zinc-900",
-          "!whitespace-pre-wrap !break-keep",
+          "!whitespace-pre-wrap !wrap-break-word !break-all",
         )}
       >
         {diffChars(prev, curr).map(({ added, removed, value }, i) =>

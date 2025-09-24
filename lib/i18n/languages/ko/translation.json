@@ -182,5 +182,8 @@
   "You must input a description for the image before uploading.": "이미지를 업로드하기 전에 설명을 입력해야 합니다.",
   "reference url": "연결링크",
   "used": "인용중",
-  "Saving...": "저장중..."
+  "Saving...": "저장중...",
+  "Upload cancelled.": "업로드가 취소되었습니다.",
+  "Select Document": "문서 선택",
+  "You can select a document": "문서를 선택할 수 있습니다."
 }

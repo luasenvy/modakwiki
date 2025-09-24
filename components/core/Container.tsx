@@ -9,12 +9,12 @@ const defaultContainerComponent = "div" as const;
 const variants = {
   wide: "relative w-full max-w-full px-4 lg:max-w-[calc(var(--container-3xl)_+_286px)] xl:max-w-[calc(var(--container-4xl)_+_286px)] pt-8",
   aside:
-    "relative pt-8 w-full max-w-full lg:max-w-3xl xl:w-[calc(100%_-_286px)] xl:max-w-4xl h-fit pr-2 pl-4 max-lg:pr-4 space-y-14",
+    "relative pt-8 w-full max-w-full lg:max-w-3xl xl:w-[calc(100%_-_286px)] xl:max-w-4xl h-fit pr-2 pl-4 max-lg:pr-4 space-y-10",
   document: cn(
     "relative",
     "w-full h-fit max-w-full lg:max-w-3xl xl:w-[calc(100%_-_286px)] xl:max-w-4xl",
     "pr-2 pl-4 pt-18 xl:pt-8 max-lg:pr-4",
-    "break-keep",
+    "wrap-break-word break-keep",
     "prose dark:prose-invert",
     "[&_p]:first-letter:ml-3",
     // Italic
@@ -41,7 +41,7 @@ const variants = {
     "prose-td:[&>figure]:m-auto",
     // footnote
     "[&_section.footnotes]:mt-24 [&_section.footnotes]:border-t",
-    "[&_section.footnotes>ol_li_p]:first-letter:!ml-0 [&_section.footnotes>ol_li_p]:!my-1 [&_section.footnotes>ol_li]:text-sm",
+    "[&_section.footnotes>ol_li_p]:first-letter:!ml-0 [&_section.footnotes>ol_li_p]:!my-1 [&_section.footnotes>ol_li_p]:text-sm",
     "[&_section.footnotes>ol_li[data-selected]]:repeat-3 [&_section.footnotes>ol_li[data-selected]]:animate-caret-blink [&_section.footnotes>ol_li[data-selected]]:text-rose-500",
     "[&_[data-footnote-ref=true][data-selected]]:repeat-3 [&_[data-footnote-ref=true][data-selected]]:animate-caret-blink [&_[data-footnote-ref=true][data-selected]]:text-rose-500",
     "prose-a:[&[data-footnote-ref]]:before:content-['[']",

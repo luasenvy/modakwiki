@@ -16,6 +16,31 @@ import {
 } from "@/lib/schema/document";
 import { scopeEnum } from "@/lib/schema/user";
 
+export async function GET(req: NextRequest) {
+  const session = await auth.api.getSession(req);
+  if (!session) return new Response(null, { status: 401 });
+  if (session.user.scope < scopeEnum.editor) return new Response(null, { status: 403 });
+
+  const client = await pool.connect();
+  try {
+    const { rows } = await client.query<DocumentType>(
+      `SELECT t.id, t.title, t.type
+         FROM (
+              SELECT d.id, d.title, 'w' as type
+                FROM document d
+           UNION ALL
+              SELECT e.id, e.title, 'e' as type
+                FROM essay e
+         ) as t
+       ORDER BY t.title ASC`,
+    );
+
+    return Response.json(rows, { status: 200 });
+  } finally {
+    client.release();
+  }
+}
+
 export async function POST(req: NextRequest) {
   const session = await auth.api.getSession(req);
   if (!session) return new Response(null, { status: 401 });

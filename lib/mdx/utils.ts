@@ -24,6 +24,7 @@ import remarkFlexibleCodeTitles from "remark-flexible-code-titles";
 import remarkHeadingId from "remark-heading-id";
 import remarkSuperSub from "remark-supersub";
 import remarkAlert from "@/lib/mdx/remark/remark-alert";
+import remarkAlias from "@/lib/mdx/remark/remark-alias";
 import remarkGfmFootnote from "@/lib/mdx/remark/remark-gfm-footnote";
 import remarkGfmTable from "@/lib/mdx/remark/remark-gfm-table";
 import remarkGfmTask from "@/lib/mdx/remark/remark-gfm-task";
@@ -32,6 +33,7 @@ import remarkYoutube from "@/lib/mdx/remark/remark-youtube";
 
 export const remarkPlugins = [
   remarkSuperSub,
+  remarkAlias,
   remarkGfmTask,
   remarkGfmTable,
   remarkKatex,

@@ -9,6 +9,9 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { Container, Viewport } from "@/components/core/Container";
+import { ImageSelectButton } from "@/components/core/MdxEditor/ImageSelectButton";
+import { ImageUploadAPI, ImageUploadButton } from "@/components/core/MdxEditor/ImageUploadButton";
+import { InternalLinkButton } from "@/components/core/MdxEditor/InternalLinkButton";
 import { KeyboardShortcuts } from "@/components/core/MdxEditor/KeyboardShortcuts";
 import { LineEditor } from "@/components/core/MdxEditor/LineEditor";
 import { Remocon } from "@/components/core/MdxEditor/Remocon";
@@ -21,8 +24,6 @@ import {
   PageTOCPopoverItems,
   PageTOCPopoverTrigger,
 } from "@/components/fumadocs/toc-popover";
-import { ImageSelectButton } from "@/components/pages/site/image/ImageSelectButton";
-import { ImageUploadAPI, ImageUploadButton } from "@/components/pages/site/image/ImageUploadButton";
 import {
   Form,
   FormControl,
@@ -149,6 +150,17 @@ export default function MdxEditor({
       setHunk("");
       lineRef.current!.value = "";
     }
+  };
+
+  const handleSelectInternalLink = async (doc: DocumentType & { type: Doctype }) => {
+    if (!lineRef.current) return;
+
+    const { selectionStart, selectionEnd } = lineRef.current;
+
+    const curr = `${hunk.substring(0, selectionStart)} [${doc.title}](/${doc.type}?${new URLSearchParams({ id: doc.id })}) ${hunk.substring(selectionEnd)}`;
+
+    setHunk(curr);
+    lineRef.current.value = curr;
   };
 
   const handleSelectImage = async (image: ImageType) => {
@@ -565,6 +577,7 @@ export default function MdxEditor({
                     />
 
                     <ImageSelectButton lng={lngParam} onSelect={handleSelectImage} />
+                    <InternalLinkButton lng={lngParam} onSelect={handleSelectInternalLink} />
                   </div>
                   {uploading && (
                     <div className="absolute inset-0 flex bg-muted/80">

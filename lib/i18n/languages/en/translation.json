@@ -200,5 +200,8 @@
   "You must input a description for the image before uploading.": "You must input a description for the image before uploading.",
   "reference url": "reference url",
   "used": "used",
-  "Saving...": "Saving..."
+  "Saving...": "Saving...",
+  "Upload cancelled.": "Upload cancelled.",
+  "Select Document": "Select Document",
+  "You can select a document": "You can select a document"
 }

@@ -14,9 +14,10 @@ import debounce from "lodash.debounce";
 import { ChevronDown, ChevronUp, Pencil, PencilOff, Trash } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+import { ImageSelectButton } from "@/components/core/MdxEditor/ImageSelectButton";
+import { ImageUploadAPI, ImageUploadButton } from "@/components/core/MdxEditor/ImageUploadButton";
+import { InternalLinkButton } from "@/components/core/MdxEditor/InternalLinkButton";
 import { SortableItem } from "@/components/core/MdxEditor/SortableItem";
-import { ImageSelectButton } from "@/components/pages/site/image/ImageSelectButton";
-import { ImageUploadAPI, ImageUploadButton } from "@/components/pages/site/image/ImageUploadButton";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
@@ -25,6 +26,7 @@ import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/react";
 import { MdxLoader } from "@/lib/mdx/react";
 import { trailingFootnotes } from "@/lib/mdx/utils";
+import { Doctype, Document as DocumentType } from "@/lib/schema/document";
 import { Image, Image as ImageType } from "@/lib/schema/image";
 import { cn } from "@/lib/utils";
 
@@ -123,6 +125,20 @@ export function LineEditor({
     textarea.value = text;
   };
 
+  const handleSelectInternalLink = async (doc: DocumentType & { type: Doctype }) => {
+    const textarea = inputRefs.current[selectedLine];
+    if (!textarea) return;
+
+    const line = lines[selectedLine];
+    const head = line.substring(0, textarea.selectionStart);
+    const tail = line.substring(textarea.selectionEnd);
+
+    const curr = `${head} [${doc.title}](/e?${new URLSearchParams({ id: doc.id })}) ${tail}`;
+
+    setLines((prev) => prev.toSpliced(selectedLine, 1, curr));
+    textarea.value = curr;
+  };
+
   const handleSelectImage = (image: ImageType) => {
     const textarea = inputRefs.current[selectedLine];
     if (!textarea) return;
@@ -202,7 +218,7 @@ export function LineEditor({
                   onPaste={handlePasteChangeLine}
                 />
 
-                <div className="mt-1 flex items-center justify-end gap-1">
+                <div className="mt-1 flex items-center gap-1">
                   <ImageUploadButton
                     ref={imageUploadRef}
                     lng={lngParam}
@@ -210,6 +226,7 @@ export function LineEditor({
                     onSave={handleSave}
                   />
                   <ImageSelectButton lng={lngParam} onSelect={handleSelectImage} />
+                  <InternalLinkButton lng={lngParam} onSelect={handleSelectInternalLink} />
                 </div>
 
                 {uploading && (
