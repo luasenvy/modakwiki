@@ -8,15 +8,15 @@ export default function remarkYoutube(this: Processor) {
       if (!node.children?.length) return;
 
       const [first] = node.children;
-      if (first.type !== "text" || !first.value.startsWith("@[")) return;
+      if (first.type !== "text" || first.value.indexOf("@[") < 0) return;
 
-      const [, videoId] = first.value.match(/^@\[([^\]]+)\]/) || [];
-      if (!videoId) return;
+      const videoMarkdowns = first.value.match(/@\[([^\]]+)\]/g) || [];
+      if (!videoMarkdowns.length) return;
 
       parent!.children.splice(index!, 1, {
         type: "mdxJsxFlowElement",
         name: "Youtube",
-        attributes: [{ type: "mdxJsxAttribute", name: "v", value: videoId }],
+        attributes: [{ type: "mdxJsxAttribute", name: "v", value: videoMarkdowns.join(",") }],
         children: [],
       } satisfies BlockContent);
     });
