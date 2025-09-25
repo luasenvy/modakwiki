@@ -39,8 +39,6 @@ const variants = {
     // Table
     "prose-table:m-0",
     "prose-td:[&>figure]:m-auto",
-    // Iframe
-    "[&_iframe]:my-4",
     // footnote
     "[&_section.footnotes]:mt-24 [&_section.footnotes]:border-t",
     "[&_section.footnotes>ol_li_p]:first-letter:!ml-0 [&_section.footnotes>ol_li_p]:!my-1 [&_section.footnotes>ol_li_p]:text-sm",

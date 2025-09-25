@@ -66,7 +66,7 @@ export async function POST(req: NextRequest) {
       .count<{ count: number }>({ count: "*" })
       .from("tag")
       .where({ category })
-      .andWhere({ id: tags })
+      .whereIn("id", tags)
       .first())!;
 
     if (Number(count) !== tags?.length) return new Response("Bad Request", { status: 400 });
@@ -186,7 +186,8 @@ export async function PATCH(req: NextRequest) {
     const { count } = (await knex
       .count<{ count: number }>({ count: "*" })
       .from("tag")
-      .where({ category, id: tags })
+      .where({ category })
+      .whereIn("id", tags)
       .first())!;
 
     if (Number(count) !== tags?.length) return new Response("Bad Request", { status: 400 });

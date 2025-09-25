@@ -37,7 +37,7 @@ export const mainNavs: Array<NavItem> = [
         url: "/w/random",
       },
       {
-        title: "기고",
+        title: "에세이",
         url: "/essay",
       },
     ],

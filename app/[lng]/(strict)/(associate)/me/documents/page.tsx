@@ -112,7 +112,7 @@ export default async function MyDocsPage(ctx: PageProps<"/[lng]/me/documents">) 
           </div>
 
           <div className="relative ms-px min-h-0 overflow-auto py-3 text-sm [scrollbar-width:none]">
-            총 {docCount}개 문서와 {essayCount}개 기고가 있습니다.
+            총 {docCount}개 문서와 {essayCount}개 에세이가 있습니다.
           </div>
 
           <Advertisement className="py-6" />

@@ -29,52 +29,52 @@ export default async function SearchPage(ctx: PageProps<"/[lng]/essay">) {
   const lngParam = (await ctx.params).lng as Language;
   const lng = localePrefix(lngParam);
 
-  const countQuery = knex("essay").count({ count: "*" }).whereNull("deleted");
+  const countQuery = knex.count({ count: "*" }).from({ e: "essay" }).whereNull("deleted");
 
   if (search) {
     countQuery.andWhere((q) => {
-      q.where("title", "ILIKE", `%${search}%`)
-        .orWhere("description", "ILIKE", `%${search}%`)
-        .orWhere("content", "ILIKE", `%${search}%`);
+      q.where("e.title", "ILIKE", `%${search}%`)
+        .orWhere("e.description", "ILIKE", `%${search}%`)
+        .orWhere("e.content", "ILIKE", `%${search}%`);
     });
   }
-  if (category) countQuery.andWhere("category", category);
-  if (tags.length) countQuery.andWhere("tags", "&&", tags);
+  if (category) countQuery.andWhere("e.category", category);
+  if (tags.length) countQuery.andWhere("e.tags", "&&", tags);
 
   const [{ count }] = await countQuery;
 
   const rowsQuery = knex
     .select(
-      `essay.id`,
-      `essay.title`,
-      `essay.description`,
-      `essay.preview`,
-      `essay.images`,
-      `user.name`,
-      `user.image`,
-      `user.email`,
-      "user.emailVerified",
-      `essay.category`,
-      `essay.tags`,
-      `essay.created`,
+      `e.id`,
+      `e.title`,
+      `e.description`,
+      `e.preview`,
+      `e.images`,
+      `u.name`,
+      `u.image`,
+      `u.email`,
+      "u.emailVerified",
+      `e.category`,
+      `e.tags`,
+      `e.created`,
     )
-    .from("essay")
-    .join(`user`, `essay.userId`, `user.id`)
-    .whereNull("essay.deleted")
-    .orderBy("essay.created", "desc")
+    .from({ e: "essay" })
+    .join({ u: "user" }, `e.userId`, `u.id`)
+    .whereNull("e.deleted")
+    .orderBy("e.created", "desc")
     .offset((page - 1) * pageSize)
     .limit(pageSize);
 
   if (search) {
     rowsQuery.andWhere((q) => {
-      q.where("title", "ILIKE", `%${search}%`)
-        .orWhere("description", "ILIKE", `%${search}%`)
-        .orWhere("content", "ILIKE", `%${search}%`);
+      q.where("e.title", "ILIKE", `%${search}%`)
+        .orWhere("e.description", "ILIKE", `%${search}%`)
+        .orWhere("e.content", "ILIKE", `%${search}%`);
     });
   }
 
-  if (category) rowsQuery.andWhere("category", category);
-  if (tags.length) rowsQuery.andWhere("tags", "&&", tags);
+  if (category) rowsQuery.andWhere("e.category", category);
+  if (tags.length) rowsQuery.andWhere("e.tags", "&&", tags);
 
   const rows = await rowsQuery;
 
@@ -112,7 +112,7 @@ export default async function SearchPage(ctx: PageProps<"/[lng]/essay">) {
             </div>
 
             <div className="relative ms-px min-h-0 overflow-auto py-3 text-sm [scrollbar-width:none]">
-              총 {count}개의 기고가 있습니다.
+              총 {count}개의 에세이가 있습니다.
             </div>
 
             <Advertisement className="py-6" />
@@ -133,7 +133,7 @@ export default async function SearchPage(ctx: PageProps<"/[lng]/essay">) {
     content = `[${t("Please register the first essay!")}](${lng}/editor/write?${baseSearchParams})`;
   }
 
-  const title = t("There is no any essay.");
+  const title = t("There is no any e.");
   const breadcrumbs: Array<BreadcrumbItem> = [{ title, href: `${lng}/essay` }];
 
   return (
