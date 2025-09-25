@@ -6,7 +6,7 @@ import { FootnoteHighlighter } from "@/components/core/MdxViewer/FootnoteHighlig
 import { isDev } from "@/config";
 import { BreadcrumbItem } from "@/hooks/use-breadcrumbs";
 import { auth } from "@/lib/auth/server";
-import { pool } from "@/lib/db";
+import { knex } from "@/lib/db";
 import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/next";
 import {
@@ -27,59 +27,54 @@ export async function generateMetadata(ctx: PageProps<"/[lng]/[doctype]">) {
   const id = searchParams.id;
   const created = searchParams.created;
 
-  const client = await pool.connect();
-  try {
-    const { table, history } = getTablesByDoctype(doctype);
+  const { table, history } = getTablesByDoctype(doctype);
 
-    if (!table) return;
+  if (!table) return;
 
-    let doc;
-    if (created) {
-      const {
-        rows: [_doc],
-      } = await client.query<DocumentType & User>(
-        `SELECT d.id
-              , d.title
-              , h.description
-              , h.content
-              , h.license
-              , h.created
-              , u.email
-              , u.name
-              , u.image
-              , u."emailVerified"
-         FROM ${history} h
-         JOIN ${table} d 
-           ON d.id = h."docId"
-         JOIN "user" u
-           ON d."userId" = u.id
-        WHERE h."docId" = $1
-          AND h.created = $2
-          AND d.deleted IS NULL`,
-        [id, created],
-      );
-      doc = _doc;
-    } else {
-      const {
-        rows: [_doc],
-      } = await client.query<DocumentType & User>(
-        `SELECT d.title, d.description, d.license, d.created, d.updated, u.name, u.image, u.email, u."emailVerified"
-           FROM ${table} d
-           JOIN "user" u
-             ON u.id = d."userId"
-          WHERE d.id = $1
-            AND d.deleted IS NULL`,
-        [id],
-      );
-      doc = _doc;
-    }
-
-    return doc;
-  } catch (err) {
-    throw err;
-  } finally {
-    client.release();
+  let doc;
+  if (created) {
+    doc = await knex
+      .select({
+        id: "d.id",
+        title: "d.title",
+        description: "h.description",
+        content: "h.content",
+        license: "h.license",
+        created: "h.created",
+        email: "u.email",
+        name: "u.name",
+        image: "u.image",
+        emailVerified: "u.emailVerified",
+      })
+      .from({ h: history })
+      .join({ d: table }, "d.id", "=", "h.docId")
+      .join({ u: "user" }, "u.id", "=", "d.userId")
+      .whereNull("d.deleted")
+      .where({
+        "h.docId": id,
+        "h.created": created,
+      })
+      .first();
+  } else {
+    doc = await knex
+      .select({
+        title: "d.title",
+        description: "d.description",
+        license: "d.license",
+        created: "d.created",
+        updated: "d.updated",
+        name: "u.name",
+        image: "u.image",
+        email: "u.email",
+        emailVerified: "u.emailVerified",
+      })
+      .from({ d: table })
+      .join({ u: "user" }, "u.id", "=", "d.userId")
+      .whereNull("d.deleted")
+      .where({ "d.id": id });
   }
+
+  return doc;
 }
 
 export default async function WikiDocPage(ctx: PageProps<"/[lng]/[doctype]">) {
@@ -96,106 +91,136 @@ export default async function WikiDocPage(ctx: PageProps<"/[lng]/[doctype]">) {
 
   if (!id) return notFound();
 
-  const client = await pool.connect();
-  try {
-    const { table, history } = getTablesByDoctype(doctype);
-    if (!table) return notFound();
+  const { table, history } = getTablesByDoctype(doctype);
+  if (!table) return notFound();
 
-    let doc: DocumentType & User;
-    if (created) {
-      const {
-        rows: [_doc],
-      } = await client.query<DocumentType & User>(
-        `SELECT d.id
-              , d.title
-              , h."userId"
-              , h.category
-              , h.tags
-              , h.description
-              , h.content
-              , h.license
-              , h.created
-              , u.email
-              , u.name
-              , u.image
-              , u."emailVerified"
-         FROM ${history} h
-         JOIN ${table} d
-           ON d.id = h."docId"
-         JOIN "user" u
-           ON h."userId" = u.id
-        WHERE h."docId" = $1
-          AND h.created = $2
-          AND d.deleted IS NULL`,
-        [id, created],
-      );
-      doc = _doc;
+  let doc: DocumentType & User;
+  if (created) {
+    doc = await knex
+      .select({
+        id: "d.id",
+        title: "d.title",
+        category: "h.category",
+        tags: "h.tags",
+        description: "h.description",
+        content: "h.content",
+        license: "h.license",
+        created: "h.created",
+        email: "u.email",
+        name: "u.name",
+        image: "u.image",
+        emailVerified: "u.emailVerified",
+      })
+      .from({ h: history })
+      .join({ d: table }, "d.id", "=", "h.docId")
+      .join({ u: "user" }, "u.id", "=", "h.userId")
+      .whereNull("d.deleted")
+      .where({
+        "h.docId": id,
+        "h.created": created,
+      })
+      .first();
+  } else {
+    if (isDev) {
+      doc = await knex
+        .select({
+          id: "d.id",
+          title: "d.title",
+          description: "d.description",
+          content: "d.content",
+          license: "d.license",
+          category: "d.category",
+          tags: "d.tags",
+          created: "d.created",
+          updated: "d.updated",
+          userId: "d.userId",
+          email: "u.email",
+          name: "u.name",
+          image: "u.image",
+          emailVerified: "u.emailVerified",
+        })
+        .from({ d: table })
+        .join({ u: "user" }, "u.id", "=", "d.userId")
+        .whereNull("d.deleted")
+        .where({ "d.id": id })
+        .first();
     } else {
-      let sql = ``;
-      // 개발모드에서는 조회수 증가 쿼리를 실행하지 않음
-      if (isDev) {
-        sql = `SELECT d.id, d.title, d.description, d.content, d.license, d.category, d.tags, u."emailVerified", u.image, u.name, u.email, d."userId", d.created, d.updated
-                 FROM ${table} d
-                JOIN "user" u
-                  ON u.id = d."userId"
-               WHERE d.id = $1
-                 AND d.deleted IS NULL`;
-      } else {
-        sql = `WITH d AS (
-                              UPDATE ${table} t
-                                 SET t.view = t.view + 1
-                               WHERE t.id = $1
-                                 AND t.deleted IS NULL
-                           RETURNING t.id, t.title, t.description, t.content, t.license, t.category, t.tags, t."userId", t.created, t.updated
-                         )
-               SELECT d.id, d.title, d.description, d.content, d.license, d.category, d.tags, u.email, u.name, u.image, u."emailVerified", d."userId", d.created, d.updated
-                 FROM d
-                 JOIN "user" u
-                   ON u.id = d."userId"`;
-      }
-
-      const {
-        rows: [_doc],
-      } = await client.query<DocumentType & User>(sql, [id]);
-      doc = _doc;
+      doc = await knex
+        .with(
+          "d",
+          knex
+            .update({ view: knex.raw(`"t"."view" + 1`) })
+            .from({ t: table })
+            .whereNull("t.deleted")
+            .where({ "t.id": id })
+            .returning([
+              "t.id",
+              "t.title",
+              "t.description",
+              "t.content",
+              "t.license",
+              "t.category",
+              "t.tags",
+              "t.userId",
+              "t.created",
+              "t.updated",
+            ]),
+        )
+        .select({
+          id: "d.id",
+          title: "d.title",
+          description: "d.description",
+          content: "d.content",
+          license: "d.license",
+          category: "d.category",
+          tags: "d.tags",
+          email: "u.email",
+          name: "u.name",
+          image: "u.image",
+          emailVerified: "u.emailVerified",
+          userId: "d.userId",
+          created: "d.created",
+          updated: "d.updated",
+        })
+        .from("d")
+        .join({ u: "user" }, "u.id", "=", "d.userId")
+        .first();
     }
+  }
 
-    if (!doc) {
-      const breadcrumbs: Array<BreadcrumbItem> = [
-        { title: doctypeEnum.document === doctype ? t("wiki document") : t("wiki essay") },
-        { title: t("Not Found"), href: `${lng}/${doctype}/${id}` },
-      ];
+  if (!doc) {
+    const breadcrumbs: Array<BreadcrumbItem> = [
+      { title: doctypeEnum.document === doctype ? t("wiki document") : t("wiki essay") },
+      { title: t("Not Found"), href: `${lng}/${doctype}/${id}` },
+    ];
 
-      const guessTitle = (id as string).replaceAll("-", " ");
-      const content = `
+    const guessTitle = (id as string).replaceAll("-", " ");
+    const content = `
 ## 문서를 찾지 못했습니다.
 
 "${guessTitle}" 제목으로 등록된 ${t(doctype)}가 없습니다.
 
 가장 먼저 ${t(doctype)}를 [등록](${lng}/editor/write?title=${encodeURIComponent(guessTitle)}&type=${doctype})해보세요!`;
-      return (
-        <>
-          <Breadcrumb lng={lngParam} breadcrumbs={breadcrumbs} />
-          <FootnoteHighlighter />
-          <Document lng={lngParam} content={content.trim()} />
-        </>
-      );
-    }
-
-    const breadcrumbs: Array<BreadcrumbItem> = [
-      { title: doctypeEnum.document === doctype ? t("wiki document") : t("wiki essay") },
-      { title: doc.title, href: `${lng}/${doctype}/${doc.id}` },
-    ];
-
-    const session = await auth.api.getSession({ headers: await headers() });
     return (
       <>
         <Breadcrumb lng={lngParam} breadcrumbs={breadcrumbs} />
         <FootnoteHighlighter />
-        <Document lng={lngParam} doc={doc} doctype={doctype} session={session?.user} />
+        <Document lng={lngParam} content={content.trim()} />
       </>
     );
-  } finally {
-    client.release();
   }
+
+  const breadcrumbs: Array<BreadcrumbItem> = [
+    { title: doctypeEnum.document === doctype ? t("wiki document") : t("wiki essay") },
+    { title: doc.title, href: `${lng}/${doctype}/${doc.id}` },
+  ];
+
+  const session = await auth.api.getSession({ headers: await headers() });
+  return (
+    <>
+      <Breadcrumb lng={lngParam} breadcrumbs={breadcrumbs} />
+      <FootnoteHighlighter />
+      <Document lng={lngParam} doc={doc} doctype={doctype} session={session?.user} />
+    </>
+  );
 }

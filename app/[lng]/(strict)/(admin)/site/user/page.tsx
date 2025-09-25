@@ -3,7 +3,7 @@ import { Container, Viewport } from "@/components/core/Container";
 import { PageHeadline } from "@/components/core/PageHeadline";
 import { UserTable } from "@/components/core/table/UserTable";
 import { BreadcrumbItem } from "@/hooks/use-breadcrumbs";
-import { pool } from "@/lib/db";
+import { knex } from "@/lib/db";
 import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/next";
 import { User } from "@/lib/schema/user";
@@ -18,32 +18,33 @@ export default async function UserPage(ctx: PageProps<"/[lng]/me/documents">) {
     { title: "사용자관리", href: `${lng}/site/user` },
   ];
 
-  const client = await pool.connect();
-  try {
-    const { rows } = await client.query<User>(
-      `SELECT id, name, email, scope, "emailVerified", "createdAt"
-         FROM "user"
-     ORDER BY "createdAt" DESC`,
-    );
+  const rows = await knex
+    .select<User[]>({
+      id: "u.id",
+      name: "u.name",
+      email: "u.email",
+      scope: "u.scope",
+      emailVerified: "u.emailVerified",
+      createdAt: "u.createdAt",
+    })
+    .from({ u: "user" })
+    .orderBy("u.createdAt", "desc");
 
-    const { t } = await useTranslation(lngParam);
-    return (
-      <>
-        <Breadcrumb lng={lngParam} breadcrumbs={breadcrumbs} />
-        <Viewport>
-          <Container as="div" variant="wide" className="space-y-2">
-            <PageHeadline
-              prose
-              title={t("User Management")}
-              description={t("Manage users in this site")}
-            />
+  const { t } = await useTranslation(lngParam);
+  return (
+    <>
+      <Breadcrumb lng={lngParam} breadcrumbs={breadcrumbs} />
+      <Viewport>
+        <Container as="div" variant="wide" className="space-y-2">
+          <PageHeadline
+            prose
+            title={t("User Management")}
+            description={t("Manage users in this site")}
+          />
 
-            <UserTable rows={rows} />
-          </Container>
-        </Viewport>
-      </>
-    );
-  } finally {
-    client.release();
-  }
+          <UserTable rows={rows} />
+        </Container>
+      </Viewport>
+    </>
+  );
 }

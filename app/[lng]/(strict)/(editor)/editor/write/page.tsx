@@ -1,14 +1,14 @@
 import { headers } from "next/headers";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import { Breadcrumb } from "@/components/core/Breadcrumb";
 import MdxEditor from "@/components/core/MdxEditor";
 import { FootnoteHighlighter } from "@/components/core/MdxViewer/FootnoteHighlighter";
 import { BreadcrumbItem } from "@/hooks/use-breadcrumbs";
 import { auth } from "@/lib/auth/server";
-import { pool } from "@/lib/db";
+import { knex } from "@/lib/db";
 import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/next";
-import { Doctype, Document, getTablesByDoctype } from "@/lib/schema/document";
+import { Doctype, getTablesByDoctype } from "@/lib/schema/document";
 import { localePrefix } from "@/lib/url";
 
 export default async function WritePage(ctx: PageProps<"/[lng]/editor/write">) {
@@ -53,51 +53,54 @@ export default async function WritePage(ctx: PageProps<"/[lng]/editor/write">) {
   }
 
   // 기존 문서 편집
-  const client = await pool.connect();
-  try {
-    const session = (await auth.api.getSession({ headers: await headers() }))!;
 
-    const { table } = getTablesByDoctype(doctype);
-    if (!table) return notFound();
+  const session = (await auth.api.getSession({ headers: await headers() }))!;
 
-    const {
-      rows: [doc],
-    } = await client.query<Document>(
-      `SELECT d.id, d.title, d.description, d.content, d.license, d.created, d.updated, d."userId", d.category, d.tags
-         FROM ${table} d
-         JOIN "user" u
-           ON u.id = d."userId"
-        WHERE d.id = $1
-          AND d."userId" = $2
-          AND d.deleted IS NULL`,
-      [id, session.user.id],
-    );
+  const { table } = getTablesByDoctype(doctype);
+  if (!table) return notFound();
 
-    if (!doc) return notFound();
+  const doc = await knex
+    .select({
+      id: "d.id",
+      title: "d.title",
+      description: "d.description",
+      content: "d.content",
+      license: "d.license",
+      created: "d.created",
+      updated: "d.updated",
+      userId: "d.userId",
+      category: "d.category",
+      tags: "d.tags",
+    })
+    .from({ d: table })
+    .join({ u: "user" }, "u.id", "=", "d.userId")
+    .whereNull("d.deleted")
+    .andWhere("d.id", id)
+    .andWhere("d.userId", session.user.id)
+    .first();
 
-    const { t } = await useTranslation(lngParam);
+  if (!doc) return notFound();
 
-    const breadcrumbs: Array<BreadcrumbItem> = [
-      { title: t("editor") },
-      {
-        title: doc.title,
-        href: `${lng}/editor/write?${new URLSearchParams({ id, type: doctype })}`,
-      },
-    ];
+  const { t } = await useTranslation(lngParam);
 
-    return (
-      <>
-        <Breadcrumb lng={lngParam} breadcrumbs={breadcrumbs} />
-        <MdxEditor
-          key={doc.id}
-          lng={lngParam}
-          doc={doc}
-          doctype={doctype}
-          deletable={session.user.id === doc.userId}
-        />
-      </>
-    );
-  } finally {
-    client.release();
-  }
+  const breadcrumbs: Array<BreadcrumbItem> = [
+    { title: t("editor") },
+    {
+      title: doc.title,
+      href: `${lng}/editor/write?${new URLSearchParams({ id, type: doctype })}`,
+    },
+  ];
+
+  return (
+    <>
+      <Breadcrumb lng={lngParam} breadcrumbs={breadcrumbs} />
+      <MdxEditor
+        key={doc.id}
+        lng={lngParam}
+        doc={doc}
+        doctype={doctype}
+        deletable={session.user.id === doc.userId}
+      />
+    </>
+  );
 }

@@ -65,6 +65,7 @@
     "i18next-http-backend": "^3.0.2",
     "i18next-resources-to-backend": "^1.2.1",
     "i18next-scanner": "^4.6.0",
+    "knex": "^3.1.0",
     "knip": "^5.64.0",
     "lint-staged": "^16.2.0",
     "lodash.debounce": "^4.0.8",

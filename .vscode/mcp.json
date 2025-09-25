@@ -1,0 +1,16 @@
+{
+  "servers": {
+    "shadcn": {
+      "url": "https://www.shadcn.io/api/mcp"
+    },
+    "context7": {
+      "command": "docker",
+      "args": ["run", "-i", "--rm", "-e", "MCP_TRANSPORT=stdio", "mcp/context7"]
+    },
+    "sequentialthinking": {
+      "command": "docker",
+      "args": ["run", "-i", "--rm", "mcp/sequentialthinking"]
+    }
+  },
+  "inputs": []
+}

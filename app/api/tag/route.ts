@@ -1,22 +1,18 @@
 import { NextRequest } from "next/server";
 import { auth } from "@/lib/auth/server";
-import { pool } from "@/lib/db";
-import { Tag, TagForm } from "@/lib/schema/tag";
+import { knex } from "@/lib/db";
+import { TagForm } from "@/lib/schema/tag";
 import { scopeEnum } from "@/lib/schema/user";
 
 export async function GET(req: NextRequest) {
   const category = req.nextUrl.searchParams.get("category");
 
-  const client = await pool.connect();
-  try {
-    const { rows } = await client.query<Tag>(`SELECT id, category FROM tag WHERE category = $1`, [
-      category,
-    ]);
+  const rows = await knex
+    .select({ id: "t.id", category: "t.category" })
+    .from({ t: "tag" })
+    .where({ category });
 
-    return Response.json(rows, { status: 200 });
-  } finally {
-    client.release();
-  }
+  return Response.json(rows, { status: 200 });
 }
 
 export async function POST(req: NextRequest) {
@@ -24,16 +20,11 @@ export async function POST(req: NextRequest) {
   if (!session) return new Response(null, { status: 401 });
   if (session.user.scope < scopeEnum.admin) return new Response(null, { status: 403 });
 
-  const client = await pool.connect();
-  try {
-    const { id, category }: TagForm = await req.json();
+  const { id, category }: TagForm = await req.json();
 
-    await client.query(`INSERT INTO tag (id, category) VALUES ($1, $2)`, [id, category]);
+  await knex.insert({ id, category }).into("tag");
 
-    return new Response(null, { status: 201 });
-  } finally {
-    client.release();
-  }
+  return new Response(null, { status: 201 });
 }
 
 export async function PUT(req: NextRequest) {
@@ -41,23 +32,20 @@ export async function PUT(req: NextRequest) {
   if (!session) return new Response(null, { status: 401 });
   if (session.user.scope < scopeEnum.admin) return new Response(null, { status: 403 });
 
-  const client = await pool.connect();
-  try {
-    const { id, category, name }: TagForm = await req.json();
+  const { id, category, name }: TagForm = await req.json();
 
-    await client.query(
-      `UPDATE tag
-          SET id = $1
-            , updated = extract(epoch FROM current_timestamp) * 1000
-          WHERE category = $2
-          AND id = $3`,
-      [name, category, id],
-    );
+  await knex("tag")
+    .update({
+      id: name,
+      updated: knex.raw("extract(epoch FROM current_timestamp) * 1000"),
+    })
+    .where({ category, id });
 
-    return new Response(null, { status: 204 });
-  } finally {
-    client.release();
-  }
+  await knex("essay")
+    .update({ tags: knex.raw("array_replace(tags, ?, ?)", [id, name]) })
+    .whereRaw(knex.raw("? = ANY (tags)", [id]));
+
+  return new Response(null, { status: 204 });
 }
 
 export async function DELETE(req: NextRequest) {
@@ -68,12 +56,7 @@ export async function DELETE(req: NextRequest) {
   const category = req.nextUrl.searchParams.get("category");
   const id = req.nextUrl.searchParams.get("id");
 
-  const client = await pool.connect();
-  try {
-    await client.query(`DELETE FROM tag WHERE category = $1 AND id = $2`, [category, id]);
+  await knex("tag").where({ category, id }).del();
 
-    return new Response(null, { status: 204 });
-  } finally {
-    client.release();
-  }
+  return new Response(null, { status: 204 });
 }

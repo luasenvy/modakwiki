@@ -7,7 +7,7 @@ import { dirname, join } from "path";
 import sharp from "sharp";
 import { openai as openaiConfig, storage } from "@/config";
 import { auth } from "@/lib/auth/server";
-import { pool } from "@/lib/db";
+import { knex } from "@/lib/db";
 import { getCurrentFilename } from "@/lib/file";
 import { optimization } from "@/lib/image";
 import { scopeEnum } from "@/lib/schema/user";
@@ -18,37 +18,34 @@ const trashDocroot = join(storage.root, "images_trash");
 export async function GET(req: NextRequest) {
   const uri = req.nextUrl.searchParams.get("uri");
 
-  const client = await pool.connect();
-  try {
-    const { rows, rowCount } = await client.query(
-      `SELECT i.id
-            , i.license
-            , i.uri
-            , i.portrait
-            , i.size
-            , i.width
-            , i.height
-            , i.name
-            , i.author
-            , i.ref
-            , i."userId"
-            , u.name AS "userName"
-            , i.created
-         FROM image i
-        JOIN "user" u
-          ON i."userId" = u.id
-        WHERE i.deleted IS NULL
-          ${uri ? "AND i.uri = $1" : ""}
-     ORDER BY i.created DESC`,
-      uri ? [uri] : undefined,
-    );
+  const imagesQuery = knex
+    .select({
+      id: "i.id",
+      license: "i.license",
+      uri: "i.uri",
+      portrait: "i.portrait",
+      size: "i.size",
+      width: "i.width",
+      height: "i.height",
+      name: "i.name",
+      author: "i.author",
+      ref: "i.ref",
+      userId: "i.userId",
+      userName: "u.name",
+      created: "i.created",
+    })
+    .from({ i: "image" })
+    .join({ u: "user" }, "u.id", "=", "i.userId")
+    .whereNull("i.deleted")
+    .orderBy("i.created", "desc");
 
-    if (!rowCount) return new Response(null, { status: 404 });
+  if (uri) imagesQuery.andWhere({ "i.uri": uri });
 
-    return Response.json(rows);
-  } finally {
-    client.release();
-  }
+  const rows = await imagesQuery;
+
+  if (!rows.length) return new Response(null, { status: 404 });
+
+  return Response.json(rows);
 }
 
 export async function POST(req: NextRequest) {
@@ -64,7 +61,6 @@ export async function POST(req: NextRequest) {
   const refs = formData.getAll("ref") || [];
 
   const saves = [];
-  const values = [];
   const images = [];
 
   if (Array.from(files).some((file) => !(file instanceof File)))
@@ -122,7 +118,7 @@ export async function POST(req: NextRequest) {
     const author = authors[i] as string;
     const license = licenses[i] as string;
 
-    const ref = (refs[i] as string | undefined)?.slice(0, 200) || null;
+    const ref = refs[i];
     const filetype = await fileTypeFromBuffer(buff);
     const original = sharp(buff);
     const filepath = await getCurrentFilename(docroot);
@@ -135,22 +131,24 @@ export async function POST(req: NextRequest) {
     } = await optimization(filepath, original, { mime: filetype?.mime });
 
     const uri = filepath.replace(docroot, "");
-    saves.push({ name, uri, width, height, author, ref });
-    values.push(
-      `('${uri}', ${isPortrait}, ${size}, ${width}, ${height}, '${author}', '${license}', '${ref}', '${name.replace(/\.[^.]+$/, ".webp")}', '${session.user.id}')`,
-    );
+
+    saves.push({
+      name: name.replace(/\.[^.]+$/, ".webp"),
+      uri,
+      size,
+      width,
+      height,
+      author,
+      license,
+      userId: session.user.id,
+      ref,
+      portrait: isPortrait,
+    });
   }
 
-  const client = await pool.connect();
-  try {
-    await client.query(
-      `INSERT INTO image (uri, portrait, size, width, height, author, license, ref, name, "userId") VALUES ${values.join(",")}`,
-    );
+  await knex.insert(saves).into("image");
 
-    return Response.json(saves, { status: 201 });
-  } finally {
-    client.release();
-  }
+  return Response.json(saves, { status: 201 });
 }
 
 export async function DELETE(req: NextRequest) {
@@ -162,29 +160,21 @@ export async function DELETE(req: NextRequest) {
 
   if (!id) return new Response("Bad Request", { status: 400 });
 
-  const client = await pool.connect();
-  try {
-    const {
-      rows: [{ uri }],
-    } = await client.query(
-      `UPDATE image
-          SET deleted = extract(epoch FROM current_timestamp) * 1000
-        WHERE id = $1
-          AND deleted IS NULL
-    RETURNING uri`,
-      [id],
-    );
+  const [{ uri }] = await knex("image")
+    .update({
+      deleted: knex.raw("extract(epoch FROM current_timestamp) * 1000"),
+    })
+    .whereNull("deleted")
+    .andWhere({ id })
+    .returning("uri");
 
-    const pathname = join(trashDocroot, uri);
+  const pathname = join(trashDocroot, uri);
 
-    if (!existsSync(pathname)) await mkdir(dirname(pathname), { recursive: true });
+  if (!existsSync(pathname)) await mkdir(dirname(pathname), { recursive: true });
 
-    await rename(join(docroot, uri), pathname);
-    await rename(join(docroot, `${uri}-t`), `${pathname}-t`);
-    await rename(join(docroot, `${uri}-o`), `${pathname}-o`);
+  await rename(join(docroot, uri), pathname);
+  await rename(join(docroot, `${uri}-t`), `${pathname}-t`);
+  await rename(join(docroot, `${uri}-o`), `${pathname}-o`);
 
-    return new Response(null, { status: 204 });
-  } finally {
-    client.release();
-  }
+  return new Response(null, { status: 204 });
 }

@@ -1,11 +1,11 @@
 import { betterAuth } from "better-auth";
 import { captcha, oneTap } from "better-auth/plugins";
 import { betterAuth as authConfig } from "@/config";
-import { pool as database } from "@/lib/db";
+import { pool } from "@/lib/db";
 import { scopeEnum } from "@/lib/schema/user";
 
 export const auth = betterAuth({
-  database,
+  database: pool,
   databaseHooks: {
     user: {
       create: {
