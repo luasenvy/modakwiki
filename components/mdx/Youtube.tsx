@@ -6,7 +6,7 @@ export function Youtube({ v }: YoutubeProps) {
   const videos = v.split(",").map((vid) => vid.substring(2, vid.length - 1).trim());
 
   return (
-    <div className="my-4 flex items-center gap-4 max-md:flex-col">
+    <div className="my-4 flex items-center gap-4 max-xl:flex-col">
       {videos.map((videoId) => (
         <iframe
           key={`video-${videoId}`}

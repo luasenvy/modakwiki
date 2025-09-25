@@ -1,4 +1,7 @@
-import { License, licenseEnum, licenseNameEnum } from "@/lib/license";
+"use client";
+
+import { useTranslation } from "@/lib/i18n/react";
+import { License, licenseEnum } from "@/lib/license";
 
 interface CopyProtectionProps {
   url: string;
@@ -13,6 +16,8 @@ export function useCopyProtection({
   author,
   license = licenseEnum.ccbyncsa,
 }: CopyProtectionProps) {
+  const { t } = useTranslation();
+
   return function handleCopy(e: ClipboardEvent) {
     const selection = document.getSelection();
     const authors = Array.isArray(author) ? author : [author].filter(Boolean);
@@ -29,7 +34,7 @@ export function useCopyProtection({
             text += `\n출처${i + 1}: ${link}`;
           });
         }
-        text += `\n\n이 내용은 "${licenseNameEnum[license]}" 라이선스로 배포되었습니다.`;
+        text += `\n\n이 내용은 "${t(license)}" 라이선스로 배포되었습니다.`;
 
         e.clipboardData!.setData("text", text);
         e.preventDefault();
