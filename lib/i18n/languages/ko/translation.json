@@ -190,5 +190,9 @@
   "Usage": "사용법",
   "syntax": "문법",
   "about": "소개",
-  "welcome! 🥳": "환영합니다! 🥳"
+  "welcome! 🥳": "환영합니다! 🥳",
+  "me": "내 정보",
+  "documents": "문서함",
+  "search results": "검색결과",
+  "total {{docCount}} documents and {{essayCount}} essays": "총 {{docCount}}개의 문서와 {{essayCount}}개의 에세이가 있습니다."
 }

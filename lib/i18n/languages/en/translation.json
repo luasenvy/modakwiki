@@ -208,5 +208,9 @@
   "Usage": "Usage",
   "syntax": "syntax",
   "about": "about",
-  "welcome! 🥳": "welcome! 🥳"
+  "welcome! 🥳": "welcome! 🥳",
+  "me": "me",
+  "documents": "documents",
+  "search results": "search results",
+  "total {{docCount}} documents and {{essayCount}} essays": "total {{docCount}} documents and {{essayCount}} essays"
 }

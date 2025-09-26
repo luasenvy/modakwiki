@@ -14,6 +14,18 @@ import { doctypeEnum } from "@/lib/schema/document";
 import { localePrefix } from "@/lib/url";
 
 const pageSize = 10;
+const columns = {
+  id: "d.id",
+  title: "d.title",
+  preview: "d.preview",
+  created: "d.created",
+  updated: "d.updated",
+  name: "u.name",
+  image: "u.image",
+  email: "u.email",
+  emailVerified: "u.emailVerified",
+};
+
 export default async function SearchPage(ctx: PageProps<"/[lng]/search">) {
   const lngParam = (await ctx.params).lng as Language;
   const searchParams = await ctx.searchParams;
@@ -28,45 +40,21 @@ export default async function SearchPage(ctx: PageProps<"/[lng]/search">) {
   if (!Array.isArray(tags)) tags = [tags].filter(Boolean);
 
   const counting = knex.count({ count: "*" }).from({ d: "document" }).whereNull("d.deleted");
-
-  const selecting = knex
-    .select({
-      id: "d.id",
-      title: "d.title",
-      preview: "d.preview",
-      type: "d.type",
-      created: "d.created",
-      updated: "d.updated",
-      name: "u.name",
-      image: "u.image",
-      email: "u.email",
-      emailVerified: "u.emailVerified",
-    })
-    .from({ d: "document" })
-    .join({ u: "user" }, "d.userId", "=", "u.id")
-    .whereNull("d.deleted")
-    .orderBy("d.created", "desc");
-
   if (search) {
     counting.andWhere((q) => {
       q.where("d.title", "ILIKE", `%${search}%`)
         .orWhere("d.description", "ILIKE", `%${search}%`)
         .orWhere("d.content", "ILIKE", `%${search}%`);
     });
-    selecting.andWhere((q) => {
-      q.where("d.title", "ILIKE", `%${search}%`)
-        .orWhere("d.description", "ILIKE", `%${search}%`)
-        .orWhere("d.content", "ILIKE", `%${search}%`);
-    });
   }
-  if (category) {
-    counting.andWhere("d.category", category);
-    selecting.andWhere("d.category", category);
-  }
-  if (tags.length) {
-    counting.andWhere("d.tags", "&&", tags);
-    selecting.andWhere("d.tags", "&&", tags);
-  }
+  if (category) counting.andWhere("d.category", category);
+  if (tags.length) counting.andWhere("d.tags", "&&", tags);
+
+  const selecting = counting
+    .clone()
+    .clearSelect()
+    .select({ ...columns, type: knex.raw(`'${doctypeEnum.document}'`) })
+    .join({ u: "user" }, "d.userId", "=", "u.id");
 
   const [{ count: docCount }, { count: essayCount }] = await knex.unionAll([
     counting,
@@ -74,8 +62,20 @@ export default async function SearchPage(ctx: PageProps<"/[lng]/search">) {
   ]);
 
   const rows = await knex
-    .unionAll([selecting, selecting.clone().from({ d: "essay" })])
-    .orderBy("created", "desc")
+    .select("*")
+    .from(
+      knex
+        .unionAll([
+          selecting,
+          selecting
+            .clone()
+            .clearSelect()
+            .select({ ...columns, type: knex.raw(`'${doctypeEnum.essay}'`) })
+            .from({ d: "essay" }),
+        ])
+        .as("o"),
+    )
+    .orderBy("o.created", "desc")
     .offset((page - 1) * pageSize)
     .limit(pageSize);
 
@@ -90,31 +90,25 @@ export default async function SearchPage(ctx: PageProps<"/[lng]/search">) {
       <Breadcrumb lng={lngParam} breadcrumbs={breadcrumbs} />
       <Viewport>
         <Container as="div" variant="aside">
-          {rows.length > 0 ? (
-            <>
-              <DocumentFilter lng={lngParam} searchParams={searchParams} />
-              <DocumentList lng={lngParam} rows={rows} doctype={doctypeEnum.essay} />
-              <Pagination
-                className="mt-6 sm:col-span-2 lg:col-span-3"
-                page={page}
-                pageSize={pageSize}
-                total={Number(docCount) + Number(essayCount)}
-                searchParams={searchParams}
-              />
-            </>
-          ) : (
-            t("No results found.")
-          )}
+          <DocumentFilter lng={lngParam} searchParams={searchParams} />
+          <DocumentList lng={lngParam} rows={rows} showDoctype />
+          <Pagination
+            className="mt-6 sm:col-span-2 lg:col-span-3"
+            page={page}
+            pageSize={pageSize}
+            total={Number(docCount) + Number(essayCount)}
+            searchParams={searchParams}
+          />
         </Container>
 
         <div className="sticky top-0 flex h-[calc(100dvh_-_var(--spacing)_*_12)] w-[286px] shrink-0 flex-col pt-8 pr-4 pl-2 [mask-image:linear-gradient(to_bottom,transparent,white_16px,white_calc(100%-16px),transparent)] max-xl:hidden">
           <div className="mb-2 flex items-center gap-2">
             <Info className="size-4" />
-            <p className="m-0 text-muted-foreground text-sm">검색결과</p>
+            <p className="m-0 text-muted-foreground text-sm">{t("search results")}</p>
           </div>
 
           <div className="relative ms-px min-h-0 overflow-auto py-3 text-sm [scrollbar-width:none]">
-            총 {docCount}개의 문서와 {essayCount}개의 에세이가 있습니다.
+            {t("total documents", { docCount, essayCount })}
           </div>
 
           <Advertisement className="py-6" />

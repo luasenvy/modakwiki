@@ -16,7 +16,7 @@ interface SearchFormProps extends React.ComponentProps<"form"> {
 
 export function SearchForm({ lng: lngParam, ...props }: SearchFormProps) {
   const router = useRouter();
-  const defaultTerm = useSearchParams().get("term") ?? "";
+  const defaultTerm = useSearchParams().get("search") ?? "";
 
   const { t } = useTranslation(lngParam);
 
@@ -25,10 +25,10 @@ export function SearchForm({ lng: lngParam, ...props }: SearchFormProps) {
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const term = new FormData(e.currentTarget).get("search") as string;
-    if (!term) return;
+    const search = new FormData(e.currentTarget).get("search") as string;
+    if (!search) return;
 
-    router.push(`${lng}/search?${new URLSearchParams({ term })}`);
+    router.push(`${lng}/search?${new URLSearchParams({ search })}`);
   };
 
   return (

@@ -30,7 +30,19 @@ export default async function SearchPage(ctx: PageProps<"/[lng]/essay">) {
 
   const counting = knex.count({ count: "*" }).from({ e: "essay" }).whereNull("deleted");
 
-  const selecting = knex
+  if (search)
+    counting.andWhere((q) => {
+      q.where("e.title", "ILIKE", `%${search}%`)
+        .orWhere("e.description", "ILIKE", `%${search}%`)
+        .orWhere("e.content", "ILIKE", `%${search}%`);
+    });
+
+  if (category) counting.andWhere("e.category", category);
+  if (tags.length) counting.andWhere("e.tags", "&&", tags);
+
+  const selecting = counting
+    .clone()
+    .clearSelect()
     .select(
       `e.id`,
       `e.title`,
@@ -45,34 +57,10 @@ export default async function SearchPage(ctx: PageProps<"/[lng]/essay">) {
       `e.tags`,
       `e.created`,
     )
-    .from({ e: "essay" })
     .join({ u: "user" }, `e.userId`, `u.id`)
-    .whereNull("e.deleted")
     .orderBy("e.created", "desc")
     .offset((page - 1) * pageSize)
     .limit(pageSize);
-
-  if (search) {
-    counting.andWhere((q) => {
-      q.where("e.title", "ILIKE", `%${search}%`)
-        .orWhere("e.description", "ILIKE", `%${search}%`)
-        .orWhere("e.content", "ILIKE", `%${search}%`);
-    });
-    selecting.andWhere((q) => {
-      q.where("e.title", "ILIKE", `%${search}%`)
-        .orWhere("e.description", "ILIKE", `%${search}%`)
-        .orWhere("e.content", "ILIKE", `%${search}%`);
-    });
-  }
-
-  if (category) {
-    counting.andWhere("e.category", category);
-    selecting.andWhere("e.category", category);
-  }
-  if (tags.length) {
-    counting.andWhere("e.tags", "&&", tags);
-    selecting.andWhere("e.tags", "&&", tags);
-  }
 
   const [{ count }] = await counting;
   const rows = await selecting;

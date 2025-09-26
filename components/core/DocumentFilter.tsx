@@ -39,7 +39,6 @@ interface DocumentFilterProps {
 export function DocumentFilter({ lng: lngParam, searchParams }: DocumentFilterProps) {
   const router = useRouter();
   const { t } = useTranslation(lngParam);
-  const lng = localePrefix(lngParam);
 
   const [searchKeyword, setSearchKeyword] = useState<string>(String(searchParams.search || ""));
   const [searchCategory, setSearchCategory] = useState<string>(String(searchParams.category || ""));
@@ -69,7 +68,7 @@ export function DocumentFilter({ lng: lngParam, searchParams }: DocumentFilterPr
 
     searchTags.forEach((tag) => baseSearchParams.append("tags", tag));
 
-    router.push(`${lng}/essay?${baseSearchParams}`);
+    router.push(`?${baseSearchParams}`);
   };
 
   const handleKeydownInput = (e: React.KeyboardEvent<HTMLInputElement>) => {
