@@ -2,107 +2,106 @@ import { Info } from "lucide-react";
 import { Breadcrumb } from "@/components/core/Breadcrumb";
 import { Advertisement } from "@/components/core/button/Advertisement";
 import { Container, Viewport } from "@/components/core/Container";
+import { DocumentFilter } from "@/components/core/DocumentFilter";
 import { DocumentList } from "@/components/core/DocumentList";
+import { Pagination } from "@/components/core/Pagination";
+import { site } from "@/config";
 import { BreadcrumbItem } from "@/hooks/use-breadcrumbs";
 import { knex } from "@/lib/db";
 import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/next";
-import { Document as DocumentType, doctypeEnum } from "@/lib/schema/document";
-import { User } from "@/lib/schema/user";
+import { doctypeEnum } from "@/lib/schema/document";
 import { localePrefix } from "@/lib/url";
 
+const pageSize = 10;
 export default async function SearchPage(ctx: PageProps<"/[lng]/search">) {
   const lngParam = (await ctx.params).lng as Language;
+  const searchParams = await ctx.searchParams;
+
   const lng = localePrefix(lngParam);
-  const term = (await ctx.searchParams).term;
 
-  const [{ count: docCount }, { count: essayCount }] = await knex.select("o.count").fromRaw(
-    knex.raw(
-      `(
-         SELECT COUNT(*) AS count
-           FROM document
-          WHERE deleted IS NULL
-            AND (title ILIKE :term OR content ILIKE :term)
- 
-      UNION ALL
-  
-         SELECT COUNT(*) AS count
-           FROM essay
-          WHERE deleted IS NULL
-            AND (title ILIKE :term OR content ILIKE :term)
-        ) as o`,
-      { term: `%${term}%` },
-    ),
-  );
+  const page = Number(searchParams.page ?? "1");
+  const search = searchParams.search || "";
+  const category = searchParams.category || "";
+  let tags = searchParams.tags || [];
 
-  const rows: Array<DocumentType & User> = await knex
+  if (!Array.isArray(tags)) tags = [tags].filter(Boolean);
+
+  const counting = knex.count({ count: "*" }).from({ d: "document" }).whereNull("d.deleted");
+
+  const selecting = knex
     .select({
-      id: "id",
-      title: "title",
-      preview: "preview",
-      type: "type",
-      created: "created",
-      updated: "updated",
-      name: "name",
-      image: "image",
-      email: "email",
-      emailVerified: "emailVerified",
+      id: "d.id",
+      title: "d.title",
+      preview: "d.preview",
+      type: "d.type",
+      created: "d.created",
+      updated: "d.updated",
+      name: "u.name",
+      image: "u.image",
+      email: "u.email",
+      emailVerified: "u.emailVerified",
     })
-    .fromRaw(
-      knex.raw(
-        `(
-           SELECT d.id
-                , d.title
-                , d.preview
-                , '${doctypeEnum.document}' AS type
-                , d.created
-                , d.updated
-                , u.name
-                , u.image
-                , u.email
-                , u."emailVerified"
-             FROM document d
-             JOIN "user" u
-               ON d."userId" = u.id
-            WHERE d.deleted IS NULL
-              AND (d.title ILIKE :term OR d.content ILIKE :term)
-           
-           UNION ALL
-      
-           SELECT e.id
-                , e.title
-                , e.preview
-                , '${doctypeEnum.essay}' AS type
-                , e.created
-                , e.updated
-                , u.name
-                , u.image
-                , u.email
-                , u."emailVerified"
-             FROM essay e
-             JOIN "user" u
-               ON e."userId" = u.id
-            WHERE e.deleted IS NULL
-              AND (e.title ILIKE :term OR e.content ILIKE :term)
-        ) as o`,
-        { term: `%${term}%` },
-      ),
-    );
+    .from({ d: "document" })
+    .join({ u: "user" }, "d.userId", "=", "u.id")
+    .whereNull("d.deleted")
+    .orderBy("d.created", "desc");
+
+  if (search) {
+    counting.andWhere((q) => {
+      q.where("d.title", "ILIKE", `%${search}%`)
+        .orWhere("d.description", "ILIKE", `%${search}%`)
+        .orWhere("d.content", "ILIKE", `%${search}%`);
+    });
+    selecting.andWhere((q) => {
+      q.where("d.title", "ILIKE", `%${search}%`)
+        .orWhere("d.description", "ILIKE", `%${search}%`)
+        .orWhere("d.content", "ILIKE", `%${search}%`);
+    });
+  }
+  if (category) {
+    counting.andWhere("d.category", category);
+    selecting.andWhere("d.category", category);
+  }
+  if (tags.length) {
+    counting.andWhere("d.tags", "&&", tags);
+    selecting.andWhere("d.tags", "&&", tags);
+  }
+
+  const [{ count: docCount }, { count: essayCount }] = await knex.unionAll([
+    counting,
+    counting.clone().from({ d: "essay" }),
+  ]);
+
+  const rows = await knex
+    .unionAll([selecting, selecting.clone().from({ d: "essay" })])
+    .orderBy("created", "desc")
+    .offset((page - 1) * pageSize)
+    .limit(pageSize);
 
   const { t } = await useTranslation(lngParam);
   const breadcrumbs: Array<BreadcrumbItem> = [
-    { title: t("editor") },
+    { title: t(site.name) },
     { title: t("search"), href: `${lng}/search` },
   ];
 
   return (
     <>
       <Breadcrumb lng={lngParam} breadcrumbs={breadcrumbs} />
-
       <Viewport>
         <Container as="div" variant="aside">
           {rows.length > 0 ? (
-            <DocumentList lng={lngParam} rows={rows} showDoctype />
+            <>
+              <DocumentFilter lng={lngParam} searchParams={searchParams} />
+              <DocumentList lng={lngParam} rows={rows} doctype={doctypeEnum.essay} />
+              <Pagination
+                className="mt-6 sm:col-span-2 lg:col-span-3"
+                page={page}
+                pageSize={pageSize}
+                total={Number(docCount) + Number(essayCount)}
+                searchParams={searchParams}
+              />
+            </>
           ) : (
             t("No results found.")
           )}
@@ -115,7 +114,7 @@ export default async function SearchPage(ctx: PageProps<"/[lng]/search">) {
           </div>
 
           <div className="relative ms-px min-h-0 overflow-auto py-3 text-sm [scrollbar-width:none]">
-            총 {docCount}개 문서와 {essayCount}개 에세이가 검색되었습니다.
+            총 {docCount}개의 문서와 {essayCount}개의 에세이가 있습니다.
           </div>
 
           <Advertisement className="py-6" />

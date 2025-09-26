@@ -11,9 +11,8 @@ import { BreadcrumbItem } from "@/hooks/use-breadcrumbs";
 import { knex } from "@/lib/db";
 import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/next";
-import { Doctype, Document as DocumentType, doctypeEnum } from "@/lib/schema/document";
-import { User } from "@/lib/schema/user";
-import { getSearchParamsFromObject, localePrefix, pickSearchParams } from "@/lib/url";
+import { doctypeEnum } from "@/lib/schema/document";
+import { localePrefix, pickSearchParams } from "@/lib/url";
 
 const pageSize = 10;
 export default async function SearchPage(ctx: PageProps<"/[lng]/essay">) {
@@ -29,21 +28,9 @@ export default async function SearchPage(ctx: PageProps<"/[lng]/essay">) {
   const lngParam = (await ctx.params).lng as Language;
   const lng = localePrefix(lngParam);
 
-  const countQuery = knex.count({ count: "*" }).from({ e: "essay" }).whereNull("deleted");
+  const counting = knex.count({ count: "*" }).from({ e: "essay" }).whereNull("deleted");
 
-  if (search) {
-    countQuery.andWhere((q) => {
-      q.where("e.title", "ILIKE", `%${search}%`)
-        .orWhere("e.description", "ILIKE", `%${search}%`)
-        .orWhere("e.content", "ILIKE", `%${search}%`);
-    });
-  }
-  if (category) countQuery.andWhere("e.category", category);
-  if (tags.length) countQuery.andWhere("e.tags", "&&", tags);
-
-  const [{ count }] = await countQuery;
-
-  const rowsQuery = knex
+  const selecting = knex
     .select(
       `e.id`,
       `e.title`,
@@ -66,17 +53,29 @@ export default async function SearchPage(ctx: PageProps<"/[lng]/essay">) {
     .limit(pageSize);
 
   if (search) {
-    rowsQuery.andWhere((q) => {
+    counting.andWhere((q) => {
+      q.where("e.title", "ILIKE", `%${search}%`)
+        .orWhere("e.description", "ILIKE", `%${search}%`)
+        .orWhere("e.content", "ILIKE", `%${search}%`);
+    });
+    selecting.andWhere((q) => {
       q.where("e.title", "ILIKE", `%${search}%`)
         .orWhere("e.description", "ILIKE", `%${search}%`)
         .orWhere("e.content", "ILIKE", `%${search}%`);
     });
   }
 
-  if (category) rowsQuery.andWhere("e.category", category);
-  if (tags.length) rowsQuery.andWhere("e.tags", "&&", tags);
+  if (category) {
+    counting.andWhere("e.category", category);
+    selecting.andWhere("e.category", category);
+  }
+  if (tags.length) {
+    counting.andWhere("e.tags", "&&", tags);
+    selecting.andWhere("e.tags", "&&", tags);
+  }
 
-  const rows = await rowsQuery;
+  const [{ count }] = await counting;
+  const rows = await selecting;
 
   const { t } = await useTranslation(lngParam);
 

@@ -34,6 +34,12 @@ export default async function HowToPage(ctx: PageProps<"/[lng]/editor/syntax">) 
 
   const { count } = (await knex.count({ count: "*" }).from("image").whereNull("deleted").first())!;
 
+  const counting = knex
+    .count({ count: "*" })
+    .from({ d: "document" })
+    .whereNull("d.deleted")
+    .andWhereRaw(knex.raw(`d.content ilike '%' || i.uri || '%'`));
+
   const rows: Array<ImageType & { usedCount: number }> = await knex
     .select({
       id: "i.id",
@@ -51,17 +57,9 @@ export default async function HowToPage(ctx: PageProps<"/[lng]/editor/syntax">) 
       ref: "i.ref",
       userId: "i.userId",
       userName: "u.name",
-      usedCount: knex.sum({ count: "o.count" }).fromRaw(`(
-                  SELECT COUNT(*) as count
-                    FROM essay e
-                   WHERE e.deleted IS NULL
-                     AND e.content LIKE '%' || i.uri || '%'
-                  UNION ALL
-                  SELECT COUNT(*) as count
-                    FROM document d
-                   WHERE d.deleted IS NULL
-                     AND d.content LIKE '%' || i.uri || '%'
-                ) as o`),
+      usedCount: knex
+        .sum({ count: "o.count" })
+        .from(knex.unionAll([counting, counting.clone().from({ d: "essay" })]).as("o")),
     })
     .from({ i: "image" })
     .join({ u: "user" }, "u.id", "=", "i.userId")

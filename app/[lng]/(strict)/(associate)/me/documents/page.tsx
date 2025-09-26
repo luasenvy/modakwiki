@@ -3,7 +3,9 @@ import { headers } from "next/headers";
 import { Breadcrumb } from "@/components/core/Breadcrumb";
 import { Advertisement } from "@/components/core/button/Advertisement";
 import { Container, Viewport } from "@/components/core/Container";
+import { DocumentFilter } from "@/components/core/DocumentFilter";
 import { DocumentList } from "@/components/core/DocumentList";
+import { Pagination } from "@/components/core/Pagination";
 import { BreadcrumbItem } from "@/hooks/use-breadcrumbs";
 import { auth } from "@/lib/auth/server";
 import { knex } from "@/lib/db";
@@ -13,85 +15,114 @@ import { Doctype, Document as DocumentType, doctypeEnum } from "@/lib/schema/doc
 import { User } from "@/lib/schema/user";
 import { localePrefix } from "@/lib/url";
 
+const pageSize = 10;
 export default async function MyDocsPage(ctx: PageProps<"/[lng]/me/documents">) {
   const session = (await auth.api.getSession({ headers: await headers() }))!;
 
   const lngParam = (await ctx.params).lng as Language;
+  const searchParams = await ctx.searchParams;
+
   const lng = localePrefix(lngParam);
 
-  const breadcrumbs: Array<BreadcrumbItem> = [
-    { title: "내 정보", href: `${lng}/me` },
-    { title: "문서함", href: `${lng}/me/documents` },
-  ];
+  const page = Number(searchParams.page ?? "1");
+  const search = searchParams.search || "";
+  const category = searchParams.category || "";
+  const tags = searchParams.tags || [];
 
-  const [{ count: docCount }, { count: essayCount }] = await knex.select("o.count").fromRaw(
-    knex.raw(
-      `(
-         SELECT COUNT(*) AS count
-           FROM document
-          WHERE deleted IS NULL
-            AND "userId" = :userId
-        
-        UNION ALL
+  const counting = knex
+    .count({ count: "*" })
+    .from({ d: "document" })
+    .whereNull("d.deleted")
+    .andWhere("d.userId", session.user.id);
 
-        SELECT COUNT(*) AS count
-          FROM essay
-        WHERE deleted IS NULL
-          AND "userId" = :userId
-       ) as o`,
-      { userId: session.user.id },
-    ),
-  );
+  const selecting = knex
+    .select({
+      id: "d.id",
+      title: "d.title",
+      preview: "d.preview",
+      created: "d.created",
+      type: knex.raw(`'${doctypeEnum.document}'`),
+      name: "u.name",
+      image: "u.image",
+      email: "u.email",
+      emailVerified: "u.emailVerified",
+    })
+    .from({ d: "document" })
+    .join({ u: "user" }, "u.id", "=", "d.userId")
+    .whereNull("d.deleted")
+    .andWhere("d.userId", session.user.id);
+
+  if (search) {
+    counting.andWhere((q) => {
+      q.where("e.title", "ILIKE", `%${search}%`)
+        .orWhere("e.description", "ILIKE", `%${search}%`)
+        .orWhere("e.content", "ILIKE", `%${search}%`);
+    });
+    selecting.andWhere((q) => {
+      q.where("e.title", "ILIKE", `%${search}%`)
+        .orWhere("e.description", "ILIKE", `%${search}%`)
+        .orWhere("e.content", "ILIKE", `%${search}%`);
+    });
+  }
+
+  if (category) {
+    counting.andWhere("e.category", category);
+    selecting.andWhere("e.category", category);
+  }
+  if (tags.length) {
+    counting.andWhere("e.tags", "&&", tags);
+    selecting.andWhere("e.tags", "&&", tags);
+  }
+
+  const [{ count: docCount }, { count: essayCount }] = await knex.unionAll([
+    counting,
+    counting.clone().from({ d: "essay" }),
+  ]);
 
   const rows = await knex
     .select<Array<DocumentType & User & { type?: Doctype }>>({
       id: "o.id",
       title: "o.title",
       preview: "o.preview",
+      created: "o.created",
       type: "o.type",
       name: "o.name",
       image: "o.image",
       email: "o.email",
       emailVerified: "o.emailVerified",
     })
-    .fromRaw(
-      knex.raw(
-        `(
-           SELECT d.id
-                , d.title
-                , d.preview
-                , '${doctypeEnum.document}' AS type
-                , u.name
-                , u.image
-                , u.email
-                , u."emailVerified"
-             FROM document d
-             JOIN "user" u
-               ON d."userId" = u.id
-             WHERE d.deleted IS NULL
-               AND d."userId" = :userId
-         
-         UNION ALL
-  
-            SELECT e.id
-                 , e.title
-                 , e.preview
-                 , '${doctypeEnum.essay}' AS type
-                 , u.name
-                 , u.image
-                 , u.email
-                 , u."emailVerified"
-              FROM essay e
-              JOIN "user" u
-                ON e."userId" = u.id
-             WHERE e.deleted IS NULL
-               AND e."userId" = :userId
-        )`,
-        { userId: session.user.id },
-      ),
-    );
+    .from(
+      knex
+        .unionAll([
+          selecting,
+          selecting
+            .clone()
+            .clearSelect()
+            .select({
+              id: "d.id",
+              title: "d.title",
+              preview: "d.preview",
+              created: "d.created",
+              type: knex.raw(`'${doctypeEnum.essay}'`),
+              name: "u.name",
+              image: "u.image",
+              email: "u.email",
+              emailVerified: "u.emailVerified",
+            })
+            .from({ d: "essay" }),
+        ])
+        .as("o"),
+    )
+    .orderBy("o.created", "desc")
+    .offset((page - 1) * pageSize)
+    .limit(pageSize);
 
   const { t } = await useTranslation(lngParam);
+
+  const breadcrumbs: Array<BreadcrumbItem> = [
+    { title: "내 정보", href: `${lng}/me` },
+    { title: "문서함", href: `${lng}/me/documents` },
+  ];
 
   return (
     <>
@@ -99,7 +130,17 @@ export default async function MyDocsPage(ctx: PageProps<"/[lng]/me/documents">) 
       <Viewport>
         <Container as="div" variant="aside">
           {rows.length > 0 ? (
-            <DocumentList lng={lngParam} rows={rows} showDoctype />
+            <>
+              <DocumentFilter lng={lngParam} searchParams={searchParams} />
+              <DocumentList lng={lngParam} rows={rows} doctype={doctypeEnum.essay} />
+              <Pagination
+                className="mt-6 sm:col-span-2 lg:col-span-3"
+                page={page}
+                pageSize={pageSize}
+                total={Number(docCount) + Number(essayCount)}
+                searchParams={searchParams}
+              />
+            </>
           ) : (
             t("No results found.")
           )}
@@ -112,7 +153,7 @@ export default async function MyDocsPage(ctx: PageProps<"/[lng]/me/documents">) 
           </div>
 
           <div className="relative ms-px min-h-0 overflow-auto py-3 text-sm [scrollbar-width:none]">
-            총 {docCount}개 문서와 {essayCount}개 에세이가 있습니다.
+            총 {docCount}개의 문서와 {essayCount}개의 에세이가 있습니다.
           </div>
 
           <Advertisement className="py-6" />
