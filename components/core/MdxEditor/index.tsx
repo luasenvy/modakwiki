@@ -323,16 +323,14 @@ export default function MdxEditor({
     setCategories([]);
     form.setValue("tags", []);
 
-    if (doctype === doctypeEnum.essay) {
-      (async () => {
-        const res = await fetch("/api/category");
+    (async () => {
+      const res = await fetch("/api/category");
 
-        if (!res.ok) return toast.error(await statusMessage({ t, res }));
+      if (!res.ok) return toast.error(await statusMessage({ t, res }));
 
-        setCategories(await res.json());
-      })();
-    }
-  }, [doctype]);
+      setCategories(await res.json());
+    })();
+  }, []);
 
   useEffect(() => {
     form.setValue("category", doc?.category || defaultCategory || categories[0] || "");
@@ -448,11 +446,7 @@ export default function MdxEditor({
                     control={form.control}
                     name="category"
                     render={({ field: { value, onChange, ...field } }) => (
-                      <FormItem
-                        className={cn("mb-1 shrink-0", {
-                          hidden: doctype !== doctypeEnum.essay,
-                        })}
-                      >
+                      <FormItem className="mb-1 shrink-0">
                         <FormControl>
                           <Select value={value} onValueChange={onChange} {...field}>
                             <SelectTrigger className="rounded-none">
@@ -476,12 +470,8 @@ export default function MdxEditor({
                     <FormField
                       control={form.control}
                       name="tags"
-                      render={({ field: { value, onChange, ...field } }) => (
-                        <FormItem
-                          className={cn("mb-1 grow", {
-                            hidden: doctype !== doctypeEnum.essay,
-                          })}
-                        >
+                      render={({ field: { value } }) => (
+                        <FormItem className="mb-1 grow">
                           <FormControl>
                             <Tags>
                               <TagsTrigger

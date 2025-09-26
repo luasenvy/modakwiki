@@ -1,6 +1,7 @@
 import { Breadcrumb } from "@/components/core/Breadcrumb";
 import { Document } from "@/components/core/Document";
 import { FootnoteHighlighter } from "@/components/core/MdxViewer/FootnoteHighlighter";
+import { site } from "@/config";
 import { BreadcrumbItem } from "@/hooks/use-breadcrumbs";
 import type { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/next";
@@ -265,7 +266,13 @@ function sayHello(x: number) {
     <>
       <Breadcrumb lng={lngParam} breadcrumbs={breadcrumbs} />
       <FootnoteHighlighter />
-      <Document lng={lngParam} title={t("wiki syntax")} content={content.trim()} />
+      <Document
+        lng={lngParam}
+        title={t("wiki syntax")}
+        content={content.trim()}
+        category={t(site.name)}
+        tags={[t("Usage")]}
+      />
     </>
   );
 }

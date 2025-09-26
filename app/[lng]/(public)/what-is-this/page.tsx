@@ -64,7 +64,13 @@ export default async function HowToPage(ctx: PageProps<"/[lng]/what-is-this">) {
     <>
       <Breadcrumb lng={lngParam} breadcrumbs={breadcrumbs} />
       <FootnoteHighlighter />
-      <Document lng={lngParam} content={content.trim()} title={t(site.name)} />
+      <Document
+        lng={lngParam}
+        content={content.trim()}
+        title={t(site.name)}
+        category={t(site.name)}
+        tags={[t("welcome! 🥳")]}
+      />
     </>
   );
 }

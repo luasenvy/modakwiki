@@ -133,7 +133,7 @@ export default async function SearchPage(ctx: PageProps<"/[lng]/essay">) {
     content = `[${t("Please register the first essay!")}](${lng}/editor/write?${baseSearchParams})`;
   }
 
-  const title = t("There is no any e.");
+  const title = t("There is no any essay.");
   const breadcrumbs: Array<BreadcrumbItem> = [{ title, href: `${lng}/essay` }];
 
   return (

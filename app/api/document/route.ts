@@ -7,13 +7,7 @@ import { openai as openaiConfig } from "@/config";
 import { auth } from "@/lib/auth/server";
 import { knex } from "@/lib/db";
 import { clear as clearMarkdown, humanReadable } from "@/lib/mdx/utils";
-import {
-  Doctype,
-  DocumentForm,
-  Document as DocumentType,
-  doctypeEnum,
-  getTablesByDoctype,
-} from "@/lib/schema/document";
+import { Doctype, DocumentForm, doctypeEnum, getTablesByDoctype } from "@/lib/schema/document";
 import { scopeEnum } from "@/lib/schema/user";
 
 export async function GET(req: NextRequest) {
@@ -22,19 +16,15 @@ export async function GET(req: NextRequest) {
   if (session.user.scope < scopeEnum.editor) return new Response(null, { status: 403 });
 
   const rows = await knex
-    .select({
-      id: "t.id",
-      title: "t.title",
-      type: "t.type",
-    })
+    .select({ id: "t.id", title: "t.title", type: "t.type" })
     .fromRaw(
-      knex.raw(`(
-                    SELECT d.id, d.title, 'w' as type
-                      FROM document d
-                 UNION ALL
-                    SELECT e.id, e.title, 'e' as type
-                      FROM essay e
-                ) as t`),
+      knex.raw(
+        `(
+            SELECT d.id, d.title, '${doctypeEnum.document}' as type FROM document d
+            UNION ALL
+            SELECT e.id, e.title, '${doctypeEnum.essay}' as type FROM essay e
+         ) as t`,
+      ),
     )
     .orderBy("t.title", "asc");
 
@@ -57,20 +47,17 @@ export async function POST(req: NextRequest) {
   }: DocumentForm = await req.json();
 
   const { table, history } = getTablesByDoctype(doctype);
-  const isEssay = doctypeEnum.essay === doctype;
 
-  if (isEssay) {
-    if (!tags?.length) return new Response("There is no tags", { status: 400 });
+  if (!tags?.length) return new Response("There is no tags", { status: 400 });
 
-    const { count } = (await knex
-      .count<{ count: number }>({ count: "*" })
-      .from("tag")
-      .where({ category })
-      .whereIn("id", tags)
-      .first())!;
+  const { count } = (await knex
+    .count<{ count: number }>({ count: "*" })
+    .from("tag")
+    .where({ category })
+    .whereIn("id", tags)
+    .first())!;
 
-    if (Number(count) !== tags?.length) return new Response("Bad Request", { status: 400 });
-  }
+  if (Number(count) !== tags?.length) return new Response("Bad Request", { status: 400 });
 
   // moderation
   const openai = new OpenAI(openaiConfig);
@@ -106,10 +93,8 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const tableQuery = knex(table);
-
-  if (isEssay) {
-    tableQuery.insert({
+  const [{ id }] = await knex(table)
+    .insert({
       id: kebabcase(title),
       title,
       description,
@@ -120,43 +105,18 @@ export async function POST(req: NextRequest) {
       category,
       tags,
       images,
-    });
-  } else {
-    tableQuery.insert({
-      id: kebabcase(title),
-      title,
-      description,
-      content,
-      userId: session.user.id,
-      preview: clearMarkdown(humanReadable(content).substring(0, 150)),
-      license,
-      images,
-    });
-  }
+    })
+    .returning(["id"]);
 
-  const [{ id }] = await tableQuery.returning(["id"]);
-
-  const historyQuery = knex(history);
-
-  if (isEssay) {
-    await historyQuery.insert({
-      docId: id,
-      description,
-      content,
-      userId: session.user.id,
-      license,
-      category,
-      tags,
-    });
-  } else {
-    await historyQuery.insert({
-      docId: id,
-      description,
-      content,
-      license,
-      userId: session.user.id,
-    });
-  }
+  await knex(history).insert({
+    docId: id,
+    description,
+    content,
+    userId: session.user.id,
+    license,
+    category,
+    tags,
+  });
 
   return Response.json({ id }, { status: 201 });
 }
@@ -179,19 +139,16 @@ export async function PATCH(req: NextRequest) {
   const { table, history } = getTablesByDoctype(doctype);
   if (!table) return new Response("Bad Request", { status: 400 });
 
-  const isEssay = doctypeEnum.essay === doctype;
-  if (isEssay) {
-    if (!tags?.length) return new Response("There is no tags", { status: 400 });
+  if (!tags?.length) return new Response("There is no tags", { status: 400 });
 
-    const { count } = (await knex
-      .count<{ count: number }>({ count: "*" })
-      .from("tag")
-      .where({ category })
-      .whereIn("id", tags)
-      .first())!;
+  const { count } = (await knex
+    .count<{ count: number }>({ count: "*" })
+    .from("tag")
+    .where({ category })
+    .whereIn("id", tags)
+    .first())!;
 
-    if (Number(count) !== tags?.length) return new Response("Bad Request", { status: 400 });
-  }
+  if (Number(count) !== tags?.length) return new Response("Bad Request", { status: 400 });
 
   const prev = (await knex
     .select({
@@ -286,8 +243,8 @@ export async function PATCH(req: NextRequest) {
       preview: clearMarkdown(humanReadable(content).substring(0, 150)),
       description,
       license,
-      category: isEssay ? category : undefined,
-      tags: isEssay ? tags : undefined,
+      category,
+      tags,
       images: isDocumentChange ? images : undefined,
       updated: knex.raw(`extract(epoch FROM current_timestamp) * 1000`),
     })
@@ -300,8 +257,8 @@ export async function PATCH(req: NextRequest) {
     userId: session.user.id,
     added: isDocumentChange ? added : 0,
     removed: isDocumentChange ? removed : 0,
-    category: isEssay ? category : undefined,
-    tags: isEssay ? tags : undefined,
+    category,
+    tags,
     license,
   });
 

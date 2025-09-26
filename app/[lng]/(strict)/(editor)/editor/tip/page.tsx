@@ -1,6 +1,7 @@
 import { Breadcrumb } from "@/components/core/Breadcrumb";
 import { Document } from "@/components/core/Document";
 import { FootnoteHighlighter } from "@/components/core/MdxViewer/FootnoteHighlighter";
+import { site } from "@/config";
 import { BreadcrumbItem } from "@/hooks/use-breadcrumbs";
 import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/next";
@@ -149,7 +150,13 @@ export default async function HowToPage(ctx: PageProps<"/[lng]/editor/tip">) {
     <>
       <Breadcrumb lng={lngParam} breadcrumbs={breadcrumbs} />
       <FootnoteHighlighter />
-      <Document lng={lngParam} title={t("writing guidelines")} content={content.trim()} />
+      <Document
+        lng={lngParam}
+        title={t("writing guidelines")}
+        content={content.trim()}
+        category={t(site.name)}
+        tags={[t("Usage")]}
+      />
     </>
   );
 }
