@@ -212,5 +212,8 @@
   "me": "me",
   "documents": "documents",
   "search results": "search results",
-  "total {{docCount}} documents and {{essayCount}} essays": "total {{docCount}} documents and {{essayCount}} essays"
+  "total {{docCount}} documents and {{essayCount}} essays": "total {{docCount}} documents and {{essayCount}} essays",
+  "popular": "popular",
+  "total documents": "total documents",
+  "All categories": "All categories"
 }

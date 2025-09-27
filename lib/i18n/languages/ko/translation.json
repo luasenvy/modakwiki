@@ -194,5 +194,8 @@
   "me": "내 정보",
   "documents": "문서함",
   "search results": "검색결과",
-  "total {{docCount}} documents and {{essayCount}} essays": "총 {{docCount}}개의 문서와 {{essayCount}}개의 에세이가 있습니다."
+  "total {{docCount}} documents and {{essayCount}} essays": "총 {{docCount}}개의 문서와 {{essayCount}}개의 에세이가 있습니다.",
+  "popular": "인기글",
+  "total documents": "총 문서 수",
+  "All categories": "전체"
 }

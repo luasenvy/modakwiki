@@ -52,18 +52,13 @@ export function DocumentFilter({ lng: lngParam, searchParams }: DocumentFilterPr
   const baseSearchParams = getSearchParamsFromObject(searchParams);
 
   const handleSearch = (value?: string) => {
-    const trimmed = value ?? searchKeyword.trim();
-
-    if (!trimmed.length && !searchCategory.length && !searchTags.length)
-      return toast.error(t("Please input search keywords"));
-
     baseSearchParams.delete("page");
     baseSearchParams.delete("search");
     baseSearchParams.delete("category");
     baseSearchParams.delete("tags");
 
     baseSearchParams.append("page", "1");
-    baseSearchParams.append("search", trimmed);
+    baseSearchParams.append("search", value ?? searchKeyword.trim());
     baseSearchParams.append("category", searchCategory);
 
     searchTags.forEach((tag) => baseSearchParams.append("tags", tag));
@@ -89,12 +84,12 @@ export function DocumentFilter({ lng: lngParam, searchParams }: DocumentFilterPr
   }, []);
 
   const getTags = useCallback(async () => {
+    setSearchTags([]);
     if (!searchCategory) return setTags([]);
 
     const res = await fetch(`/api/tag?${new URLSearchParams({ category: searchCategory })}`);
 
     if (!res.ok) return toast.error(await statusMessage({ t, res }));
-
     setTags(await res.json());
   }, [searchCategory]);
 
@@ -104,11 +99,15 @@ export function DocumentFilter({ lng: lngParam, searchParams }: DocumentFilterPr
 
   return (
     <div className="flex items-center gap-1">
-      <Select value={searchCategory} onValueChange={(value) => setSearchCategory(value)}>
+      <Select
+        value={searchCategory}
+        onValueChange={(value) => setSearchCategory(value === "all" ? "" : value)}
+      >
         <SelectTrigger className="rounded-none">
           <SelectValue placeholder={t("Select a category")} />
         </SelectTrigger>
         <SelectContent>
+          <SelectItem value="all">{t("All categories")}</SelectItem>
           {categories.map((id) => (
             <SelectItem key={id} value={id}>
               {id}

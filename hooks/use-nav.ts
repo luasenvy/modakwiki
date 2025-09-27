@@ -37,8 +37,12 @@ export const mainNavs: Array<NavItem> = [
         url: "/w/random",
       },
       {
-        title: "에세이",
-        url: "/essay",
+        title: "인기글",
+        url: "/popular",
+      },
+      {
+        title: "최신글",
+        url: "/recent",
       },
     ],
   },
