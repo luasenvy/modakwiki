@@ -101,7 +101,7 @@ export default function MdxEditor({
   const router = useRouter();
 
   const lng = localePrefix(lngParam);
-  const { t } = useTranslation(lngParam);
+  const { t } = useTranslation();
 
   const [hunk, setHunk] = useState<string>("");
   const [lines, setLines] = useState<string[]>(getHunks(doc?.content || ""));
@@ -161,7 +161,7 @@ export default function MdxEditor({
 
     const { selectionStart, selectionEnd } = lineRef.current;
 
-    const curr = `${hunk.substring(0, selectionStart)} [${doc.title}](/${doc.type}?${new URLSearchParams({ id: doc.id })}) ${hunk.substring(selectionEnd)}`;
+    const curr = `${hunk.substring(0, selectionStart)} [${hunk.substring(selectionStart, selectionEnd) || doc.title}](/${doc.type}?${new URLSearchParams({ id: doc.id })})${hunk.substring(selectionEnd)}`;
 
     setHunk(curr);
     lineRef.current.value = curr;
@@ -172,7 +172,10 @@ export default function MdxEditor({
 
     const { selectionStart, selectionEnd } = lineRef.current;
 
-    const curr = `${hunk.substring(0, selectionStart)}\n\n![${image.name} width-${image.width} height-${image.height}](/api/image${image.uri}-o)\n\n${hunk.substring(selectionEnd)}`;
+    const curr =
+      `${hunk.substring(0, selectionStart)}\n\n![${image.name} width-${image.width} height-${image.height}](/api/image${image.uri}-o)\n\n${hunk.substring(selectionEnd)}`
+        .replace(/\n{3,}/, "\n\n")
+        .trim();
 
     setHunk(curr);
     lineRef.current.value = curr;
@@ -185,7 +188,10 @@ export default function MdxEditor({
 
     const saves: Image[] = await res.json();
 
-    const curr = `${hunk}\n\n${saves.map(({ uri, name, width, height }) => `![${name} width-${width} height-${height}](/api/image${uri}-o)`).join("\n\n")}`;
+    const curr =
+      `${hunk}\n\n${saves.map(({ uri, name, width, height }) => `![${name} width-${width} height-${height}](/api/image${uri}-o)`).join("\n\n")}`
+        .replace(/\n{3,}/, "\n\n")
+        .trim();
     setHunk(curr);
 
     lineRef.current!.value = curr;
@@ -203,7 +209,10 @@ export default function MdxEditor({
 
     const saves: Image[] = await res.json();
 
-    const curr = `${hunk}\n\n${saves.map(({ uri, name, width, height }) => `![${name} width-${width} height-${height}](/api/image${uri}-o)`).join("\n\n")}`;
+    const curr =
+      `${hunk}\n\n${saves.map(({ uri, name, width, height }) => `![${name} width-${width} height-${height}](/api/image${uri}-o)`).join("\n\n")}`
+        .replace(/\n{3,}/, "\n\n")
+        .trim();
     setHunk(curr);
 
     lineRef.current!.value = curr;

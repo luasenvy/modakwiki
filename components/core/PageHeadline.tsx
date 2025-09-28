@@ -45,7 +45,7 @@ export async function PageHeadline({
 
       <div className="my-6 flex flex-col items-end gap-y-1">
         {category && (
-          <p className="!my-0 first-letter:!ml-0 text-right text-xs">
+          <p className="!my-0 first-letter:!ml-0 text-right text-muted-foreground text-xs">
             <span className="font-semibold">{category}</span>
             {Boolean(tags?.length) && (
               <>

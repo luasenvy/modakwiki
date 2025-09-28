@@ -129,11 +129,14 @@ export function LineEditor({
     const textarea = inputRefs.current[selectedLine];
     if (!textarea) return;
 
-    const line = lines[selectedLine];
-    const head = line.substring(0, textarea.selectionStart);
-    const tail = line.substring(textarea.selectionEnd);
+    const { selectionStart, selectionEnd } = textarea;
 
-    const curr = `${head} [${doc.title}](/e?${new URLSearchParams({ id: doc.id })}) ${tail}`;
+    const line = lines[selectedLine];
+
+    const head = line.substring(0, selectionStart);
+    const tail = line.substring(selectionEnd);
+
+    const curr = `${head} [${line.substring(selectionStart, selectionEnd) || doc.title}](/${doc.type}?${new URLSearchParams({ id: doc.id })})${tail}`;
 
     setLines((prev) => prev.toSpliced(selectedLine, 1, curr));
     textarea.value = curr;
@@ -147,7 +150,10 @@ export function LineEditor({
     const head = line.substring(0, textarea.selectionStart);
     const tail = line.substring(textarea.selectionEnd);
 
-    const curr = `${head}\n\n![${image.name} width-${image.width} height-${image.height}](/api/image${image.uri}-o)\n\n${tail}`;
+    const curr =
+      `${head}\n\n![${image.name} width-${image.width} height-${image.height}](/api/image${image.uri}-o)\n\n${tail}`
+        .replace(/\n{3,}/, "\n\n")
+        .trim();
 
     setLines((prev) => prev.toSpliced(selectedLine, 1, curr));
     textarea.value = curr;
@@ -175,7 +181,7 @@ export function LineEditor({
           `![${name} width-${width} height-${height}](/api/image${uri}-o)`,
       )
       .join("\n\n");
-    const text = `${head}\n\n${imageMarkdown}\n\n${tail}`;
+    const text = `${head}\n\n${imageMarkdown}\n\n${tail}`.replace(/\n{3,}/, "\n\n").trim();
 
     setLines((prev) => prev.toSpliced(selectedLine, 1, text));
     textarea.value = text;

@@ -1,8 +1,10 @@
+"use client";
+
 import { AlignLeft } from "lucide-react";
 import { TOCScrollArea } from "@/components/fumadocs/toc";
 import TocClerk from "@/components/fumadocs/toc-clerk";
 import { Language } from "@/lib/i18n/config";
-import { useTranslation } from "@/lib/i18n/next";
+import { useTranslation } from "@/lib/i18n/react";
 import { cn } from "@/lib/utils";
 
 interface NavTocProps extends React.PropsWithChildren {
@@ -11,8 +13,8 @@ interface NavTocProps extends React.PropsWithChildren {
   className?: React.ComponentProps<"nav">["className"];
 }
 
-export async function NavToc({ lng: lngParam, title, className, children }: NavTocProps) {
-  const { t } = await useTranslation(lngParam);
+export function NavToc({ lng: lngParam, title, className, children }: NavTocProps) {
+  const { t } = useTranslation();
 
   return (
     <nav
