@@ -16,6 +16,7 @@ interface PageHeadlineProps {
   tags?: string[];
   author?: User;
   license?: License;
+  className?: React.ComponentProps<"div">["className"];
 }
 
 export async function PageHeadline({
@@ -27,10 +28,11 @@ export async function PageHeadline({
   tags,
   author,
   license,
+  className,
 }: PageHeadlineProps) {
   return (
     <>
-      <div className={cn({ "prose dark:prose-invert": prose })}>
+      <div className={cn({ "prose dark:prose-invert": prose }, className)}>
         {title && (
           <h1 id="doc-title" className="mb-2 text-center">
             {title}

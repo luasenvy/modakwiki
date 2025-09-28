@@ -37,6 +37,7 @@ export default async function MyDocsPage(ctx: PageProps<"/[lng]/me/documents">) 
             prose
             title={t("Tag Management")}
             description={t("Manage your tags and categories")}
+            className="max-w-full"
           />
 
           <CategoryList rows={rows} />
