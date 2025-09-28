@@ -41,7 +41,7 @@ export async function PUT(req: NextRequest) {
     })
     .where({ category, id });
 
-  await knex("essay")
+  await knex("post")
     .update({ tags: knex.raw("array_replace(tags, ?, ?)", [id, name]) })
     .whereRaw(knex.raw("? = ANY (tags)", [id]));
 

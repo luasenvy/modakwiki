@@ -22,7 +22,7 @@ export async function GET(req: NextRequest) {
         `(
             SELECT d.id, d.title, '${doctypeEnum.document}' as type FROM document d
             UNION ALL
-            SELECT e.id, e.title, '${doctypeEnum.essay}' as type FROM essay e
+            SELECT p.id, p.title, '${doctypeEnum.post}' as type FROM post p
          ) as t`,
       ),
     )

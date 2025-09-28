@@ -61,7 +61,7 @@ export default async function DiffPage(ctx: PageProps<"/[lng]/[doctype]/diff">) 
   const { t } = await useTranslation(lngParam);
 
   const breadcrumbs: Array<BreadcrumbItem> = [
-    { title: t("essay") },
+    { title: t("post") },
     { title: t("change history") },
     {
       title: title,

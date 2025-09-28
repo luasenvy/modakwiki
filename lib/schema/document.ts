@@ -5,7 +5,7 @@ import { tag } from "@/lib/schema/tag";
 
 export const doctypeEnum = {
   document: "w",
-  essay: "e",
+  post: "p",
 } as const;
 
 export function getTablesByDoctype(doctype: Doctype) {

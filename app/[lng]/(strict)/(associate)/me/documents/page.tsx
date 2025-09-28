@@ -64,9 +64,9 @@ export default async function MyDocsPage(ctx: PageProps<"/[lng]/me/documents">) 
     .from({ d: "document" })
     .join({ u: "user" }, "u.id", "=", "d.userId");
 
-  const [{ count: docCount }, { count: essayCount }] = await knex.unionAll([
+  const [{ count: docCount }, { count: postCount }] = await knex.unionAll([
     counting,
-    counting.clone().from({ d: "essay" }),
+    counting.clone().from({ d: "post" }),
   ]);
 
   const rows = await knex
@@ -80,9 +80,9 @@ export default async function MyDocsPage(ctx: PageProps<"/[lng]/me/documents">) 
             .clearSelect()
             .select({
               ...columns,
-              type: knex.raw(`'${doctypeEnum.essay}'`),
+              type: knex.raw(`'${doctypeEnum.post}'`),
             })
-            .from({ d: "essay" }),
+            .from({ d: "post" }),
         ])
         .as("o"),
     )
@@ -107,7 +107,7 @@ export default async function MyDocsPage(ctx: PageProps<"/[lng]/me/documents">) 
             className="mt-6 sm:col-span-2 lg:col-span-3"
             page={page}
             pageSize={pageSize}
-            total={Number(docCount) + Number(essayCount)}
+            total={Number(docCount) + Number(postCount)}
             searchParams={searchParams}
           />
         </Container>
@@ -119,7 +119,7 @@ export default async function MyDocsPage(ctx: PageProps<"/[lng]/me/documents">) 
           </div>
 
           <div className="relative ms-px min-h-0 overflow-auto py-3 text-sm [scrollbar-width:none]">
-            {t("total {{docCount}} documents and {{essayCount}} essays", { docCount, essayCount })}
+            {t("total {{docCount}} documents and {{postCount}} posts", { docCount, postCount })}
           </div>
 
           <Advertisement className="py-6" />

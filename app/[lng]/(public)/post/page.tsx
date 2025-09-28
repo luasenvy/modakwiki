@@ -15,7 +15,7 @@ import { doctypeEnum } from "@/lib/schema/document";
 import { localePrefix, pickSearchParams } from "@/lib/url";
 
 const pageSize = 10;
-export default async function SearchPage(ctx: PageProps<"/[lng]/essay">) {
+export default async function SearchPage(ctx: PageProps<"/[lng]/post">) {
   const searchParams = await ctx.searchParams;
 
   const page = Number(searchParams.page ?? "1");
@@ -28,37 +28,37 @@ export default async function SearchPage(ctx: PageProps<"/[lng]/essay">) {
   const lngParam = (await ctx.params).lng as Language;
   const lng = localePrefix(lngParam);
 
-  const counting = knex.count({ count: "*" }).from({ e: "essay" }).whereNull("deleted");
+  const counting = knex.count({ count: "*" }).from({ p: "post" }).whereNull("deleted");
 
   if (search)
     counting.andWhere((q) => {
-      q.where("e.title", "ILIKE", `%${search}%`)
-        .orWhere("e.description", "ILIKE", `%${search}%`)
-        .orWhere("e.content", "ILIKE", `%${search}%`);
+      q.where("p.title", "ILIKE", `%${search}%`)
+        .orWhere("p.description", "ILIKE", `%${search}%`)
+        .orWhere("p.content", "ILIKE", `%${search}%`);
     });
 
-  if (category) counting.andWhere("e.category", category);
-  if (tags.length) counting.andWhere("e.tags", "&&", tags);
+  if (category) counting.andWhere("p.category", category);
+  if (tags.length) counting.andWhere("p.tags", "&&", tags);
 
   const selecting = counting
     .clone()
     .clearSelect()
     .select(
-      `e.id`,
-      `e.title`,
-      `e.description`,
-      `e.preview`,
-      `e.images`,
+      `p.id`,
+      `p.title`,
+      `p.description`,
+      `p.preview`,
+      `p.images`,
       `u.name`,
       `u.image`,
       `u.email`,
       "u.emailVerified",
-      `e.category`,
-      `e.tags`,
-      `e.created`,
+      `p.category`,
+      `p.tags`,
+      `p.created`,
     )
-    .join({ u: "user" }, `e.userId`, `u.id`)
-    .orderBy("e.created", "desc")
+    .join({ u: "user" }, `p.userId`, `u.id`)
+    .orderBy("p.created", "desc")
     .offset((page - 1) * pageSize)
     .limit(pageSize);
 
@@ -68,7 +68,7 @@ export default async function SearchPage(ctx: PageProps<"/[lng]/essay">) {
   const { t } = await useTranslation(lngParam);
 
   if (rows.length > 0) {
-    const breadcrumbs: Array<BreadcrumbItem> = [{ title: t("wiki essay"), href: `${lng}/essay` }];
+    const breadcrumbs: Array<BreadcrumbItem> = [{ title: t("post"), href: `${lng}/post` }];
 
     return (
       <>
@@ -78,7 +78,7 @@ export default async function SearchPage(ctx: PageProps<"/[lng]/essay">) {
             {rows.length > 0 ? (
               <>
                 <DocumentFilter lng={lngParam} searchParams={searchParams} />
-                <DocumentList lng={lngParam} rows={rows} doctype={doctypeEnum.essay} />
+                <DocumentList lng={lngParam} rows={rows} doctype={doctypeEnum.post} />
                 <Pagination
                   className="mt-6 sm:col-span-2 lg:col-span-3"
                   page={page}
@@ -99,7 +99,7 @@ export default async function SearchPage(ctx: PageProps<"/[lng]/essay">) {
             </div>
 
             <div className="relative ms-px min-h-0 overflow-auto py-3 text-sm [scrollbar-width:none]">
-              총 {count}개의 에세이가 있습니다.
+              총 {count}개의 포스트가 있습니다.
             </div>
 
             <Advertisement className="py-6" />
@@ -113,15 +113,15 @@ export default async function SearchPage(ctx: PageProps<"/[lng]/essay">) {
   if (isDev) {
     const baseSearchParams = pickSearchParams(searchParams, ["page", "search", "category", "tags"]);
 
-    baseSearchParams.set("type", doctypeEnum.essay);
+    baseSearchParams.set("type", doctypeEnum.post);
     baseSearchParams.set("title", String(baseSearchParams.get("search") || ""));
     baseSearchParams.delete("search");
 
-    content = `[${t("Please register the first essay!")}](${lng}/editor/write?${baseSearchParams})`;
+    content = `[${t("Please register the first post!")}](${lng}/editor/write?${baseSearchParams})`;
   }
 
-  const title = t("There is no any essay.");
-  const breadcrumbs: Array<BreadcrumbItem> = [{ title, href: `${lng}/essay` }];
+  const title = t("There is no any post.");
+  const breadcrumbs: Array<BreadcrumbItem> = [{ title, href: `${lng}/post` }];
 
   return (
     <>

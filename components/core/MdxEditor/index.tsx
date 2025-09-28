@@ -381,22 +381,21 @@ export default function MdxEditor({
                       {t("document")}
                     </Toggle>
                   )}
-                  {(!Boolean(doc?.id) || doctypeEnum.essay === doctype) && (
+                  {(!Boolean(doc?.id) || doctypeEnum.post === doctype) && (
                     <Toggle
                       variant="outline"
-                      pressed={doctype === doctypeEnum.essay}
+                      pressed={doctype === doctypeEnum.post}
                       className={cn({
-                        "!border-rose-200 !bg-rose-50 !text-rose-800":
-                          doctype === doctypeEnum.essay,
+                        "!border-rose-200 !bg-rose-50 !text-rose-800": doctype === doctypeEnum.post,
                       })}
                       onPressedChange={(pressed: boolean) =>
-                        pressed && form.setValue("type", doctypeEnum.essay)
+                        pressed && form.setValue("type", doctypeEnum.post)
                       }
-                      aria-label="Toggle essay"
+                      aria-label="Toggle post"
                       size="sm"
                     >
                       <MessageSquareHeart className="size-4" />
-                      {t("essay")}
+                      {t("post")}
                     </Toggle>
                   )}
                 </div>

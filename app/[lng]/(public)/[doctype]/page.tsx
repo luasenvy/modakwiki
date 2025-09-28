@@ -190,7 +190,7 @@ export default async function WikiDocPage(ctx: PageProps<"/[lng]/[doctype]">) {
 
   if (!doc) {
     const breadcrumbs: Array<BreadcrumbItem> = [
-      { title: doctypeEnum.document === doctype ? t("wiki document") : t("wiki essay") },
+      { title: doctypeEnum.document === doctype ? t("wiki document") : t("post") },
       { title: t("Not Found"), href: `${lng}/${doctype}/${id}` },
     ];
 
@@ -211,7 +211,7 @@ export default async function WikiDocPage(ctx: PageProps<"/[lng]/[doctype]">) {
   }
 
   const breadcrumbs: Array<BreadcrumbItem> = [
-    { title: doctypeEnum.document === doctype ? t("wiki document") : t("wiki essay") },
+    { title: doctypeEnum.document === doctype ? t("wiki document") : t("post") },
     { title: doc.title, href: `${lng}/${doctype}/${doc.id}` },
   ];
 

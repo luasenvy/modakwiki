@@ -59,7 +59,7 @@ export default async function HowToPage(ctx: PageProps<"/[lng]/editor/syntax">) 
       userName: "u.name",
       usedCount: knex
         .sum({ count: "o.count" })
-        .from(knex.unionAll([counting, counting.clone().from({ d: "essay" })]).as("o")),
+        .from(knex.unionAll([counting, counting.clone().from({ d: "post" })]).as("o")),
     })
     .from({ i: "image" })
     .join({ u: "user" }, "u.id", "=", "i.userId")

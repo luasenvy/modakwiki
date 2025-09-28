@@ -48,38 +48,38 @@ export async function DocumentList({
 
   if (!Array.isArray(tags)) tags = [tags].filter(Boolean);
 
-  const counting = knex.count({ count: "*" }).from({ e: "essay" }).whereNull("deleted");
+  const counting = knex.count({ count: "*" }).from({ p: "post" }).whereNull("deleted");
 
   if (search)
     counting.andWhere((q) => {
-      q.where("e.title", "ILIKE", `%${search}%`)
-        .orWhere("e.description", "ILIKE", `%${search}%`)
-        .orWhere("e.content", "ILIKE", `%${search}%`);
+      q.where("p.title", "ILIKE", `%${search}%`)
+        .orWhere("p.description", "ILIKE", `%${search}%`)
+        .orWhere("p.content", "ILIKE", `%${search}%`);
     });
 
-  if (category) counting.andWhere("e.category", category);
-  if (tags.length) counting.andWhere("e.tags", "&&", tags);
+  if (category) counting.andWhere("p.category", category);
+  if (tags.length) counting.andWhere("p.tags", "&&", tags);
 
   const selecting = counting
     .clone()
     .clearSelect()
     .select({
-      id: `e.id`,
-      title: `e.title`,
-      description: `e.description`,
-      preview: `e.preview`,
-      type: knex.raw(`'${doctypeEnum.essay}'`),
-      images: `e.images`,
+      id: `p.id`,
+      title: `p.title`,
+      description: `p.description`,
+      preview: `p.preview`,
+      type: knex.raw(`'${doctypeEnum.post}'`),
+      images: `p.images`,
       name: `u.name`,
       image: `u.image`,
       email: `u.email`,
       emailVerified: "u.emailVerified",
-      category: `e.category`,
-      tags: `e.tags`,
-      created: `e.created`,
+      category: `p.category`,
+      tags: `p.tags`,
+      created: `p.created`,
     })
-    .join({ u: "user" }, `e.userId`, `u.id`)
-    .orderBy("e.created", "desc")
+    .join({ u: "user" }, `p.userId`, `u.id`)
+    .orderBy("p.created", "desc")
     .offset((pagination.page - 1) * pagination.pageSize)
     .limit(pagination.pageSize);
 
