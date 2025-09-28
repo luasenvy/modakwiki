@@ -47,7 +47,7 @@ export async function Document({
   content = "",
   title = "",
   description = "",
-  license = licenseEnum.ccbysa,
+  license,
   category,
   tags,
   author,
@@ -109,23 +109,27 @@ export async function Document({
           <MdxLoader source={content} />
 
           <div className="my-16 space-y-1">
-            <p className="!my-1 text-right text-muted-foreground text-xs">
-              {`${t("First Created")}: ${dateFormat.format(Number(created))}`}
-            </p>
+            {created && (
+              <p className="!my-1 text-right font-mono text-muted-foreground text-xs">
+                {`${t("First Created")}: ${dateFormat.format(Number(created))}`}
+              </p>
+            )}
 
             {created !== updated && (
-              <p className="!my-1 text-right text-muted-foreground text-xs">
+              <p className="!my-1 text-right font-mono text-muted-foreground text-xs">
                 {`${t("Last Modified")}: ${dateFormat.format(Number(updated))}`}
               </p>
             )}
 
-            <p className="!my-4 text-right font-semibold text-sm">
-              &copy; {new Date(Number(created)).getFullYear()}{" "}
-              {t(
-                `This document is published under the "{{license}}" license. All rights reserved by the author.`,
-                { license: t(license) },
-              )}
-            </p>
+            {license && (
+              <p className="!my-4 text-right font-semibold text-sm">
+                &copy; {new Date(Number(created)).getFullYear()}{" "}
+                {t(
+                  `This document is published under the "{{license}}" license. All rights reserved by the author.`,
+                  { license: t(license) },
+                )}
+              </p>
+            )}
           </div>
         </Container>
 
