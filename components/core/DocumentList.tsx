@@ -79,9 +79,9 @@ export async function DocumentList({
               </div>
 
               <div className="flex items-center justify-between">
-                <AvatarProfile profile={{ name, email, image, emailVerified }} size="sm" />
+                <AvatarProfile profile={{ name, email, image, emailVerified } as User} size="sm" />
 
-                <p className="!my-0 text-xs">{datetimeFormat.format(updated || created)}</p>
+                <p className="!my-0 text-xs">{datetimeFormat.format(Number(updated || created))}</p>
               </div>
 
               <div>

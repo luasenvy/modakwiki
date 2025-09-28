@@ -34,7 +34,7 @@ interface DocumentProps {
   category?: string;
   license?: License;
   tags?: string[];
-  author?: { name: string; image?: string; email?: string; emailVerified?: boolean };
+  author?: User;
   created?: number;
   updated?: number;
   session?: Session["user"] | null;
@@ -59,16 +59,31 @@ export async function Document({
   title = doc?.title ?? title;
   description = doc?.description ?? description;
   author = doc?.name
-    ? { name: doc.name, image: doc.image, email: doc.email, emailVerified: doc.emailVerified }
+    ? ({
+        name: doc.name,
+        image: doc.image,
+        email: doc.email,
+        emailVerified: doc.emailVerified,
+      } as User)
     : author;
   created = doc?.created ?? created;
   updated = doc?.updated ?? updated;
   license = doc?.license ?? license;
   category = doc?.category ?? category;
   tags = doc?.tags ?? tags;
-  const toc = getToc(content);
 
+  const toc = getToc(content);
   const { t } = await useTranslation(lngParam);
+
+  const dateFormat = new Intl.DateTimeFormat(lngParam, {
+    hourCycle: "h23",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  });
 
   return (
     <Viewport>
@@ -81,19 +96,40 @@ export async function Document({
         </PageTOCPopover>
 
         <Container as="article" variant="document">
-          <PageHeadline title={title} description={description} category={category} tags={tags} />
+          <PageHeadline
+            t={t}
+            title={title}
+            description={description}
+            category={category}
+            tags={tags}
+            license={license}
+            author={author}
+          />
 
           <MdxLoader source={content} />
+
+          <div className="my-16 space-y-1">
+            <p className="!my-1 text-right text-muted-foreground text-xs">
+              {`${t("First Created")}: ${dateFormat.format(Number(created))}`}
+            </p>
+
+            {created !== updated && (
+              <p className="!my-1 text-right text-muted-foreground text-xs">
+                {`${t("Last Modified")}: ${dateFormat.format(Number(updated))}`}
+              </p>
+            )}
+
+            <p className="!my-4 text-right font-semibold text-sm">
+              &copy; {new Date(Number(created)).getFullYear()}{" "}
+              {t(
+                `This document is published under the "{{license}}" license. All rights reserved by the author.`,
+                { license: t(license) },
+              )}
+            </p>
+          </div>
         </Container>
 
-        <NavToc
-          lng={lngParam}
-          title={title}
-          author={author}
-          license={license}
-          created={created}
-          updated={updated}
-        >
+        <NavToc lng={lngParam} title={title}>
           {(session || doc) && (
             <Remocon
               lng={lngParam}

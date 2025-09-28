@@ -216,6 +216,7 @@ export default async function WikiDocPage(ctx: PageProps<"/[lng]/[doctype]">) {
   ];
 
   const session = await auth.api.getSession({ headers: await headers() });
+
   return (
     <>
       <Breadcrumb lng={lngParam} breadcrumbs={breadcrumbs} />

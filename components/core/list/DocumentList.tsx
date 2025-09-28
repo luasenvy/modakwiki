@@ -10,7 +10,7 @@ import { ImageZoom } from "@/components/ui/shadcn-io/image-zoom";
 import { knex } from "@/lib/db";
 import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/next";
-import { Doctype, Document as DocumentType } from "@/lib/schema/document";
+import { Doctype, Document as DocumentType, doctypeEnum } from "@/lib/schema/document";
 import { User } from "@/lib/schema/user";
 import { localePrefix } from "@/lib/url";
 import { cn } from "@/lib/utils";
@@ -63,20 +63,21 @@ export async function DocumentList({
   const selecting = counting
     .clone()
     .clearSelect()
-    .select(
-      `e.id`,
-      `e.title`,
-      `e.description`,
-      `e.preview`,
-      `e.images`,
-      `u.name`,
-      `u.image`,
-      `u.email`,
-      "u.emailVerified",
-      `e.category`,
-      `e.tags`,
-      `e.created`,
-    )
+    .select({
+      id: `e.id`,
+      title: `e.title`,
+      description: `e.description`,
+      preview: `e.preview`,
+      type: knex.raw(`'${doctypeEnum.essay}'`),
+      images: `e.images`,
+      name: `u.name`,
+      image: `u.image`,
+      email: `u.email`,
+      emailVerified: "u.emailVerified",
+      category: `e.category`,
+      tags: `e.tags`,
+      created: `e.created`,
+    })
     .join({ u: "user" }, `e.userId`, `u.id`)
     .orderBy("e.created", "desc")
     .offset((pagination.page - 1) * pagination.pageSize)
@@ -135,9 +136,14 @@ export async function DocumentList({
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <AvatarProfile profile={{ name, email, image, emailVerified }} size="sm" />
+                  <AvatarProfile
+                    profile={{ name, email, image, emailVerified } as User}
+                    size="sm"
+                  />
 
-                  <p className="!my-0 text-xs">{datetimeFormat.format(updated || created)}</p>
+                  <p className="!my-0 text-xs">
+                    {datetimeFormat.format(Number(updated || created))}
+                  </p>
                 </div>
 
                 <div>

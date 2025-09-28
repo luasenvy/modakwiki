@@ -197,5 +197,6 @@
   "total {{docCount}} documents and {{essayCount}} essays": "총 {{docCount}}개의 문서와 {{essayCount}}개의 에세이가 있습니다.",
   "popular": "인기글",
   "total documents": "총 문서 수",
-  "All categories": "전체"
+  "All categories": "전체",
+  "This document is published under the \"{{license}}\" license. All rights reserved by the author.": "이 문서는 \"{{license}}\" 라이선스로 배포 되었습니다. 모든 권리는 저자에게 있습니다."
 }

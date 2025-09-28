@@ -16,7 +16,9 @@ const variants = {
     "pr-2 pl-4 pt-18 xl:pt-8 max-lg:pr-4",
     "wrap-break-word break-keep",
     "prose dark:prose-invert",
-    "[&_p]:first-letter:ml-3",
+    // Paragraph
+    "prose-h2:first-of-type:mt-0",
+    "[&>p]:first-letter:ml-3",
     // Italic
     "[&_em]:font-semibold",
     // Bold

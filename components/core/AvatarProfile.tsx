@@ -1,5 +1,6 @@
 import { CheckCircle } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { User } from "@/lib/schema/user";
 import { cn } from "@/lib/utils";
 
 const variants = {
@@ -9,12 +10,7 @@ const variants = {
 } as const;
 
 interface AvatarProfileProps {
-  profile: {
-    name: string;
-    image?: string | null;
-    email?: string;
-    emailVerified?: boolean;
-  };
+  profile: User;
   name?: string;
   size?: keyof typeof variants;
   flatten?: boolean;

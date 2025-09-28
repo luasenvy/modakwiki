@@ -49,7 +49,7 @@ export function Image({
           {...props}
           alt={altText}
           loading="lazy"
-          className={cn(className, "mx-auto")}
+          className={cn(className, "!my-0 mx-auto")}
           style={{
             ...style,
             ...styles,

@@ -33,6 +33,7 @@ export default async function MyDocsPage(ctx: PageProps<"/[lng]/me/documents">) 
       <Viewport>
         <Container as="div" variant="wide" className="space-y-2">
           <PageHeadline
+            t={t}
             prose
             title={t("Tag Management")}
             description={t("Manage your tags and categories")}

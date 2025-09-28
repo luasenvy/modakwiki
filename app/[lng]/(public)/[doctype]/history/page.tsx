@@ -70,7 +70,7 @@ export default async function HistoryPage(ctx: PageProps<"/[lng]/[doctype]/histo
 
       <Viewport className="!justify-start flex-col items-center">
         <Container variant="wide" className="prose dark:prose-invert">
-          <PageHeadline title={`${t("change history")}: ${doc.title}`} />
+          <PageHeadline t={t} title={`${t("change history")}: ${doc.title}`} />
 
           <div className="mt-6">
             {rows.map(
@@ -185,7 +185,9 @@ export default async function HistoryPage(ctx: PageProps<"/[lng]/[doctype]/histo
                           {name}
                         </a>
                       </p>
-                      <p className="!my-0 text-xs md:text-sm">{dateFormater.format(created)}</p>
+                      <p className="!my-0 text-xs md:text-sm">
+                        {dateFormater.format(Number(created))}
+                      </p>
                     </div>
                   </div>
                 );
