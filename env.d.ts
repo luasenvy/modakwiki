@@ -12,7 +12,7 @@ declare module "*.webp" {
 //   interface ProcessEnv {
 //     // DB Configurations
 //     DB_URL: string;
-//     RDS_URL: string;
+//     RS_URL: string;
 //     OAI_KEY: string;
 //     DTG_KEY: string;
 

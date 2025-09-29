@@ -7,22 +7,19 @@ import { useTranslation } from "@/lib/i18n/react";
 import { localePrefix } from "@/lib/url";
 
 interface BreadcrumbProps {
-  home?: boolean;
   breadcrumbs?: Array<BreadcrumbItem>;
   lng: Language;
 }
 
-export function Breadcrumb({ lng: lngParam, breadcrumbs = [], home }: BreadcrumbProps) {
+export function Breadcrumb({ lng: lngParam, breadcrumbs = [] }: BreadcrumbProps) {
   const setBreadcrumbs = useBreadcrumbs((state) => state.setBreadcrumbs);
 
-  const { t } = useTranslation(lngParam);
   const lng = localePrefix(lngParam);
-
-  if (home) breadcrumbs = [{ title: t("Home"), href: `${lng}/` }, ...breadcrumbs];
+  const { t } = useTranslation();
 
   useEffect(() => {
-    setBreadcrumbs(breadcrumbs);
-  }, [breadcrumbs]);
+    setBreadcrumbs([{ title: t("Home"), href: `${lng}/` }, ...breadcrumbs]);
+  }, [t, breadcrumbs]);
 
   return null;
 }

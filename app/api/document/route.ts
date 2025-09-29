@@ -7,6 +7,7 @@ import { openai as openaiConfig } from "@/config";
 import { auth } from "@/lib/auth/server";
 import { knex } from "@/lib/db";
 import { clear as clearMarkdown, humanReadable } from "@/lib/mdx/utils";
+import { redis } from "@/lib/redis";
 import { Doctype, DocumentForm, doctypeEnum, getTablesByDoctype } from "@/lib/schema/document";
 import { scopeEnum } from "@/lib/schema/user";
 
@@ -118,6 +119,10 @@ export async function POST(req: NextRequest) {
     category,
     tags,
   });
+
+  if (!redis.isOpen) await redis.connect();
+  // not awaiting
+  redis.hSet("latest", { id, title, type: doctype });
 
   return Response.json({ id }, { status: 201 });
 }

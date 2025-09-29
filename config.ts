@@ -60,7 +60,7 @@ export const datago = {
 
 export type Datago = typeof datago;
 
-const redisUrl = urlParse(process.env.RDS_URL!);
+const redisUrl = urlParse(process.env.RS_URL!);
 
 export const redis = {
   url: redisUrl?.baseurl,

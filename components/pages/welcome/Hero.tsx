@@ -10,24 +10,29 @@ import {
 import { site } from "@/config";
 import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/next";
+import { redis } from "@/lib/redis";
 import { localePrefix } from "@/lib/url";
 import { cn } from "@/lib/utils";
 
 interface HeroProps extends React.ComponentProps<"div"> {
-  lng?: Language;
+  lng: Language;
 }
 
 export default async function Hero({ lng: lngParam, className, ...props }: HeroProps) {
   const { t } = await useTranslation(lngParam);
   const lng = localePrefix(lngParam);
 
+  if (!redis.isOpen) await redis.connect();
+
+  const { id, title, type } = await redis.hGetAll("latest");
+
   return (
     <div className={cn("flex flex-col gap-16 px-8 py-24 text-center", className)} {...props}>
       <div className="flex flex-col items-center justify-center gap-8">
-        <Link href="#">
+        <Link href={`${lng}/${type}?${new URLSearchParams({ id })}`} className="no-underline">
           <Announcement>
-            <AnnouncementTag>Recent</AnnouncementTag>
-            <AnnouncementTitle>Introducing blocks by Modakwiki</AnnouncementTitle>
+            <AnnouncementTag>{t("Recent")}</AnnouncementTag>
+            <AnnouncementTitle>{title}</AnnouncementTitle>
           </Announcement>
         </Link>
         <h1 className="mb-0 text-balance font-medium text-6xl md:text-7xl xl:text-[5.25rem]">

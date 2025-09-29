@@ -215,5 +215,6 @@
   "popular": "popular",
   "total documents": "total documents",
   "All categories": "All categories",
-  "This document is published under the \"{{license}}\" license. All rights reserved by the author.": "This document is published under the \"{{license}}\" license. All rights reserved by the author."
+  "This document is published under the \"{{license}}\" license. All rights reserved by the author.": "This document is published under the \"{{license}}\" license. All rights reserved by the author.",
+  "Recent": "Recent"
 }
