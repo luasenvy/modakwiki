@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronsUpDown, LogIn, LogOut, User } from "lucide-react";
+import { ChevronsUpDown, LogIn, LogOut, UserIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -23,6 +23,7 @@ import {
 import { Session, signOut } from "@/lib/auth/react";
 import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/react";
+import { User } from "@/lib/schema/user";
 import { localePrefix } from "@/lib/url";
 import Logo from "@/public/brand/32x32.webp";
 
@@ -52,12 +53,14 @@ export function NavUser({ lng: lngParam, sitename, session, dev }: NavUserProps)
                 className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
               >
                 <AvatarProfile
-                  profile={{
-                    name: session.name,
-                    image: session.image,
-                    email: session.email,
-                    emailVerified: session.emailVerified,
-                  }}
+                  profile={
+                    {
+                      name: session.name,
+                      image: session.image,
+                      email: session.email,
+                      emailVerified: session.emailVerified,
+                    } as User
+                  }
                   size="lg"
                   flatten
                 />
@@ -73,7 +76,7 @@ export function NavUser({ lng: lngParam, sitename, session, dev }: NavUserProps)
               <DropdownMenuGroup>
                 <DropdownMenuItem asChild>
                   <Link href={`${lng}/me`}>
-                    <User /> {t("My Account")}
+                    <UserIcon /> {t("My Account")}
                   </Link>
                 </DropdownMenuItem>
               </DropdownMenuGroup>
