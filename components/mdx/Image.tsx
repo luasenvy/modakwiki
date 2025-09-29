@@ -69,24 +69,26 @@ export function Image({
         <p className="!m-0 !mr-auto text-center font-light">{altText}</p>
       </figcaption>
 
-      <HoverCard openDelay={100} closeDelay={100}>
-        <HoverCardTrigger asChild>
-          <Button
-            variant="outline"
-            size="icon"
-            className={cn(
-              "absolute top-1 right-1 size-5 shadow-md",
-              "!border-amber-600 rounded-full",
-              "shrink-0 text-amber-600",
-            )}
-          >
-            <Info className="size-4" />
-          </Button>
-        </HoverCardTrigger>
-        <HoverCardContent className="w-64">
-          <HoverCardContentImageDetail src={props.src as string} />
-        </HoverCardContent>
-      </HoverCard>
+      {typeof props.src === "string" && props.src.startsWith("/api/image") && (
+        <HoverCard openDelay={100} closeDelay={100}>
+          <HoverCardTrigger asChild>
+            <Button
+              variant="outline"
+              size="icon"
+              className={cn(
+                "absolute top-1 right-1 size-5 shadow-md",
+                "!border-amber-600 rounded-full",
+                "shrink-0 text-amber-600",
+              )}
+            >
+              <Info className="size-4" />
+            </Button>
+          </HoverCardTrigger>
+          <HoverCardContent className="w-64">
+            <HoverCardContentImageDetail src={props.src as string} />
+          </HoverCardContent>
+        </HoverCard>
+      )}
     </figure>
   );
 }

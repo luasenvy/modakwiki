@@ -14,6 +14,7 @@ export const categoryForm = category
   })
   .extend({
     name: z.string().min(1).max(30),
+    type: z.string().min(1).max(1),
   });
 
 export type CategoryForm = z.infer<typeof categoryForm>;

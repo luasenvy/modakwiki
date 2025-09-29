@@ -1,7 +1,14 @@
 "use client";
 
 import debounce from "lodash.debounce";
-import { ChevronsDown, ChevronsRight, Edit, Trash } from "lucide-react";
+import {
+  ChevronsDown,
+  ChevronsRight,
+  Edit,
+  MessageSquareHeart,
+  ScrollText,
+  Trash,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -26,24 +33,25 @@ import {
 } from "@/components/ui/command";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
+import { Toggle } from "@/components/ui/toggle";
 import { useBreakpoints } from "@/hooks/use-breakpoints";
 import { statusMessage } from "@/lib/fetch/react";
 import { useTranslation } from "@/lib/i18n/react";
 import { Category } from "@/lib/schema/category";
+import { Doctype, doctypeEnum } from "@/lib/schema/document";
 import { Tag } from "@/lib/schema/tag";
 import { cn } from "@/lib/utils";
 
-interface CategoryListProps {
-  rows: Array<Category>;
-}
-
-export function CategoryList({ rows }: CategoryListProps) {
+export function CategoryList() {
   const router = useRouter();
 
   const { t } = useTranslation();
 
   const firstInputRef = useRef<HTMLInputElement>(null);
-  const [categories, setCategories] = useState<Array<Category>>(rows);
+
+  const [type, setType] = useState<Doctype>(doctypeEnum.document);
+
+  const [categories, setCategories] = useState<Array<string>>([]);
   const [tags, setTags] = useState<Tag[]>([]);
   const [inputCategory, setInputCategory] = useState<string>("");
   const [inputTag, setInputTag] = useState<string>("");
@@ -62,7 +70,12 @@ export function CategoryList({ rows }: CategoryListProps) {
     if (!selectedCategory) return;
 
     setLoadingTags(true);
-    const res = await fetch(`/api/tag?category=${selectedCategory}`);
+    const res = await fetch(
+      `/api/tag?${new URLSearchParams({
+        type,
+        category: selectedCategory,
+      })}`,
+    );
 
     if (!res.ok) return toast.error(await statusMessage({ t, res }));
 
@@ -74,6 +87,16 @@ export function CategoryList({ rows }: CategoryListProps) {
     getTags();
   }, [selectedCategory]);
 
+  useEffect(() => {
+    (async () => {
+      const res = await fetch(`/api/category?${new URLSearchParams({ type })}`);
+      if (!res.ok) return toast.error(await statusMessage({ t, res }));
+
+      setCategories(await res.json());
+      setSelectedCategory("");
+    })();
+  }, [type]);
+
   const handleClickCreateCategory = async () => {
     if (!inputCategory) return;
 
@@ -81,15 +104,15 @@ export function CategoryList({ rows }: CategoryListProps) {
     const options = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id: inputCategory }),
+      body: JSON.stringify({ id: inputCategory, type }),
     };
 
     const res = await fetch("/api/category", options);
 
     if (!res.ok) return await statusMessage({ t, res, options });
 
+    setCategories((prev) => [...prev, inputCategory]);
     setInputCategory("");
-    router.refresh();
   };
 
   const handleClickCreateTag = async () => {
@@ -99,7 +122,7 @@ export function CategoryList({ rows }: CategoryListProps) {
     const options = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id: inputTag, category: selectedCategory }),
+      body: JSON.stringify({ id: inputTag, category: selectedCategory, type }),
     };
 
     const res = await fetch(`/api/tag`, options);
@@ -107,14 +130,14 @@ export function CategoryList({ rows }: CategoryListProps) {
     if (!res.ok) return await statusMessage({ t, res, options });
 
     setInputTag("");
-    getTags();
+    setTags((prev) => [...prev, { id: inputTag, category: selectedCategory, type }]);
   };
 
   const handleClickEditNameTag = async (id: string, category: string, name: string) => {
     const options = {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id, category, name }),
+      body: JSON.stringify({ id, category, name, type }),
     };
     const res = await fetch("/api/tag", options);
 
@@ -130,28 +153,28 @@ export function CategoryList({ rows }: CategoryListProps) {
     const options = {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id, name }),
+      body: JSON.stringify({ id, name, type }),
     };
     const res = await fetch("/api/category", options);
 
     if (!res.ok) return await statusMessage({ t, res, options });
 
-    const index = categories.findIndex(({ id: _id }) => id === _id);
+    const index = categories.findIndex((_id) => id === _id);
     if (index < 0) return router.refresh();
 
-    setCategories((prev) => prev.toSpliced(index, 1, { ...prev[index], id: name }));
+    setCategories((prev) => prev.toSpliced(index, 1, name));
     setSelectedCategory(name);
   };
 
   const handleClickDeleteCategory = async (id: string) => {
     const options = { method: "DELETE" };
 
-    const res = await fetch(`/api/category?${new URLSearchParams({ id })}`, options);
+    const res = await fetch(`/api/category?${new URLSearchParams({ id, type })}`, options);
 
     if (!res.ok) return await statusMessage({ t, res, options });
 
     if (id === selectedCategory) setSelectedCategory("");
-    router.refresh();
+    setCategories((prev) => prev.filter((_id) => _id !== id));
   };
 
   const handleClickDeleteTag = async (category: string, id: string) => {
@@ -159,6 +182,7 @@ export function CategoryList({ rows }: CategoryListProps) {
 
     const res = await fetch(
       `/api/tag?${new URLSearchParams({
+        type,
         category,
         id,
       })}`,
@@ -168,234 +192,266 @@ export function CategoryList({ rows }: CategoryListProps) {
     if (!res.ok) return await statusMessage({ t, res, options });
 
     setInputTag("");
-    getTags();
+    setTags((prev) => prev.filter((tag) => tag.id !== id));
   };
 
   const isLg = useBreakpoints("lg");
   return (
-    <div className="flex flex-col items-center gap-4 lg:flex-row">
-      <Command className="rounded-lg border shadow-md max-lg:max-h-[calc(40dvh_-_(var(--spacing)_*_20))] lg:h-[calc(100dvh_-_(var(--spacing)_*_60))]">
-        <CommandInput
-          ref={firstInputRef}
-          value={inputCategory}
-          onValueChange={setInputCategory}
-          placeholder={t("Type a category or search...")}
-        />
-        <CommandList>
-          <CommandEmpty className="flex flex-col items-center space-y-2 p-4">
-            {inputCategory ? (
-              <>
-                <p className="text-muted-foreground text-sm">
-                  "{inputCategory}" {t("Category is not exists")}{" "}
-                </p>
-                <Button size="sm" onClick={handleClickCreateCategory}>
-                  {t("Create New")}
-                </Button>
-              </>
-            ) : (
-              t("No results found.")
-            )}
-          </CommandEmpty>
-          {categories.map(({ id }) => (
-            <CommandItem
-              key={id}
-              onSelect={setSelectedCategory}
-              className={cn("group", { "!text-blue-600 underline": id === selectedCategory })}
-            >
-              {id}
-              <div className={cn("ml-auto hidden items-center gap-1 group-hover:flex")}>
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button variant="ghost" size="icon" className="size-5">
-                      <Edit className="size-3.5 text-orange-500" />
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>{t("Change name")}</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        {t("You can change the category name here.")}
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
+    <>
+      <div className="mb-2 flex items-center gap-1">
+        <Toggle
+          variant="outline"
+          pressed={type === doctypeEnum.document}
+          className={cn({
+            "!border-blue-200 !bg-blue-50 !text-blue-800": type === doctypeEnum.document,
+          })}
+          onPressedChange={(pressed: boolean) => pressed && setType(doctypeEnum.document)}
+          aria-label="Toggle wkdoc"
+          size="sm"
+        >
+          <ScrollText className="size-4" />
+          {t("document")}
+        </Toggle>
 
-                    <div className="py-4">
-                      <Input
-                        name={`category-name-${id}`}
-                        defaultValue={id}
-                        onChange={debounce((e) => setChangeCategoryName(e.target.value), 110)}
-                        onKeyDown={(e) => e.stopPropagation()}
-                      />
-                    </div>
-
-                    <AlertDialogFooter>
-                      <AlertDialogCancel onClick={(e: React.MouseEvent) => e.stopPropagation()}>
-                        {t("Cancel")}
-                      </AlertDialogCancel>
-                      <AlertDialogAction
-                        onClick={(e: React.MouseEvent) => {
-                          e.stopPropagation();
-                          handleClickEditNameCategory(id, changeCategoryName);
-                        }}
-                      >
-                        {t("Save")}
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button variant="ghost" size="icon" className="size-5">
-                      <Trash className="size-3.5 text-destructive" />
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>{t("Are you absolutely sure?")}</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        {t("This action cannot be undone. This will delete data permanently.")}
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel onClick={(e: React.MouseEvent) => e.stopPropagation()}>
-                        {t("Cancel")}
-                      </AlertDialogCancel>
-                      <AlertDialogAction
-                        onClick={(e: React.MouseEvent) => {
-                          e.stopPropagation();
-                          handleClickDeleteCategory(id);
-                        }}
-                      >
-                        {t("Yes, I'm sure")}
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </div>
-            </CommandItem>
-          ))}
-        </CommandList>
-      </Command>
-
-      <div className="shrink-0">
-        {isLg ? <ChevronsRight className="size-4" /> : <ChevronsDown className="size-4" />}
+        <Toggle
+          variant="outline"
+          pressed={type === doctypeEnum.post}
+          className={cn({
+            "!border-rose-200 !bg-rose-50 !text-rose-800": type === doctypeEnum.post,
+          })}
+          onPressedChange={(pressed: boolean) => pressed && setType(doctypeEnum.post)}
+          aria-label="Toggle post"
+          size="sm"
+        >
+          <MessageSquareHeart className="size-4" />
+          {t("post")}
+        </Toggle>
       </div>
 
-      <Command className="rounded-lg border shadow-md max-lg:max-h-[calc(40dvh_-_(var(--spacing)_*_20))] lg:h-[calc(100dvh_-_(var(--spacing)_*_60))]">
-        {selectedCategory ? (
-          <>
-            <CommandInput
-              value={inputTag}
-              onValueChange={setInputTag}
-              placeholder={t("Type a tag or search...")}
-            />
-            {loadingTags ? (
-              <Spinner className="mx-auto my-6" variant="ring" size={32} />
-            ) : (
-              <CommandList>
-                <CommandEmpty className="flex flex-col items-center space-y-2 p-4">
-                  {inputTag ? (
-                    <>
-                      <p className="text-muted-foreground text-sm">
-                        "{inputTag}" {t("Tag is not exists")}{" "}
-                      </p>
-                      <Button size="sm" onClick={handleClickCreateTag}>
-                        {t("Create New")}
+      <div className="flex flex-col items-center gap-4 lg:flex-row">
+        <Command className="rounded-lg border shadow-md max-lg:max-h-[calc(40dvh_-_(var(--spacing)_*_20))] lg:h-[calc(100dvh_-_(var(--spacing)_*_60))]">
+          <CommandInput
+            ref={firstInputRef}
+            value={inputCategory}
+            onValueChange={setInputCategory}
+            placeholder={t("Type a category or search...")}
+          />
+          <CommandList>
+            <CommandEmpty className="flex flex-col items-center space-y-2 p-4">
+              {inputCategory ? (
+                <>
+                  <p className="text-muted-foreground text-sm">
+                    "{inputCategory}" {t("Category is not exists")}{" "}
+                  </p>
+                  <Button size="sm" onClick={handleClickCreateCategory}>
+                    {t("Create New")}
+                  </Button>
+                </>
+              ) : (
+                t("No results found.")
+              )}
+            </CommandEmpty>
+            {categories.map((id) => (
+              <CommandItem
+                key={`category-${id}`}
+                onSelect={setSelectedCategory}
+                className={cn("group", { "!text-blue-600 underline": id === selectedCategory })}
+              >
+                {id}
+                <div className={cn("ml-auto hidden items-center gap-1 group-hover:flex")}>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="ghost" size="icon" className="size-5">
+                        <Edit className="size-3.5 text-orange-500" />
                       </Button>
-                    </>
-                  ) : (
-                    t("No results found.")
-                  )}
-                </CommandEmpty>
-                {tags.map(({ category, id }) => (
-                  <CommandItem className="group" key={`tag-${category}-${id}`}>
-                    {id}
-                    <div className={cn("ml-auto hidden items-center gap-1 group-hover:flex")}>
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button variant="ghost" size="icon" className="size-5">
-                            <Edit className="size-3.5 text-orange-500" />
-                          </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>{t("Change name")}</AlertDialogTitle>
-                            <AlertDialogDescription>
-                              {t("You can change the tag name here.")}
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>{t("Change name")}</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          {t("You can change the category name here.")}
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
 
-                          <div className="py-4">
-                            <Input
-                              id={`tag-name-${id}`}
-                              defaultValue={id}
-                              onChange={debounce((e) => setChangeTagName(e.target.value), 110)}
-                              onKeyDown={(e) => e.stopPropagation()}
-                            />
-                          </div>
+                      <div className="py-4">
+                        <Input
+                          name={`category-name-${id}`}
+                          defaultValue={id}
+                          onChange={debounce((e) => setChangeCategoryName(e.target.value), 110)}
+                          onKeyDown={(e) => e.stopPropagation()}
+                        />
+                      </div>
 
-                          <AlertDialogFooter>
-                            <AlertDialogCancel
-                              onClick={(e: React.MouseEvent) => e.stopPropagation()}
-                            >
-                              {t("Cancel")}
-                            </AlertDialogCancel>
-                            <AlertDialogAction
-                              onClick={(e: React.MouseEvent) => {
-                                e.stopPropagation();
-                                handleClickEditNameTag(id, category, changeTagName);
-                              }}
-                            >
-                              {t("Save")}
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel onClick={(e: React.MouseEvent) => e.stopPropagation()}>
+                          {t("Cancel")}
+                        </AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={(e: React.MouseEvent) => {
+                            e.stopPropagation();
+                            handleClickEditNameCategory(id, changeCategoryName);
+                          }}
+                        >
+                          {t("Save")}
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
 
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button variant="ghost" size="icon" className="ml-auto size-5">
-                            <Trash className="size-3.5 text-destructive" />
-                          </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>{t("Are you absolutely sure?")}</AlertDialogTitle>
-                            <AlertDialogDescription>
-                              {t(
-                                "This action cannot be undone. This will delete data permanently.",
-                              )}
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel
-                              onClick={(e: React.MouseEvent) => e.stopPropagation()}
-                            >
-                              {t("Cancel")}
-                            </AlertDialogCancel>
-                            <AlertDialogAction
-                              onClick={(e: React.MouseEvent) => {
-                                e.stopPropagation();
-                                handleClickDeleteTag(category, id);
-                              }}
-                            >
-                              {t("Yes, I'm sure")}
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-                    </div>
-                  </CommandItem>
-                ))}
-              </CommandList>
-            )}
-          </>
-        ) : (
-          <p className="my-6 text-center font-semibold text-muted-foreground">
-            {t("Please select category first.")}
-          </p>
-        )}
-      </Command>
-    </div>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="ghost" size="icon" className="size-5">
+                        <Trash className="size-3.5 text-destructive" />
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>{t("Are you absolutely sure?")}</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          {t("This action cannot be undone. This will delete data permanently.")}
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel onClick={(e: React.MouseEvent) => e.stopPropagation()}>
+                          {t("Cancel")}
+                        </AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={(e: React.MouseEvent) => {
+                            e.stopPropagation();
+                            handleClickDeleteCategory(id);
+                          }}
+                        >
+                          {t("Yes, I'm sure")}
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </div>
+              </CommandItem>
+            ))}
+          </CommandList>
+        </Command>
+
+        <div className="shrink-0">
+          {isLg ? <ChevronsRight className="size-4" /> : <ChevronsDown className="size-4" />}
+        </div>
+
+        <Command className="rounded-lg border shadow-md max-lg:max-h-[calc(40dvh_-_(var(--spacing)_*_20))] lg:h-[calc(100dvh_-_(var(--spacing)_*_60))]">
+          {selectedCategory ? (
+            <>
+              <CommandInput
+                value={inputTag}
+                onValueChange={setInputTag}
+                placeholder={t("Type a tag or search...")}
+              />
+              {loadingTags ? (
+                <Spinner className="mx-auto my-6" variant="ring" size={32} />
+              ) : (
+                <CommandList>
+                  <CommandEmpty className="flex flex-col items-center space-y-2 p-4">
+                    {inputTag ? (
+                      <>
+                        <p className="text-muted-foreground text-sm">
+                          "{inputTag}" {t("Tag is not exists")}{" "}
+                        </p>
+                        <Button size="sm" onClick={handleClickCreateTag}>
+                          {t("Create New")}
+                        </Button>
+                      </>
+                    ) : (
+                      t("No results found.")
+                    )}
+                  </CommandEmpty>
+                  {tags.map(({ category, id }) => (
+                    <CommandItem className="group" key={`tag-${category}-${id}`}>
+                      {id}
+                      <div className={cn("ml-auto hidden items-center gap-1 group-hover:flex")}>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button variant="ghost" size="icon" className="size-5">
+                              <Edit className="size-3.5 text-orange-500" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>{t("Change name")}</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                {t("You can change the tag name here.")}
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+
+                            <div className="py-4">
+                              <Input
+                                id={`tag-name-${id}`}
+                                defaultValue={id}
+                                onChange={debounce((e) => setChangeTagName(e.target.value), 110)}
+                                onKeyDown={(e) => e.stopPropagation()}
+                              />
+                            </div>
+
+                            <AlertDialogFooter>
+                              <AlertDialogCancel
+                                onClick={(e: React.MouseEvent) => e.stopPropagation()}
+                              >
+                                {t("Cancel")}
+                              </AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={(e: React.MouseEvent) => {
+                                  e.stopPropagation();
+                                  handleClickEditNameTag(id, category, changeTagName);
+                                }}
+                              >
+                                {t("Save")}
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button variant="ghost" size="icon" className="ml-auto size-5">
+                              <Trash className="size-3.5 text-destructive" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>{t("Are you absolutely sure?")}</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                {t(
+                                  "This action cannot be undone. This will delete data permanently.",
+                                )}
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel
+                                onClick={(e: React.MouseEvent) => e.stopPropagation()}
+                              >
+                                {t("Cancel")}
+                              </AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={(e: React.MouseEvent) => {
+                                  e.stopPropagation();
+                                  handleClickDeleteTag(category, id);
+                                }}
+                              >
+                                {t("Yes, I'm sure")}
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
+                    </CommandItem>
+                  ))}
+                </CommandList>
+              )}
+            </>
+          ) : (
+            <p className="my-6 text-center font-semibold text-muted-foreground">
+              {t("Please select category first.")}
+            </p>
+          )}
+        </Command>
+      </div>
+    </>
   );
 }

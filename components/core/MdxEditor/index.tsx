@@ -303,7 +303,7 @@ export default function MdxEditor({
   const getTags = useCallback(async () => {
     if (!category) return setTags([]);
 
-    const res = await fetch(`/api/tag?${new URLSearchParams({ category })}`);
+    const res = await fetch(`/api/tag?${new URLSearchParams({ category, type: doctype })}`);
 
     if (!res.ok) return toast.error(await statusMessage({ t, res }));
 
@@ -333,13 +333,13 @@ export default function MdxEditor({
     form.setValue("tags", []);
 
     (async () => {
-      const res = await fetch("/api/category");
+      const res = await fetch(`/api/category?${new URLSearchParams({ type: doctype })}`);
 
       if (!res.ok) return toast.error(await statusMessage({ t, res }));
 
       setCategories(await res.json());
     })();
-  }, []);
+  }, [doctype]);
 
   useEffect(() => {
     form.setValue("category", doc?.category || defaultCategory || categories[0] || "");

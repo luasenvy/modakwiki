@@ -15,6 +15,7 @@ export const tagForm = tag
   })
   .extend({
     name: z.string().min(1).max(30),
+    type: z.string().min(1).max(1),
   });
 
 export type TagForm = z.infer<typeof tagForm>;
