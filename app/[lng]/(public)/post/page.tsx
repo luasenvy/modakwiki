@@ -77,7 +77,11 @@ export default async function SearchPage(ctx: PageProps<"/[lng]/post">) {
           <Container as="div" variant="aside">
             {rows.length > 0 ? (
               <>
-                <DocumentFilter lng={lngParam} searchParams={searchParams} />
+                <DocumentFilter
+                  lng={lngParam}
+                  searchParams={searchParams}
+                  type={doctypeEnum.post}
+                />
                 <DocumentList lng={lngParam} rows={rows} doctype={doctypeEnum.post} />
                 <Pagination
                   className="mt-6 sm:col-span-2 lg:col-span-3"

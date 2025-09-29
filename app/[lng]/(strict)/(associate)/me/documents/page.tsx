@@ -35,6 +35,7 @@ export default async function MyDocsPage(ctx: PageProps<"/[lng]/me/documents">) 
 
   const lng = localePrefix(lngParam);
 
+  const type = (searchParams.type || doctypeEnum.document) as Doctype;
   const page = Number(searchParams.page ?? "1");
   const search = searchParams.search || "";
   const category = searchParams.category || "";
@@ -101,8 +102,8 @@ export default async function MyDocsPage(ctx: PageProps<"/[lng]/me/documents">) 
       <Breadcrumb lng={lngParam} breadcrumbs={breadcrumbs} />
       <Viewport>
         <Container as="div" variant="aside">
-          <DocumentFilter lng={lngParam} searchParams={searchParams} />
-          <DocumentList lng={lngParam} rows={rows} showDoctype />
+          <DocumentFilter lng={lngParam} searchParams={searchParams} type={type} />
+          <DocumentList lng={lngParam} rows={rows} showDoctype doctype={type} />
           <Pagination
             className="mt-6 sm:col-span-2 lg:col-span-3"
             page={page}

@@ -62,11 +62,13 @@ export function DocumentFilter({
   const baseSearchParams = getSearchParamsFromObject(searchParams);
 
   const handleSearch = (value?: string) => {
+    baseSearchParams.delete("type");
     baseSearchParams.delete("page");
     baseSearchParams.delete("search");
     baseSearchParams.delete("category");
     baseSearchParams.delete("tags");
 
+    baseSearchParams.append("type", type);
     baseSearchParams.append("page", "1");
     baseSearchParams.append("search", value ?? searchKeyword.trim());
     baseSearchParams.append("category", searchCategory);

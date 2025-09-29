@@ -7,12 +7,14 @@ import { DocumentList } from "@/components/core/list/DocumentList";
 import { BreadcrumbItem } from "@/hooks/use-breadcrumbs";
 import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/next";
+import { Doctype, doctypeEnum } from "@/lib/schema/document";
 import { localePrefix } from "@/lib/url";
 
 const pageSize = 10;
 export default async function RecentPage(ctx: PageProps<"/[lng]/recent">) {
   const searchParams = await ctx.searchParams;
 
+  const type = (searchParams.type || doctypeEnum.document) as Doctype;
   const page = Number(searchParams.page ?? "1");
   const search = searchParams.search || "";
   const category = searchParams.category || "";
@@ -38,6 +40,7 @@ export default async function RecentPage(ctx: PageProps<"/[lng]/recent">) {
             searchParams={searchParams}
             search={search}
             category={category}
+            doctype={type}
             tags={tags}
             pagination={{ page, pageSize }}
           />
