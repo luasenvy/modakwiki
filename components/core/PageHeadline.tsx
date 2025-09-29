@@ -47,15 +47,15 @@ export async function PageHeadline({
 
       <div className="my-6 flex flex-col items-end gap-y-1">
         {category && (
-          <p className="!my-0 first-letter:!ml-0 text-right text-muted-foreground text-xs">
-            <span className="font-semibold">{category}</span>
+          <div className="flex items-center">
+            <span className="font-semibold text-xs">{category}</span>
             {Boolean(tags?.length) && (
               <>
-                <ChevronRight className="inline size-2.5" />
-                {tags?.join(", ")}
+                <ChevronRight className="mx-0.5 inline size-2.5" />
+                <span className="text-muted-foreground text-xs">{tags?.join(", ")}</span>
               </>
             )}
-          </p>
+          </div>
         )}
 
         {author && <AvatarProfile profile={author} size="sm" name={author.name} />}

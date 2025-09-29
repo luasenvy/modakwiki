@@ -4,7 +4,7 @@ import { category } from "@/lib/schema/category";
 import { tag } from "@/lib/schema/tag";
 
 export const doctypeEnum = {
-  document: "w",
+  document: "d",
   post: "p",
 } as const;
 

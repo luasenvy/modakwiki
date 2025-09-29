@@ -46,13 +46,14 @@ export async function POST(req: NextRequest) {
     tags,
   }: DocumentForm = await req.json();
 
-  const { table, history } = getTablesByDoctype(doctype);
+  const { table, history, tag: tagTable } = getTablesByDoctype(doctype);
 
   if (!tags?.length) return new Response("There is no tags", { status: 400 });
+  if (!table || !history || !tagTable) return new Response(null, { status: 400 });
 
   const { count } = (await knex
     .count<{ count: number }>({ count: "*" })
-    .from("tag")
+    .from(tagTable)
     .where({ category })
     .whereIn("id", tags)
     .first())!;
@@ -136,14 +137,14 @@ export async function PATCH(req: NextRequest) {
     tags,
   }: DocumentForm & { type: Doctype } = await req.json();
 
-  const { table, history } = getTablesByDoctype(doctype);
+  const { table, history, tag } = getTablesByDoctype(doctype);
   if (!table) return new Response("Bad Request", { status: 400 });
 
   if (!tags?.length) return new Response("There is no tags", { status: 400 });
 
   const { count } = (await knex
     .count<{ count: number }>({ count: "*" })
-    .from("tag")
+    .from(tag)
     .where({ category })
     .whereIn("id", tags)
     .first())!;
@@ -250,17 +251,19 @@ export async function PATCH(req: NextRequest) {
     })
     .where({ id });
 
-  await knex(history).insert({
-    docId: id,
-    description,
-    content,
-    userId: session.user.id,
-    added: isDocumentChange ? added : 0,
-    removed: isDocumentChange ? removed : 0,
-    category,
-    tags,
-    license,
-  });
+  await knex
+    .insert({
+      docId: id,
+      description,
+      content,
+      userId: session.user.id,
+      added: isDocumentChange ? added : 0,
+      removed: isDocumentChange ? removed : 0,
+      category,
+      tags,
+      license,
+    })
+    .into(history);
 
   return Response.json({ id }, { status: 200 });
 }

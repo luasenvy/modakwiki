@@ -37,7 +37,6 @@ import { Toggle } from "@/components/ui/toggle";
 import { useBreakpoints } from "@/hooks/use-breakpoints";
 import { statusMessage } from "@/lib/fetch/react";
 import { useTranslation } from "@/lib/i18n/react";
-import { Category } from "@/lib/schema/category";
 import { Doctype, doctypeEnum } from "@/lib/schema/document";
 import { Tag } from "@/lib/schema/tag";
 import { cn } from "@/lib/utils";

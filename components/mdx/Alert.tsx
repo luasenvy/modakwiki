@@ -27,7 +27,7 @@ export function Alert({ children, level, ...props }: BannerProps) {
 
   return (
     <ShadcnAlert
-      className={cn("my-12", {
+      className={cn("my-6", {
         "border-blue-200 bg-blue-50 text-blue-800 shadow-sm *:data-[slot=alert-description]:text-blue-800/90 dark:border-blue-800 dark:bg-blue-950/30 dark:text-blue-200 dark:*:data-[slot=alert-description]:text-blue-200/90 [&>svg]:text-blue-600 dark:[&>svg]:text-blue-400":
           isInfo,
         "border-orange-200 bg-orange-50 text-orange-800 shadow-sm *:data-[slot=alert-description]:text-orange-800/90 dark:border-yellow-800 dark:bg-yellow-950/30 dark:text-yellow-200 dark:*:data-[slot=alert-description]:text-yellow-200/90 [&>svg]:text-orange-600 dark:[&>svg]:text-yellow-400":

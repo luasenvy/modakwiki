@@ -1,8 +1,8 @@
 "use client";
 
-import { CheckIcon, Search } from "lucide-react";
+import { CheckIcon, MessageSquareHeart, ScrollText, Search } from "lucide-react";
 import { SearchParams } from "next/dist/server/request/search-params";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -25,20 +25,30 @@ import {
   TagsTrigger,
   TagsValue,
 } from "@/components/ui/shadcn-io/tags";
+import { Toggle } from "@/components/ui/toggle";
 import { statusMessage } from "@/lib/fetch/react";
 import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/react";
+import { Doctype, doctypeEnum } from "@/lib/schema/document";
 import { Tag } from "@/lib/schema/tag";
-import { getSearchParamsFromObject, localePrefix } from "@/lib/url";
+import { getSearchParamsFromObject } from "@/lib/url";
+import { cn } from "@/lib/utils";
 
 interface DocumentFilterProps {
   lng: Language;
   searchParams: SearchParams;
+  type?: Doctype;
 }
 
-export function DocumentFilter({ lng: lngParam, searchParams }: DocumentFilterProps) {
+export function DocumentFilter({
+  lng: lngParam,
+  searchParams,
+  type: doctype = doctypeEnum.document,
+}: DocumentFilterProps) {
   const router = useRouter();
   const { t } = useTranslation(lngParam);
+
+  const [type, setType] = useState<Doctype>(doctype);
 
   const [searchKeyword, setSearchKeyword] = useState<string>(String(searchParams.search || ""));
   const [searchCategory, setSearchCategory] = useState<string>(String(searchParams.category || ""));
@@ -75,19 +85,19 @@ export function DocumentFilter({ lng: lngParam, searchParams }: DocumentFilterPr
 
   useEffect(() => {
     (async () => {
-      const res = await fetch("/api/category");
+      const res = await fetch(`/api/category?${new URLSearchParams({ type })}`);
 
       if (!res.ok) return toast.error(await statusMessage({ t, res }));
 
       setCategories(await res.json());
     })();
-  }, []);
+  }, [type]);
 
   const getTags = useCallback(async () => {
     setSearchTags([]);
     if (!searchCategory) return setTags([]);
 
-    const res = await fetch(`/api/tag?${new URLSearchParams({ category: searchCategory })}`);
+    const res = await fetch(`/api/tag?${new URLSearchParams({ type, category: searchCategory })}`);
 
     if (!res.ok) return toast.error(await statusMessage({ t, res }));
     setTags(await res.json());
@@ -99,6 +109,32 @@ export function DocumentFilter({ lng: lngParam, searchParams }: DocumentFilterPr
 
   return (
     <div className="flex items-center gap-1">
+      <Toggle
+        variant="outline"
+        pressed={type === doctypeEnum.document}
+        className={cn("!min-w-20 rounded-none", {
+          "!border-blue-200 !bg-blue-50 !text-blue-800 shrink-0": type === doctypeEnum.document,
+        })}
+        onPressedChange={(pressed: boolean) => pressed && setType(doctypeEnum.document)}
+        aria-label="Toggle wkdoc"
+      >
+        <ScrollText className="size-4" />
+        {t("document")}
+      </Toggle>
+
+      <Toggle
+        variant="outline"
+        pressed={type === doctypeEnum.post}
+        className={cn("!min-w-20 rounded-none", {
+          "!border-rose-200 !bg-rose-50 !text-rose-800 shrink-0": type === doctypeEnum.post,
+        })}
+        onPressedChange={(pressed: boolean) => pressed && setType(doctypeEnum.post)}
+        aria-label="Toggle post"
+      >
+        <MessageSquareHeart className="size-4" />
+        {t("post")}
+      </Toggle>
+
       <Select
         value={searchCategory}
         onValueChange={(value) => setSearchCategory(value === "all" ? "" : value)}
@@ -160,7 +196,7 @@ export function DocumentFilter({ lng: lngParam, searchParams }: DocumentFilterPr
 
       <Input
         name="searchKeyword"
-        className="rounded-none"
+        className="grow rounded-none"
         placeholder={t("Please input search keywords")}
         defaultValue={searchKeyword}
         onBlur={(e) => setSearchKeyword(e.target.value)}

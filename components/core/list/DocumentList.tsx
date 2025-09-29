@@ -10,7 +10,12 @@ import { ImageZoom } from "@/components/ui/shadcn-io/image-zoom";
 import { knex } from "@/lib/db";
 import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/next";
-import { Doctype, Document as DocumentType, doctypeEnum } from "@/lib/schema/document";
+import {
+  Doctype,
+  Document as DocumentType,
+  doctypeEnum,
+  getTablesByDoctype,
+} from "@/lib/schema/document";
 import { User } from "@/lib/schema/user";
 import { localePrefix } from "@/lib/url";
 import { cn } from "@/lib/utils";
@@ -25,7 +30,7 @@ interface DocumentListProps {
     pageSize?: number;
   };
   showDoctype?: boolean;
-  doctype?: string;
+  doctype?: Doctype;
   searchParams?: SearchParams;
 }
 
@@ -35,7 +40,7 @@ export async function DocumentList({
   category,
   tags = [],
   showDoctype,
-  doctype,
+  doctype = doctypeEnum.document,
   pagination = {},
   searchParams = {},
 }: DocumentListProps) {
@@ -48,7 +53,8 @@ export async function DocumentList({
 
   if (!Array.isArray(tags)) tags = [tags].filter(Boolean);
 
-  const counting = knex.count({ count: "*" }).from({ p: "post" }).whereNull("deleted");
+  const { table } = getTablesByDoctype(doctype);
+  const counting = knex.count({ count: "*" }).from({ p: table! }).whereNull("deleted");
 
   if (search)
     counting.andWhere((q) => {
@@ -68,7 +74,7 @@ export async function DocumentList({
       title: `p.title`,
       description: `p.description`,
       preview: `p.preview`,
-      type: knex.raw(`'${doctypeEnum.post}'`),
+      type: knex.raw(`'${doctype}'`),
       images: `p.images`,
       name: `u.name`,
       image: `u.image`,
@@ -112,8 +118,8 @@ export async function DocumentList({
                   <span className="font-semibold text-xs">{category}</span>
                   {Boolean(tags?.length) && (
                     <>
-                      <ChevronRight className="inline size-2.5" />
-                      <span className="text-xs">{tags?.join(", ")}</span>
+                      <ChevronRight className="mx-0.5 inline size-2.5" />
+                      <span className="text-muted-foreground text-xs">{tags?.join(", ")}</span>
                     </>
                   )}
                 </div>
