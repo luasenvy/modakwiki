@@ -1,13 +1,15 @@
 import { GalleryVerticalEnd } from "lucide-react";
 import { headers as nextHeaders } from "next/headers";
-import { redirect } from "next/navigation";
+import { forbidden, redirect } from "next/navigation";
 import { SigninForm } from "@/components/pages/signin/SigninForm";
-import { betterAuth as authConfig, site } from "@/config";
+import { betterAuth as authConfig, isDev, site } from "@/config";
 import { auth } from "@/lib/auth/server";
 import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/next";
 
 export default async function SigninPage(ctx: PageProps<"/[lng]/signin">) {
+  if (!isDev) return forbidden();
+
   const lngParam = (await ctx.params).lng as Language;
 
   const headers = await nextHeaders();

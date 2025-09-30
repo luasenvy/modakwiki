@@ -7,15 +7,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/react";
 import { licenseEnum } from "@/lib/license";
 import { cn } from "@/lib/utils";
 
 interface LicenseProps extends React.ComponentProps<typeof Select> {
+  lng: Language;
   className?: React.ComponentProps<typeof SelectTrigger>["className"];
 }
 
-export function License({ className, ...props }: LicenseProps) {
+export function License({ lng: lngParam, className, ...props }: LicenseProps) {
   const { t } = useTranslation(lngParam);
 
   return (

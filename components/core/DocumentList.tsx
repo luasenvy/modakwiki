@@ -115,7 +115,7 @@ export async function DocumentList({
                           </Button>
                         </HoverCardTrigger>
                         <HoverCardContent className="w-64">
-                          <HoverCardContentImageDetail src={src} />
+                          <HoverCardContentImageDetail lng={lngParam} src={src} />
                         </HoverCardContent>
                       </HoverCard>
                     </figure>

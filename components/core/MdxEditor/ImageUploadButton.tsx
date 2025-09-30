@@ -197,6 +197,7 @@ export const ImageUploadButton = forwardRef(function (
                       }, 110)}
                     />
                     <LicenseInput
+                      lng={lngParam}
                       className="[&>span]:!inline w-full rounded-none [&>span]:line-clamp-1 [&>span]:truncate"
                       defaultValue={filesFormRef.current![i].license || licenseEnum.ccbysa}
                       onValueChange={(e) => {

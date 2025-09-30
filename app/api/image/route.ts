@@ -16,6 +16,10 @@ const docroot = join(storage.root, "images");
 const trashDocroot = join(storage.root, "images_trash");
 
 export async function GET(req: NextRequest) {
+  const session = await auth.api.getSession(req);
+  if (!session) return new Response(null, { status: 401 });
+  if (session.user.scope < scopeEnum.admin) return new Response(null, { status: 403 });
+
   const uri = req.nextUrl.searchParams.get("uri");
 
   const imagesQuery = knex

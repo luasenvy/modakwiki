@@ -1,6 +1,6 @@
 import { Toaster } from "sonner";
 
-export default async function DefaultLayout({ params, children }: LayoutProps<"/[lng]">) {
+export default async function DefaultLayout({ children }: LayoutProps<"/[lng]">) {
   return (
     <>
       {children}
