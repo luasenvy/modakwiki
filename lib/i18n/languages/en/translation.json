@@ -84,7 +84,7 @@
   "description": "description",
   "changed": "changed",
   "Information Changed": "Information Changed",
-  "Created": "Created",
+  "First Edition": "First Edition",
   "You do not have permission to access this page.": "You do not have permission to access this page.",
   "move to home": "move to home",
   "Unable to save. Please enter both the title and content.": "Unable to save. Please enter both the title and content.",
@@ -149,14 +149,14 @@
   "kogl3": "공공누리 제 3유형: 출처표시 + 변경금지",
   "kogl4": "공공누리 제 4유형: 출처표시 + 상업적 이용금지 + 변경금지",
   "koglopen": "공공누리 만료 공공저작물: 자유이용",
-  "Last Modified": "Last Modified",
+  "Revised Edition": "Revised Edition",
   "Select a license": "Select a license",
   "license": "license",
   "created": "created",
   "diff": "diff",
   "file": "file",
   "image": "image",
-  "First Created": "First Created",
+  "Created": "Created",
   "No Headings": "No Headings",
   "User Management": "User Management",
   "Manage users in this site": "Manage users in this site",
@@ -243,5 +243,6 @@
   "Joined": "Joined",
   "total contributes": "total contributes",
   "letters": "letters",
-  "total writes": "total writes"
+  "total writes": "total writes",
+  "User Bio": "User Bio"
 }

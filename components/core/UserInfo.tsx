@@ -62,7 +62,8 @@ export async function UserInfo({ lng: lngParam, user }: UserInfoProps) {
 ${t("")}
 `;
 
-  if (user.bio) content += `\n\n${user.bio}`;
+  if (user.bio)
+    content += `\n\n---\n\n## ${t("User Bio")}\n\n${user.bio.replace(/^(#{2,}) /gm, "$1# ")}`;
 
   return (
     <>

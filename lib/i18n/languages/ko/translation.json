@@ -135,7 +135,7 @@
   "kogl3": "공공누리 제 3유형: 출처표시 + 변경금지",
   "kogl4": "공공누리 제 4유형: 출처표시 + 상업적 이용금지 + 변경금지",
   "koglopen": "공공누리 만료 공공저작물: 자유이용",
-  "Last Modified": "수정",
+  "Revised Edition": "수정판",
   "Select a license": "라이선스 선택",
   "license": "라이선스",
   "created": "생성됨",
@@ -143,7 +143,7 @@
   "Text changed": "본문 변경됨",
   "file": "파일",
   "image": "사진",
-  "First Created": "초판",
+  "First Edition": "초판",
   "No Headings": "목차 없음",
   "User Management": "사용자 관리",
   "Manage users in this site": "사이트 회원을 관리할 수 있습니다.",
@@ -225,5 +225,6 @@
   "Joined": "가입일시",
   "total contributes": "총 기여",
   "letters": "자",
-  "total writes": "총 작성"
+  "total writes": "총 작성",
+  "User Bio": "사용자 개요"
 }

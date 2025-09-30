@@ -31,20 +31,12 @@ export async function generateMetadata(ctx: PageProps<"/[lng]/[doctype]">) {
 
   if (!table) return;
 
-  let doc;
+  let query;
   if (created) {
-    doc = await knex
+    query = knex
       .select({
-        id: "d.id",
         title: "d.title",
         description: "h.description",
-        content: "h.content",
-        license: "h.license",
-        created: "h.created",
-        email: "u.email",
-        name: "u.name",
-        image: "u.image",
-        emailVerified: "u.emailVerified",
       })
       .from({ h: history })
       .join({ d: table }, "d.id", "=", "h.docId")
@@ -53,20 +45,12 @@ export async function generateMetadata(ctx: PageProps<"/[lng]/[doctype]">) {
       .where({
         "h.docId": id,
         "h.created": created,
-      })
-      .first();
+      });
   } else {
-    doc = await knex
+    query = knex
       .select({
         title: "d.title",
         description: "d.description",
-        license: "d.license",
-        created: "d.created",
-        updated: "d.updated",
-        name: "u.name",
-        image: "u.image",
-        email: "u.email",
-        emailVerified: "u.emailVerified",
       })
       .from({ d: table })
       .join({ u: "user" }, "u.id", "=", "d.userId")
@@ -74,7 +58,7 @@ export async function generateMetadata(ctx: PageProps<"/[lng]/[doctype]">) {
       .where({ "d.id": id });
   }
 
-  return doc;
+  return await query.first();
 }
 
 export default async function WikiDocPage(ctx: PageProps<"/[lng]/[doctype]">) {

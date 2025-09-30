@@ -114,18 +114,18 @@ export async function Document({
           <div className="my-16 space-y-1">
             {created && (
               <p className="!my-1 text-right font-mono text-muted-foreground text-xs">
-                {`${t("First Created")}: ${dateFormat.format(Number(created))}`}
+                {`${t("First Edition")}: ${dateFormat.format(Number(created))}`}
               </p>
             )}
 
             {created !== updated && (
               <p className="!my-1 text-right font-mono text-muted-foreground text-xs">
-                {`${t("Last Modified")}: ${dateFormat.format(Number(updated))}`}
+                {`${t("Revised Edition")}: ${dateFormat.format(Number(updated))}`}
               </p>
             )}
 
             {license && (
-              <p className="!my-4 text-right font-semibold text-sm">
+              <p className="!my-8 text-right font-semibold text-sm">
                 &copy; {new Date(Number(created)).getFullYear()}{" "}
                 {t(
                   `This document is  under the "{{license}}" license. All rights reserved by the author.`,
