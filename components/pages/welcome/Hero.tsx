@@ -39,7 +39,7 @@ export default async function Hero({ lng: lngParam, className, ...props }: HeroP
           {t(site.name)}
         </h1>
         <p className="mt-0 mb-0 text-balance text-lg text-muted-foreground">
-          {t(`{{name}} is a community wiki created by many people.`, site.name)}
+          {t(`{{name}} is a community wiki created by many people.`, { name: site.name })}
         </p>
         <div className="flex items-center gap-2">
           <Button asChild>
