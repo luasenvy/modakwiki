@@ -27,7 +27,6 @@ export default function remarkBanner(this: Processor) {
           (acc, child) => {
             if (acc.length < 1) acc.push({ type: "paragraph", children: [] });
 
-            console.info(child, "<<<");
             // Last paragraph
             const block = acc[acc.length - 1];
             if (child.type === "text") {
@@ -52,38 +51,6 @@ export default function remarkBanner(this: Processor) {
             }
 
             return acc;
-
-            // if (["text"].includes(child.type)) {
-            //   const contents = child.value.match(/(?!!+)([^\n$]+)/gm) || [];
-            //   console.info(contents);
-            //   const value = contents.join(" ").trim();
-
-            //   if (acc.length > 0) {
-            //     const prevParagraph: BlockContent | DefinitionContent = acc[acc.length - 1];
-            //     if (prevParagraph.type === "paragraph") {
-            //       return acc.toSpliced(acc.length - 1, 1, {
-            //         ...prevParagraph,
-            //         children: prevParagraph.children.concat({ type: "text", value }),
-            //       });
-            //     }
-
-            //     return acc.concat({ type: "paragraph", children: [{ type: "text", value }] });
-            //   } else {
-            //     // 제목
-            //     const [title, ...descriptions] = contents;
-            //     return acc.concat([
-            //       {
-            //         type: "paragraph",
-            //         children: [{ type: "text", value: title?.trim() || "" }],
-            //       },
-            //       {
-            //         type: "paragraph",
-            //         children: [{ type: "text", value: descriptions.join(" ").trim() }],
-            //       },
-            //     ]);
-            //   }
-            // }
-            // return acc;
           },
           [] as (BlockContent | FootnoteDefinition)[],
         ),
