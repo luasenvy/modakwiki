@@ -6,6 +6,7 @@ import { tag } from "@/lib/schema/tag";
 export const doctypeEnum = {
   document: "d",
   post: "p",
+  user: "u",
 } as const;
 
 export function getTablesByDoctype(doctype: Doctype) {

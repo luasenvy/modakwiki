@@ -230,7 +230,18 @@
   "Tag": "Tag",
   "User": "User",
   "Image": "Image",
+  "Profile": "Profile",
   "Documents": "Documents",
   "{{name}} is a community wiki created by many people.": "{{name}} is a community wiki created by many people.",
-  "WhatIsThis": "Modakwiki"
+  "WhatIsThis": "Modakwiki",
+  "total documents: {{docCount}}": "total documents: {{docCount}}",
+  "total posts: {{postCount}}": "total posts: {{postCount}}",
+  "General Information": "General Information",
+  "user": "user",
+  "info": "info",
+  "User Info": "User Info",
+  "Joined": "Joined",
+  "total contributes": "total contributes",
+  "letters": "letters",
+  "total writes": "total writes"
 }

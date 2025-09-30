@@ -1,3 +1,5 @@
+import { Language, languageEnum } from "@/lib/i18n/config";
+
 type DateFormatType =
   | "default"
   | "iso"
@@ -67,15 +69,28 @@ export const MINUTE = 60_000;
 export const HOUR = MINUTE * 60;
 export const DAY = HOUR * 24;
 
-export function fromNow(epoch: number | Date) {
+const i18n = {
+  ko: {
+    minute: "분 전",
+    hour: "시간 전",
+    day: "일 전",
+  },
+  en: {
+    minute: "minutes ago",
+    hour: "hours ago",
+    day: "days ago",
+  },
+};
+
+export function fromNow(epoch: number | Date, lng: Language = languageEnum.ko) {
   if (epoch instanceof Date) epoch = epoch.getTime();
   const diff = Date.now() - epoch;
 
-  if (diff < HOUR) return `${Math.ceil(diff / MINUTE)} 분 전`;
+  if (diff < HOUR) return `${Math.ceil(diff / MINUTE)} ${i18n[lng].minute}`;
 
-  if (diff < DAY) return `${Math.ceil(diff / HOUR)} 시간 전`;
+  if (diff < DAY) return `${Math.ceil(diff / HOUR)} ${i18n[lng].hour}`;
 
-  return `${Math.ceil(diff / DAY)} 일 전`;
+  return `${Math.ceil(diff / DAY)} ${i18n[lng].day}`;
 }
 
 const sizes = {

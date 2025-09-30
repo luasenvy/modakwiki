@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  CircleUserRound,
   FilePlus2,
   FlameKindling,
   Image,
@@ -84,6 +85,12 @@ export const mainNavs: Array<NavItem> = [
 ];
 
 export const subNavs: Array<NavItem> = [
+  {
+    title: "Profile",
+    url: "/me/profile",
+    icon: CircleUserRound,
+    scope: scopeEnum.editor,
+  },
   {
     title: "Documents",
     url: "/me/documents",

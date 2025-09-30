@@ -13,6 +13,7 @@ export type ScopeEnum = (typeof scopeEnum)[keyof typeof scopeEnum];
 export const user = z.object({
   id: z.string(),
   name: z.string(),
+  bio: z.string(),
   email: z.string(),
   emailVerified: z.boolean(),
   image: z.string().optional(),

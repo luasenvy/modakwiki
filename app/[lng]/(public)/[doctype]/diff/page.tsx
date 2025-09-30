@@ -48,7 +48,7 @@ export default async function DiffPage(ctx: PageProps<"/[lng]/[doctype]/diff">) 
 
   const [curr, prev] = rows;
 
-  const dateFormater = new Intl.DateTimeFormat(lngParam, {
+  const dateFormatter = new Intl.DateTimeFormat(lngParam, {
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
@@ -89,7 +89,7 @@ export default async function DiffPage(ctx: PageProps<"/[lng]/[doctype]/diff">) 
 
           <div className="mt-6 mb-2 flex flex-col items-end">
             <p className="!m-0 font-mono text-muted-foreground text-sm">
-              변경전: {dateFormater.format(prev.created)}{" "}
+              변경전: {dateFormatter.format(prev.created)}{" "}
               <sub>
                 (
                 <a
@@ -104,7 +104,7 @@ export default async function DiffPage(ctx: PageProps<"/[lng]/[doctype]/diff">) 
               </sub>
             </p>
             <p className="!m-0 font-mono text-muted-foreground text-sm">
-              변경후: {dateFormater.format(curr.created)}{" "}
+              변경후: {dateFormatter.format(curr.created)}{" "}
               <sub>
                 (
                 <a

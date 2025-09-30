@@ -50,7 +50,7 @@ export default async function HistoryPage(ctx: PageProps<"/[lng]/[doctype]/histo
     .where("h.docId", id)
     .orderBy("h.created", "desc");
 
-  const dateFormater = new Intl.DateTimeFormat(lngParam);
+  const dateFormatter = new Intl.DateTimeFormat(lngParam);
   const numberFormat = new Intl.NumberFormat(lngParam);
 
   const { t } = await useTranslation(lngParam);
@@ -186,7 +186,7 @@ export default async function HistoryPage(ctx: PageProps<"/[lng]/[doctype]/histo
                         </a>
                       </p>
                       <p className="!my-0 text-xs md:text-sm">
-                        {dateFormater.format(Number(created))}
+                        {dateFormatter.format(Number(created))}
                       </p>
                     </div>
                   </div>

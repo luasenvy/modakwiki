@@ -212,7 +212,18 @@
   "Tag": "태그관리",
   "User": "사용자관리",
   "Image": "이미지관리",
+  "Profile": "내 정보",
   "Documents": "문서함",
   "{{name}} is a community wiki created by many people.": "{{name}}는 여러 사람들이 함께 만들어가는 커뮤니티 위키입니다.",
-  "WhatIsThis": "모닥위키"
+  "WhatIsThis": "모닥위키",
+  "total documents: {{docCount}}": "총 작성 문서: {{docCount}}",
+  "total posts: {{postCount}}": "총 작성 포스트: {{postCount}}",
+  "General Information": "일반 정보",
+  "user": "사용자",
+  "info": "정보",
+  "User Info": "사용자 정보",
+  "Joined": "가입일시",
+  "total contributes": "총 기여",
+  "letters": "자",
+  "total writes": "총 작성"
 }

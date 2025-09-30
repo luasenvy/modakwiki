@@ -23,6 +23,7 @@ export const auth = betterAuth({
   user: {
     additionalFields: {
       scope: { type: "number" },
+      bio: { type: "string" },
     },
   },
   session: {

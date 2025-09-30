@@ -170,7 +170,7 @@ export default async function HowToPage(ctx: PageProps<"/[lng]/editor/syntax">) 
                       </div>
                     </div>
                     <div className="border-t pt-2 text-right text-muted-foreground text-xs">
-                      {t("Created")}: {fromNow(Number(created))}
+                      {t("Created")}: {fromNow(Number(created), lngParam)}
                     </div>
                   </div>
                 </CardContent>

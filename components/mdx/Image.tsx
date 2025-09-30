@@ -167,7 +167,7 @@ export function HoverCardContentImageDetail({
         </div>
       </div>
       <div className="border-t pt-2 text-right text-muted-foreground text-xs">
-        {t("Created")}: {fromNow(image.created)}
+        {t("Created")}: {fromNow(image.created, lngParam)}
       </div>
     </div>
   ) : (
