@@ -120,7 +120,7 @@ export const TagsTrigger = ({
   children,
   i18n,
   ...props
-}: TagsTriggerProps & { i18n?: typeof defaultI18n}) => (
+}: TagsTriggerProps & { i18n?: typeof defaultI18n }) => (
   i18n = { ...defaultI18n, ...i18n },
 
   <PopoverTrigger asChild>

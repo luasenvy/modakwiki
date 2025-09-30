@@ -31,34 +31,27 @@ export async function generateMetadata(ctx: PageProps<"/[lng]/[doctype]">) {
 
   if (!table) return;
 
-  let query;
+  const query = knex.from({ u: "user" }).whereNull("d.deleted").andWhere({ "d.id": id });
+
   if (created) {
-    query = knex
+    return await query
       .select({
         title: "d.title",
         description: "h.description",
       })
-      .from({ h: history })
-      .join({ d: table }, "d.id", "=", "h.docId")
-      .join({ u: "user" }, "u.id", "=", "d.userId")
-      .whereNull("d.deleted")
-      .where({
-        "h.docId": id,
-        "h.created": created,
-      });
+      .join({ d: table }, "u.id", "=", "d.userId")
+      .join({ h: history }, "h.docId", "=", "d.id")
+      .andWhere({ "h.created": created })
+      .first();
   } else {
-    query = knex
+    return await query
       .select({
         title: "d.title",
         description: "d.description",
       })
-      .from({ d: table })
-      .join({ u: "user" }, "u.id", "=", "d.userId")
-      .whereNull("d.deleted")
-      .where({ "d.id": id });
+      .join({ d: table }, "u.id", "=", "d.userId")
+      .first();
   }
-
-  return await query.first();
 }
 
 export default async function WikiDocPage(ctx: PageProps<"/[lng]/[doctype]">) {

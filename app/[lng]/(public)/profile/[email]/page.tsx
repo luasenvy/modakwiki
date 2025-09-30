@@ -7,6 +7,19 @@ import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/next";
 import { User } from "@/lib/schema/user";
 
+export async function generateMetadata(ctx: PageProps<"/[lng]/profile/[email]">) {
+  const email = decodeURIComponent((await ctx.params).email);
+
+  return await knex
+    .select({
+      title: "name",
+      description: knex.raw(`'Profile of ' || name`),
+    })
+    .from("user")
+    .where({ email })
+    .first();
+}
+
 export default async function UserProfilePage(ctx: PageProps<"/[lng]/profile/[email]">) {
   const params = await ctx.params;
   const lngParam = params.lng as Language;

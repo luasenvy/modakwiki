@@ -50,11 +50,9 @@ export function DocumentFilter({
 
   const [type, setType] = useState<Doctype>(doctype);
 
-  const [searchKeyword, setSearchKeyword] = useState<string>(String(searchParams.search || ""));
-  const [searchCategory, setSearchCategory] = useState<string>(String(searchParams.category || ""));
-  const [searchTags, setSearchTags] = useState<string[]>(
-    Array.isArray(searchParams.tags) ? searchParams.tags : [],
-  );
+  const [searchKeyword, setSearchKeyword] = useState<string>("");
+  const [searchCategory, setSearchCategory] = useState<string>("");
+  const [searchTags, setSearchTags] = useState<string[]>([]);
 
   const [categories, setCategories] = useState<string[]>([]);
   const [tags, setTags] = useState<Tag[]>([]);
@@ -85,134 +83,158 @@ export function DocumentFilter({
     }
   };
 
-  useEffect(() => {
-    (async () => {
-      const res = await fetch(`/api/category?${new URLSearchParams({ type })}`);
+  const getCategories = useCallback(async () => {
+    setSearchCategory("");
+    const res = await fetch(`/api/category?${new URLSearchParams({ type })}`);
 
-      if (!res.ok) return toast.error(await statusMessage({ t, res }));
+    if (!res.ok) return toast.error(await statusMessage({ t, res }));
 
-      setCategories(await res.json());
-    })();
+    const categories: string[] = await res.json();
+    setCategories(categories);
+    setSearchCategory(categories[0] || "");
   }, [type]);
 
   const getTags = useCallback(async () => {
-    setSearchTags([]);
     if (!searchCategory) return setTags([]);
 
     const res = await fetch(`/api/tag?${new URLSearchParams({ type, category: searchCategory })}`);
 
     if (!res.ok) return toast.error(await statusMessage({ t, res }));
-    setTags(await res.json());
+
+    const tags: Tag[] = await res.json();
+    setTags(tags);
+    setSearchTags(searchTags.filter((tag) => tags.some(({ id }) => id === tag)));
   }, [searchCategory]);
+
+  useEffect(() => {
+    getCategories();
+  }, [getCategories]);
 
   useEffect(() => {
     getTags();
   }, [getTags]);
 
+  // Initialize states from searchParams on mount
+  useEffect(() => {
+    setSearchKeyword(String(searchParams.search || ""));
+    setSearchCategory(String(searchParams.category || ""));
+    setSearchTags(
+      Array.isArray(searchParams.tags)
+        ? searchParams.tags
+        : [searchParams.tags as string].filter(Boolean),
+    );
+  }, []);
+
   return (
-    <div className="flex items-center gap-1">
-      <Toggle
-        variant="outline"
-        pressed={type === doctypeEnum.document}
-        className={cn("!min-w-20 rounded-none", {
-          "!border-blue-200 !bg-blue-50 !text-blue-800 shrink-0": type === doctypeEnum.document,
-        })}
-        onPressedChange={(pressed: boolean) => pressed && setType(doctypeEnum.document)}
-        aria-label="Toggle wkdoc"
-      >
-        <ScrollText className="size-4" />
-        {t("document")}
-      </Toggle>
+    <div className="space-y-1">
+      <div className="grid gap-1 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="flex items-center gap-1 max-lg:col-span-2">
+          <Toggle
+            variant="outline"
+            pressed={type === doctypeEnum.document}
+            className={cn("!min-w-20 grow rounded-none", {
+              "!border-blue-200 !bg-blue-50 !text-blue-800 shrink-0": type === doctypeEnum.document,
+            })}
+            onPressedChange={(pressed: boolean) => pressed && setType(doctypeEnum.document)}
+            aria-label="Toggle wkdoc"
+          >
+            <ScrollText className="size-4" />
+            {t("document")}
+          </Toggle>
 
-      <Toggle
-        variant="outline"
-        pressed={type === doctypeEnum.post}
-        className={cn("!min-w-20 rounded-none", {
-          "!border-rose-200 !bg-rose-50 !text-rose-800 shrink-0": type === doctypeEnum.post,
-        })}
-        onPressedChange={(pressed: boolean) => pressed && setType(doctypeEnum.post)}
-        aria-label="Toggle post"
-      >
-        <MessageSquareHeart className="size-4" />
-        {t("post")}
-      </Toggle>
+          <Toggle
+            variant="outline"
+            pressed={type === doctypeEnum.post}
+            className={cn("!min-w-20 grow rounded-none", {
+              "!border-rose-200 !bg-rose-50 !text-rose-800 shrink-0": type === doctypeEnum.post,
+            })}
+            onPressedChange={(pressed: boolean) => pressed && setType(doctypeEnum.post)}
+            aria-label="Toggle post"
+          >
+            <MessageSquareHeart className="size-4" />
+            {t("post")}
+          </Toggle>
+        </div>
 
-      <Select
-        value={searchCategory}
-        onValueChange={(value) => setSearchCategory(value === "all" ? "" : value)}
-      >
-        <SelectTrigger className="rounded-none">
-          <SelectValue placeholder={t("Select a category")} />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">{t("All categories")}</SelectItem>
-          {categories.map((id) => (
-            <SelectItem key={id} value={id}>
-              {id}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-
-      {searchCategory && (
-        <Tags>
-          <TagsTrigger className="rounded-none" i18n={{ selectATag: t("Select a tag") }}>
-            {searchTags.map((tag) => (
-              <TagsValue
-                key={`tag-value-${tag}`}
-                onRemove={() => setSearchTags((prev) => prev.filter((t) => t !== tag))}
-              >
-                {tag}
-              </TagsValue>
+        <Select
+          value={searchCategory}
+          onValueChange={(value) => setSearchCategory(value === "all" ? "" : value)}
+        >
+          <SelectTrigger className="w-full rounded-none max-lg:col-span-2">
+            <SelectValue placeholder={t("Select a category")} />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">{t("All categories")}</SelectItem>
+            {categories.map((id) => (
+              <SelectItem key={id} value={id}>
+                {id}
+              </SelectItem>
             ))}
-          </TagsTrigger>
-          <TagsContent>
-            <TagsInput placeholder={t("Search options...")} />
-            <TagsList>
-              <TagsEmpty>{t("No tags found.")}</TagsEmpty>
-              <TagsGroup>
-                {tags
-                  .filter((tag) => !searchTags.includes(tag.id))
-                  .map(({ id }) => (
-                    <TagsItem
-                      key={`tag-${id}`}
-                      onSelect={(value) => {
-                        if (searchTags.includes(value))
-                          return setSearchTags((prev) => prev.filter((t) => t !== value));
+          </SelectContent>
+        </Select>
 
-                        setSearchTags((prev) => prev.concat(value));
-                      }}
-                      value={id}
-                    >
-                      {id}
-                      {searchTags.includes(id) && (
-                        <CheckIcon className="text-muted-foreground" size={14} />
-                      )}
-                    </TagsItem>
-                  ))}
-              </TagsGroup>
-            </TagsList>
-          </TagsContent>
-        </Tags>
-      )}
+        {searchCategory && (
+          <Tags className="max-lg:col-span-2">
+            <TagsTrigger className="rounded-none" i18n={{ selectATag: t("Select a tag") }}>
+              {searchTags.map((tag) => (
+                <TagsValue
+                  key={`tag-value-${tag}`}
+                  onRemove={() => setSearchTags((prev) => prev.filter((t) => t !== tag))}
+                >
+                  {tag}
+                </TagsValue>
+              ))}
+            </TagsTrigger>
+            <TagsContent>
+              <TagsInput placeholder={t("Search options...")} />
+              <TagsList>
+                <TagsEmpty>{t("No tags found.")}</TagsEmpty>
+                <TagsGroup>
+                  {tags
+                    .filter((tag) => !searchTags.includes(tag.id))
+                    .map(({ id }) => (
+                      <TagsItem
+                        key={`tag-${id}`}
+                        onSelect={(value) => {
+                          if (searchTags.includes(value))
+                            return setSearchTags((prev) => prev.filter((t) => t !== value));
 
-      <Input
-        name="searchKeyword"
-        className="grow rounded-none"
-        placeholder={t("Please input search keywords")}
-        defaultValue={searchKeyword}
-        onBlur={(e) => setSearchKeyword(e.target.value)}
-        onKeyDown={handleKeydownInput}
-      />
+                          setSearchTags((prev) => prev.concat(value));
+                        }}
+                        value={id}
+                      >
+                        {id}
+                        {searchTags.includes(id) && (
+                          <CheckIcon className="text-muted-foreground" size={14} />
+                        )}
+                      </TagsItem>
+                    ))}
+                </TagsGroup>
+              </TagsList>
+            </TagsContent>
+          </Tags>
+        )}
+      </div>
 
-      <Button
-        type="button"
-        className="rounded-none"
-        variant="outline"
-        onClick={() => handleSearch()}
-      >
-        <Search className="size-5" />
-      </Button>
+      <div className="flex items-center gap-1">
+        <Input
+          name="searchKeyword"
+          className="grow rounded-none"
+          placeholder={t("Please input search keywords")}
+          defaultValue={searchKeyword}
+          onBlur={(e) => setSearchKeyword(e.target.value)}
+          onKeyDown={handleKeydownInput}
+        />
+
+        <Button
+          type="button"
+          className="rounded-none"
+          variant="outline"
+          onClick={() => handleSearch()}
+        >
+          <Search className="size-5" />
+        </Button>
+      </div>
     </div>
   );
 }

@@ -42,7 +42,7 @@ export class ReadableStreamResponse extends Response {
     if (!headers.get("Content-Type"))
       headers.set("Content-Type", lookup(extname(filepath)) || "application/octet-stream");
 
-    headers.set("Last-Revised Edition", mtime.toUTCString());
+    headers.set("Last-Modified", mtime.toUTCString());
     headers.set("Transfer-Encoding", "chunked");
 
     super(readable, {
