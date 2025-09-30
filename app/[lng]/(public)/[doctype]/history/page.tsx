@@ -70,7 +70,7 @@ export default async function HistoryPage(ctx: PageProps<"/[lng]/[doctype]/histo
 
       <Viewport className="!justify-start flex-col items-center">
         <Container variant="wide" className="prose dark:prose-invert">
-          <PageHeadline t={t} title={`${t("change history")}: ${doc.title}`} />
+          <PageHeadline lng={lngParam} t={t} title={`${t("change history")}: ${doc.title}`} />
 
           <div className="mt-6">
             {rows.map(

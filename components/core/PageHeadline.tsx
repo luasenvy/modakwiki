@@ -8,6 +8,7 @@ import { User } from "@/lib/schema/user";
 import { cn } from "@/lib/utils";
 
 interface PageHeadlineProps {
+  lng: Language;
   t: TFunction;
   title?: string;
   description?: string;
@@ -20,6 +21,7 @@ interface PageHeadlineProps {
 }
 
 export async function PageHeadline({
+  lng: lngParam,
   t,
   title,
   description,
@@ -58,7 +60,7 @@ export async function PageHeadline({
           </div>
         )}
 
-        {author && <AvatarProfile profile={author} size="sm" name={author.name} />}
+        {author && <AvatarProfile lng={lngParam} profile={author} size="sm" name={author.name} />}
 
         {license && (
           <a

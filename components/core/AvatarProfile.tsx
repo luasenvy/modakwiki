@@ -1,6 +1,9 @@
 import { CheckCircle } from "lucide-react";
+import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Language } from "@/lib/i18n/config";
 import { User } from "@/lib/schema/user";
+import { localePrefix } from "@/lib/url";
 import { cn } from "@/lib/utils";
 
 const variants = {
@@ -10,13 +13,21 @@ const variants = {
 } as const;
 
 interface AvatarProfileProps {
+  lng: Language;
   profile: User;
   name?: string;
   size?: keyof typeof variants;
   flatten?: boolean;
 }
 
-export function AvatarProfile({ profile, name = "", size = "sm", flatten }: AvatarProfileProps) {
+export function AvatarProfile({
+  lng: lngParam,
+  profile,
+  name = "",
+  size = "sm",
+  flatten,
+}: AvatarProfileProps) {
+  const lng = localePrefix(lngParam);
   return (
     <div className="flex items-center space-x-1">
       <Avatar className={cn(variants[size], "rounded-full")}>
@@ -29,14 +40,12 @@ export function AvatarProfile({ profile, name = "", size = "sm", flatten }: Avat
       {size === "sm" ? (
         <p className="!my-0 text-sm">
           {profile.email ? (
-            <a
-              href={`mailto:${profile.email}`}
+            <Link
+              href={`${lng}/profile/${profile.email}`}
               className="text-blue-600 text-xs no-underline hover:underline"
-              target="_blank"
-              rel="noreferrer noopener"
             >
               {name || profile.name}
-            </a>
+            </Link>
           ) : (
             <span className="text-muted-foreground">{name || profile.name}</span>
           )}

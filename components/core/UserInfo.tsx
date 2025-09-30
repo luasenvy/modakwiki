@@ -77,6 +77,7 @@ ${t("")}
         content={content}
         doctype={doctypeEnum.user}
         session={user}
+        remocon={false}
       />
     </>
   );

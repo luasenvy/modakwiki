@@ -80,6 +80,7 @@ export default async function DiffPage(ctx: PageProps<"/[lng]/[doctype]/diff">) 
       <Viewport className="!justify-start flex-col items-center">
         <Container as="div" variant="wide">
           <PageHeadline
+            lng={lngParam}
             t={t}
             title={t("compare changes")}
             description={title}

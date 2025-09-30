@@ -145,6 +145,7 @@ export async function DocumentList({
 
                 <div className="flex items-center justify-between">
                   <AvatarProfile
+                    lng={lngParam}
                     profile={{ name, email, image, emailVerified } as User}
                     size="sm"
                   />

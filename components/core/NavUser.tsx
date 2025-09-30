@@ -53,6 +53,7 @@ export function NavUser({ lng: lngParam, sitename, session, dev }: NavUserProps)
                 className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
               >
                 <AvatarProfile
+                  lng={lngParam}
                   profile={
                     {
                       name: session.name,

@@ -35,6 +35,7 @@ interface DocumentProps {
   license?: License;
   tags?: string[];
   author?: User;
+  remocon?: boolean;
   created?: number;
   updated?: number;
   session?: Session["user"] | null;
@@ -51,6 +52,7 @@ export async function Document({
   category,
   tags,
   author,
+  remocon = true,
   created,
   updated,
   session,
@@ -97,6 +99,7 @@ export async function Document({
 
         <Container as="article" variant="document">
           <PageHeadline
+            lng={lngParam}
             t={t}
             title={title}
             description={description}
@@ -134,7 +137,7 @@ export async function Document({
         </Container>
 
         <NavToc lng={lngParam} title={title}>
-          {(session || doc) && (
+          {remocon && (session || doc) && (
             <Remocon
               lng={lngParam}
               t={t}
