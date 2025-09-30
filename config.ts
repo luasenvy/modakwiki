@@ -11,6 +11,7 @@ export const site = {
   name: process.env.SITE_TITLE!,
   description: process.env.SITE_DESCRIPTION!,
   baseurl: process.env.SITE_BASEURL!,
+  copyrights: process.env.SITE_COPYRIGHTS!,
   author: "luasenvy",
 };
 

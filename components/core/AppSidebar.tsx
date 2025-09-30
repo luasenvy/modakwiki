@@ -35,7 +35,7 @@ export async function AppSidebar({ lng: lngParam, session, ...props }: AppSideba
 
         <div className="space-y-2">
           <p className="text-center text-xs">
-            &copy; 2025 {new URL(site.baseurl).hostname} All rights reserved.
+            &copy; 2025 {site.copyrights || new URL(site.baseurl).hostname} All rights reserved.
           </p>
 
           {isDev && (
