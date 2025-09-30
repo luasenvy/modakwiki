@@ -56,7 +56,7 @@ export default async function HistoryPage(ctx: PageProps<"/[lng]/[doctype]/histo
   const { t } = await useTranslation(lngParam);
 
   const breadcrumbs: Array<BreadcrumbItem> = [
-    { title: doctypeEnum.document === doctype ? t("wiki document") : t("post") },
+    { title: doctypeEnum.document === doctype ? t("document") : t("post") },
     { title: t("change history") },
     {
       title: doc.title,

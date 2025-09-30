@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { forbidden } from "next/navigation";
 import { Breadcrumb } from "@/components/core/Breadcrumb";
 import { Document } from "@/components/core/Document";
 import { FootnoteHighlighter } from "@/components/core/MdxViewer/FootnoteHighlighter";
@@ -9,7 +9,7 @@ import { useTranslation } from "@/lib/i18n/next";
 import { localePrefix } from "@/lib/url";
 
 export default async function HowToPage(ctx: PageProps<"/[lng]/privacy">) {
-  if (!isDev) return notFound();
+  if (!isDev) return forbidden();
 
   const lngParam = (await ctx.params).lng as Language;
   const lng = localePrefix(lngParam);
