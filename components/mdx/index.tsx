@@ -8,15 +8,13 @@ import { cn } from "@/lib/utils";
 
 export default {
   a: AutoLink,
-  p: (props: React.HTMLAttributes<HTMLParagraphElement>) =>
-    Children.toArray(props.children).some((child) =>
-      // @ts-expect-error: i18next conflicts
-      Boolean(child.props?.src),
-    ) ? (
-      props.children
-    ) : (
-      <p {...props} />
-    ),
+  p: (props: React.HTMLAttributes<HTMLParagraphElement>) => {
+    // @ts-expect-error: i18next conflicts
+    const hasSrc = Children.toArray(props.children).some((child) => Boolean(child.props?.src));
+
+    if (hasSrc) return props.children;
+    return <p {...props} />;
+  },
   img: (props: React.ImgHTMLAttributes<HTMLImageElement>) => {
     return <MdxImage {...props} />;
   },

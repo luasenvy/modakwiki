@@ -1,6 +1,6 @@
 import { Info, Siren, TriangleAlert } from "lucide-react";
 import { Children, JSX } from "react";
-
+import { Image } from "@/components/mdx/Image";
 import { AlertDescription, AlertTitle, Alert as ShadcnAlert } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
 
@@ -27,13 +27,16 @@ export function Alert({ children, level, ...props }: BannerProps) {
 
   return (
     <ShadcnAlert
-      className={cn("my-6", {
+      className={cn("my-6", "[&_sub]:!text-current [&_code]:text-current [&_strong]:text-current", {
         "border-blue-200 bg-blue-50 text-blue-800 shadow-sm *:data-[slot=alert-description]:text-blue-800/90 dark:border-blue-800 dark:bg-blue-950/30 dark:text-blue-200 dark:*:data-[slot=alert-description]:text-blue-200/90 [&>svg]:text-blue-600 dark:[&>svg]:text-blue-400":
           isInfo,
+        "[&_code]:!bg-background/20 [&_code]:border-blue-200": isInfo,
         "border-orange-200 bg-orange-50 text-orange-800 shadow-sm *:data-[slot=alert-description]:text-orange-800/90 dark:border-yellow-800 dark:bg-yellow-950/30 dark:text-yellow-200 dark:*:data-[slot=alert-description]:text-yellow-200/90 [&>svg]:text-orange-600 dark:[&>svg]:text-yellow-400":
           isWarning,
+        "[&_code]:!bg-background/20 [&_code]:border-orange-200": isWarning,
         "border-2 border-rose-200 bg-rose-50 text-rose-800 shadow-md *:data-[slot=alert-description]:text-rose-800/90 dark:border-rose-800 dark:bg-rose-950/30 dark:text-rose-200 dark:*:data-[slot=alert-description]:text-rose-200/90 [&>svg]:text-rose-600 dark:[&>svg]:text-rose-400":
           isDanger,
+        "[&_code]:!bg-background/20 [&_code]:border-rose-200": isDanger,
       })}
       {...props}
     >
@@ -47,15 +50,9 @@ export function Alert({ children, level, ...props }: BannerProps) {
       >
         {title}
       </AlertTitle>
-      {Boolean(descriptions.length) && (
-        <AlertDescription>
-          {descriptions.map((description, i) => (
-            <p key={`alert-desc-${i}`} className="!m-0">
-              {description}
-            </p>
-          ))}
-        </AlertDescription>
-      )}
+      <AlertDescription>
+        <p className="!my-0">{descriptions}</p>
+      </AlertDescription>
     </ShadcnAlert>
   );
 }
