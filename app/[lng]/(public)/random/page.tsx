@@ -6,22 +6,39 @@ import { BreadcrumbItem } from "@/hooks/use-breadcrumbs";
 import { knex } from "@/lib/db";
 import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/next";
-import { Doctype, Document as DocumentType, getTablesByDoctype } from "@/lib/schema/document";
+import {
+  Doctype,
+  Document as DocumentType,
+  doctypeEnum,
+  getTablesByDoctype,
+} from "@/lib/schema/document";
 import { localePrefix } from "@/lib/url";
 
-export default async function WikiDocPage(ctx: PageProps<"/[lng]/[doctype]/random">) {
+export default async function WikiDocPage(ctx: PageProps<"/[lng]/random">) {
   const params = await ctx.params;
 
   const lngParam = params.lng as Language;
   const lng = localePrefix(lngParam);
-  const doctype = params.doctype as Doctype;
-
-  const { table } = getTablesByDoctype(doctype);
-  if (!table) return notFound();
 
   const doc = await knex
-    .select("id")
-    .from(knex.raw(`?? TABLESAMPLE SYSTEM (100)`, table))
+    .select(["id", "type"])
+    .from(
+      knex.unionAll([
+        knex
+          .select({
+            id: "id",
+            type: knex.raw(`'${doctypeEnum.document}'`),
+          })
+          .from("document"),
+        knex
+          .select({
+            id: "id",
+            type: knex.raw(`'${doctypeEnum.post}'`),
+          })
+          .from("post"),
+      ]),
+    )
+    .orderByRaw("random()")
     .limit(1)
     .first();
 
@@ -42,5 +59,5 @@ export default async function WikiDocPage(ctx: PageProps<"/[lng]/[doctype]/rando
     );
   }
 
-  return redirect(`${lng}/${doctype}?${new URLSearchParams({ id: doc.id })}`);
+  return redirect(`${lng}/${doc.type}?${new URLSearchParams({ id: doc.id })}`);
 }

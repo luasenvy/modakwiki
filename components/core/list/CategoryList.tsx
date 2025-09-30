@@ -36,15 +36,20 @@ import { Spinner } from "@/components/ui/shadcn-io/spinner";
 import { Toggle } from "@/components/ui/toggle";
 import { useBreakpoints } from "@/hooks/use-breakpoints";
 import { statusMessage } from "@/lib/fetch/react";
+import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/react";
 import { Doctype, doctypeEnum } from "@/lib/schema/document";
 import { Tag } from "@/lib/schema/tag";
 import { cn } from "@/lib/utils";
 
-export function CategoryList() {
+interface CategoryListProps {
+  lng: Language;
+}
+
+export function CategoryList({ lng: lngParam }: CategoryListProps) {
   const router = useRouter();
 
-  const { t } = useTranslation();
+  const { t } = useTranslation(lngParam);
 
   const firstInputRef = useRef<HTMLInputElement>(null);
 

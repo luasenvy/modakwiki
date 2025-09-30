@@ -14,7 +14,7 @@ interface NavTocProps extends React.PropsWithChildren {
 }
 
 export function NavToc({ lng: lngParam, title, className, children }: NavTocProps) {
-  const { t } = useTranslation();
+  const { t } = useTranslation(lngParam);
 
   return (
     <nav

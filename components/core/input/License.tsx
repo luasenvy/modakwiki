@@ -16,7 +16,7 @@ interface LicenseProps extends React.ComponentProps<typeof Select> {
 }
 
 export function License({ className, ...props }: LicenseProps) {
-  const { t } = useTranslation();
+  const { t } = useTranslation(lngParam);
 
   return (
     <Select {...props}>

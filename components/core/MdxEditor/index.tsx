@@ -101,7 +101,7 @@ export default function MdxEditor({
   const router = useRouter();
 
   const lng = localePrefix(lngParam);
-  const { t } = useTranslation();
+  const { t } = useTranslation(lngParam);
 
   const [hunk, setHunk] = useState<string>("");
   const [lines, setLines] = useState<string[]>(getHunks(doc?.content || ""));
@@ -662,9 +662,9 @@ export default function MdxEditor({
             }
           >
             <BannerIcon icon={CircleAlert} />
-            <BannerTitle>작성요령을 꼭 읽어주세요. 🥳</BannerTitle>
+            <BannerTitle>{t("Please read the writing instructions carefully. 🥳")}</BannerTitle>
             <BannerAction size="sm" asChild>
-              <Link href={`${lng}/editor/tip`}>작성요령</Link>
+              <Link href={`${lng}/editor/tip`}>{t("Writing Instructions")}</Link>
             </BannerAction>
             <BannerClose type="button" />
           </Banner>

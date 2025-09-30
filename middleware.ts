@@ -1,7 +1,6 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
-import type { Language } from "@/lib/i18n/config";
 import { cookieName, languages } from "@/lib/i18n/config";
 import { negotiate } from "@/lib/i18n/detect";
 import { redirectStamp, reqStamp, resStamp } from "@/lib/log";

@@ -43,7 +43,7 @@ export default async function UserPage(ctx: PageProps<"/[lng]/me/documents">) {
             description={t("Manage users in this site")}
           />
 
-          <UserTable rows={rows} />
+          <UserTable lng={lngParam} rows={rows} />
         </Container>
       </Viewport>
     </>

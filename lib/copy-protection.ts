@@ -1,9 +1,11 @@
 "use client";
 
+import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/react";
 import { License, licenseEnum } from "@/lib/license";
 
 interface CopyProtectionProps {
+  lng: Language;
   url: string;
   links?: Array<string>;
   author?: string | Array<string>;
@@ -11,12 +13,13 @@ interface CopyProtectionProps {
 }
 
 export function useCopyProtection({
+  lng: lngParam,
   url,
   links,
   author,
   license = licenseEnum.ccbyncsa,
 }: CopyProtectionProps) {
-  const { t } = useTranslation();
+  const { t } = useTranslation(lngParam);
 
   return function handleCopy(e: ClipboardEvent) {
     const selection = document.getSelection();

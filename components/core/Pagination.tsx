@@ -40,7 +40,7 @@ export function Pagination({ page, pageSize, total, searchParams, className }: P
       <PaginationContent>
         {page > 1 && (
           <PaginationItem>
-            <PaginationPrevious href={`?${getPagedSearchParams(page)}`} />
+            <PaginationPrevious href={`?${getPagedSearchParams(page - 1)}`} />
           </PaginationItem>
         )}
 

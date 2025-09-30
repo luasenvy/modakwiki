@@ -125,7 +125,7 @@ export async function Document({
               <p className="!my-4 text-right font-semibold text-sm">
                 &copy; {new Date(Number(created)).getFullYear()}{" "}
                 {t(
-                  `This document is published under the "{{license}}" license. All rights reserved by the author.`,
+                  `This document is  under the "{{license}}" license. All rights reserved by the author.`,
                   { license: t(license) },
                 )}
               </p>

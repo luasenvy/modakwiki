@@ -30,7 +30,7 @@ export default async function MyDocsPage(ctx: PageProps<"/[lng]/me/documents">) 
             className="max-w-full"
           />
 
-          <CategoryList />
+          <CategoryList lng={lngParam} />
         </Container>
       </Viewport>
     </>

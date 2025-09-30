@@ -11,13 +11,16 @@ import { Doctype, doctypeEnum } from "@/lib/schema/document";
 import { localePrefix } from "@/lib/url";
 
 const pageSize = 10;
-export default async function RecentPage(ctx: PageProps<"/[lng]/recent">) {
+export default async function RecentPage(ctx: PageProps<"/[lng]/list">) {
   const searchParams = await ctx.searchParams;
 
   const type = (searchParams.type || doctypeEnum.document) as Doctype;
   const page = Number(searchParams.page ?? "1");
   const search = searchParams.search || "";
   const category = searchParams.category || "";
+  let sort = (searchParams.sort || "created") as "created" | "view";
+  if (!["created", "view"].includes(sort)) sort = "created";
+
   let tags = searchParams.tags || [];
 
   if (!Array.isArray(tags)) tags = [tags].filter(Boolean);
@@ -34,7 +37,7 @@ export default async function RecentPage(ctx: PageProps<"/[lng]/recent">) {
       <Breadcrumb lng={lngParam} breadcrumbs={breadcrumbs} />
       <Viewport>
         <Container as="div" variant="aside">
-          <DocumentFilter lng={lngParam} searchParams={searchParams} type={type} />
+          <DocumentFilter key={type} lng={lngParam} searchParams={searchParams} type={type} />
           <DocumentList
             lng={lngParam}
             searchParams={searchParams}
@@ -42,6 +45,7 @@ export default async function RecentPage(ctx: PageProps<"/[lng]/recent">) {
             category={category}
             doctype={type}
             tags={tags}
+            sort={sort}
             pagination={{ page, pageSize }}
           />
         </Container>
@@ -49,7 +53,7 @@ export default async function RecentPage(ctx: PageProps<"/[lng]/recent">) {
         <div className="sticky top-0 flex h-[calc(100dvh_-_var(--spacing)_*_12)] w-[286px] shrink-0 flex-col pt-8 pr-4 pl-2 [mask-image:linear-gradient(to_bottom,transparent,white_16px,white_calc(100%-16px),transparent)] max-xl:hidden">
           <div className="mb-2 flex items-center gap-2">
             <Info className="size-4" />
-            <p className="m-0 text-muted-foreground text-sm">검색결과</p>
+            <p className="m-0 text-muted-foreground text-sm">{t("search results")}</p>
           </div>
 
           <div className="relative ms-px min-h-0 overflow-auto py-3 text-sm [scrollbar-width:none]"></div>

@@ -15,7 +15,7 @@ export function Breadcrumb({ lng: lngParam, breadcrumbs = [] }: BreadcrumbProps)
   const setBreadcrumbs = useBreadcrumbs((state) => state.setBreadcrumbs);
 
   const lng = localePrefix(lngParam);
-  const { t } = useTranslation();
+  const { t } = useTranslation(lngParam);
 
   useEffect(() => {
     setBreadcrumbs([{ title: t("Home"), href: `${lng}/` }, ...breadcrumbs]);

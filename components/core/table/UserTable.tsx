@@ -18,6 +18,7 @@ import {
   TableProvider,
   TableRow,
 } from "@/components/ui/shadcn-io/table";
+import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/react";
 import { scopeEnum, User } from "@/lib/schema/user";
 
@@ -61,11 +62,12 @@ const columns: Array<ColumnDef<User>> = [
 ];
 
 interface UserTableProps {
+  lng: Language;
   rows: Array<User>;
 }
 
-export function UserTable({ rows }: UserTableProps) {
-  const { t } = useTranslation();
+export function UserTable({ lng: lngParam, rows }: UserTableProps) {
+  const { t } = useTranslation(lngParam);
 
   const handleChangeScope = (id: string, scope: string) => {
     console.info(id, scope, "changed");

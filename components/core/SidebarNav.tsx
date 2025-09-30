@@ -14,6 +14,7 @@ import {
 import { useNavItems } from "@/hooks/use-nav";
 import { Session } from "@/lib/auth/server";
 import { Language } from "@/lib/i18n/config";
+import { useTranslation } from "@/lib/i18n/react";
 import { localePrefix } from "@/lib/url";
 
 interface NavMenuProps {
@@ -23,6 +24,7 @@ interface NavMenuProps {
 
 export function SidebarNav({ lng: lngParam, session }: NavMenuProps) {
   const lng = localePrefix(lngParam);
+  const { t } = useTranslation(lngParam);
   const pathname = usePathname();
 
   const mainNavs = useNavItems((state) => state.mainNavs);
@@ -44,31 +46,31 @@ export function SidebarNav({ lng: lngParam, session }: NavMenuProps) {
       {scopedMainNavs.map((item) => {
         const hasChild = Number(item.items?.length) > 0;
         return (
-          <SidebarGroup key={item.title}>
-            {hasChild && <SidebarGroupLabel>{item.title}</SidebarGroupLabel>}
+          <SidebarGroup key={t(item.title)}>
+            {hasChild && <SidebarGroupLabel>{t(item.title)}</SidebarGroupLabel>}
             <SidebarGroupContent>
               <SidebarMenu>
                 {hasChild ? (
                   item.items?.map((item) => (
-                    <SidebarMenuItem key={item.title}>
+                    <SidebarMenuItem key={t(item.title)}>
                       <SidebarMenuButton
                         asChild
                         isActive={`${lng}${item.url}` === pathname}
                         data-url={`${lng}${item.url}`}
                       >
-                        <Link href={item.url}>
+                        <Link href={`${lng}${item.url}`}>
                           {item.icon && createElement(item.icon)}
-                          <span>{item.title}</span>
+                          <span>{t(item.title)}</span>
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                   ))
                 ) : (
-                  <SidebarMenuItem key={item.title}>
+                  <SidebarMenuItem key={t(item.title)}>
                     <SidebarMenuButton asChild isActive={`${lng}${item.url}` === pathname}>
-                      <Link href={item.url}>
+                      <Link href={`${lng}${item.url}`}>
                         {item.icon && createElement(item.icon)}
-                        <span>{item.title}</span>
+                        <span>{t(item.title)}</span>
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -83,11 +85,11 @@ export function SidebarNav({ lng: lngParam, session }: NavMenuProps) {
         <SidebarGroupContent>
           <SidebarMenu>
             {scopedSubNavs.map((item) => (
-              <SidebarMenuItem key={item.title}>
+              <SidebarMenuItem key={t(item.title)}>
                 <SidebarMenuButton asChild size="sm" isActive={`${lng}${item.url}` === pathname}>
-                  <Link href={item.url}>
+                  <Link href={`${lng}${item.url}`}>
                     {item.icon && createElement(item.icon)}
-                    <span>{item.title}</span>
+                    <span>{t(item.title)}</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

@@ -24,67 +24,58 @@ export interface NavItem {
 
 export const mainNavs: Array<NavItem> = [
   {
-    title: "모닥위키",
+    title: "WhatIsThis",
     url: "/what-is-this",
     icon: FlameKindling,
   },
   {
-    title: "위키",
+    title: "Wiki",
     url: "#",
     items: [
-      {
-        title: "임의문서",
-        url: "/d/random",
-      },
-      {
-        title: "인기글",
-        url: "/popular",
-      },
-      {
-        title: "최신글",
-        url: "/recent",
-      },
+      { title: "Random", url: "/random" },
+      { title: "Popular", url: "/list?sort=view" },
+      { title: "Recent", url: "/list?sort=created" },
     ],
   },
   {
-    title: "편집자",
+    title: "Editor",
     scope: scopeEnum.editor,
     url: "#",
     items: [
       {
-        title: "위키문법",
+        title: "Syntax",
         url: "/editor/syntax",
         icon: SpellCheck,
       },
       {
-        title: "작성요령",
+        title: "Instructions",
         url: "/editor/tip",
         icon: ScrollText,
       },
       {
-        title: "새 문서",
+        title: "New document",
         url: "/editor/write",
         icon: FilePlus2,
       },
     ],
   },
   {
-    title: "사이트관리",
+    title: "Site",
     url: "#",
     scope: scopeEnum.admin,
     items: [
       {
-        title: "태그관리",
+        title: "Tag",
         url: "/site/tag",
         icon: Tags,
       },
       {
-        title: "사용자관리",
+        title: "User",
         url: "/site/user",
         icon: UserCheck,
       },
       {
-        title: "이미지관리",
+        title: "Image",
         url: "/site/image",
         icon: Image,
       },
@@ -94,7 +85,7 @@ export const mainNavs: Array<NavItem> = [
 
 export const subNavs: Array<NavItem> = [
   {
-    title: "문서함",
+    title: "Documents",
     url: "/me/documents",
     icon: Inbox,
     scope: scopeEnum.editor,

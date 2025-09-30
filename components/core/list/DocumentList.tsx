@@ -25,6 +25,7 @@ interface DocumentListProps {
   search?: string | string[];
   category?: string | string[];
   tags?: string | Array<string>;
+  sort?: "created" | "view";
   pagination?: {
     page?: number;
     pageSize?: number;
@@ -39,6 +40,7 @@ export async function DocumentList({
   search,
   category,
   tags = [],
+  sort = "created",
   showDoctype,
   doctype = doctypeEnum.document,
   pagination = {},
@@ -85,7 +87,7 @@ export async function DocumentList({
       created: `p.created`,
     })
     .join({ u: "user" }, `p.userId`, `u.id`)
-    .orderBy("p.created", "desc")
+    .orderBy(`p.${sort}`, "desc")
     .offset((pagination.page - 1) * pagination.pageSize)
     .limit(pagination.pageSize);
 
@@ -186,7 +188,7 @@ export async function DocumentList({
                             </Button>
                           </HoverCardTrigger>
                           <HoverCardContent className="w-64">
-                            <HoverCardContentImageDetail src={src} />
+                            <HoverCardContentImageDetail lng={lngParam} src={src} />
                           </HoverCardContent>
                         </HoverCard>
                       </figure>

@@ -2,6 +2,7 @@
 
 import { Info } from "lucide-react";
 import NextImage from "next/image";
+import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -10,6 +11,7 @@ import { ImageZoom } from "@/components/ui/shadcn-io/image-zoom";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
 import { statusMessage } from "@/lib/fetch/react";
 import { byteto, fromNow } from "@/lib/format";
+import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/react";
 import { licenseImageEnum, licenseLinkEnum } from "@/lib/license";
 import { Image as ImageType } from "@/lib/schema/image";
@@ -21,6 +23,7 @@ export function Image({
   className,
   ...props
 }: React.ImgHTMLAttributes<HTMLImageElement>) {
+  const lngParam = useParams().lng as Language;
   const [text, ...others] = alt?.split(" ") ?? [];
 
   const otherTexts = others
@@ -85,7 +88,7 @@ export function Image({
             </Button>
           </HoverCardTrigger>
           <HoverCardContent className="w-64">
-            <HoverCardContentImageDetail src={props.src as string} />
+            <HoverCardContentImageDetail lng={lngParam} src={props.src as string} />
           </HoverCardContent>
         </HoverCard>
       )}
@@ -94,11 +97,15 @@ export function Image({
 }
 
 interface HoverCardContentImageDetailProps {
+  lng: Language;
   src: string;
 }
 
-export function HoverCardContentImageDetail({ src }: HoverCardContentImageDetailProps) {
-  const { t } = useTranslation();
+export function HoverCardContentImageDetail({
+  lng: lngParam,
+  src,
+}: HoverCardContentImageDetailProps) {
+  const { t } = useTranslation(lngParam);
   const [image, setImage] = useState<ImageType>();
 
   useEffect(() => {
