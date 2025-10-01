@@ -113,7 +113,7 @@ export async function DocumentList({
           updated,
         }) => {
           return (
-            <div className="p-2 hover:bg-accent" key={id}>
+            <div className="p-2 hover:bg-accent/40" key={id}>
               {category && (
                 <div className="flex items-center">
                   <span className="font-semibold text-xs">{t(category)}</span>
