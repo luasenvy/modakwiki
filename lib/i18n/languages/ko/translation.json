@@ -203,6 +203,7 @@
   "Wiki": "위키",
   "Random": "임의문서",
   "Popular": "인기순",
+  "Weekly": "주간인기",
   "Recent": "최신순",
   "Editor": "에디터",
   "Syntax": "문법",
@@ -226,5 +227,16 @@
   "total contributes": "총 기여",
   "letters": "자",
   "total writes": "총 작성",
-  "User Bio": "사용자 개요"
+  "check this week's popular articles!": "이번주의 인기 문서들을 확인해보세요!",
+  "User Bio": "사용자 개요",
+  "total document views": "총 문서 조회수",
+  "Software": "소프트웨어",
+  "Manual": "사용설명서",
+  "Computer/IT": "컴퓨터/IT",
+  "Worklog": "작업기록",
+  "History": "역사",
+  "Study": "학습",
+  "Hobby": "취미",
+  "Translation": "번역",
+  "Info": "정보"
 }

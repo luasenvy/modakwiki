@@ -68,6 +68,7 @@ export const date = (timestamp: Date | number, options?: { type?: DateFormatType
 export const MINUTE = 60_000;
 export const HOUR = MINUTE * 60;
 export const DAY = HOUR * 24;
+export const WEEK = 7 * DAY;
 
 const i18n = {
   ko: {

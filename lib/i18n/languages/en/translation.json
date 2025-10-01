@@ -221,6 +221,7 @@
   "Wiki": "Wiki",
   "Random": "Random",
   "Popular": "Popular",
+  "Weekly": "Weekly",
   "Recent": "Recent",
   "Editor": "Editor",
   "Syntax": "Syntax",
@@ -244,5 +245,16 @@
   "total contributes": "total contributes",
   "letters": "letters",
   "total writes": "total writes",
-  "User Bio": "User Bio"
+  "check this week's popular articles!": "check this week's popular articles!",
+  "User Bio": "User Bio",
+  "total document views": "total document views",
+  "Software": "Software",
+  "Manual": "Manual",
+  "Computer/IT": "Computer/IT",
+  "Worklog": "Worklog",
+  "History": "History",
+  "Study": "Study",
+  "Hobby": "Hobby",
+  "Translation": "Translation",
+  "Info": "Info"
 }

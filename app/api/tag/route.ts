@@ -60,6 +60,10 @@ export async function PUT(req: NextRequest) {
     .update({ tags: knex.raw("array_replace(tags, ?, ?)", [id, name]) })
     .whereRaw(knex.raw("? = ANY (tags)", [id]));
 
+  await knex("document")
+    .update({ tags: knex.raw("array_replace(tags, ?, ?)", [id, name]) })
+    .whereRaw(knex.raw("? = ANY (tags)", [id]));
+
   return new Response(null, { status: 204 });
 }
 

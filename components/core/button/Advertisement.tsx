@@ -11,7 +11,7 @@ export function Advertisement({ className }: AdvertisementProps) {
     <a href="mailto:luas.envy@gmail.com" target="_blank" rel="noopener noreferrer">
       <Skeleton
         className={cn(
-          "hover:animation-duration-[0s] flex w-full cursor-pointer rounded-xl border px-4 py-12 shadow-sm",
+          "hover:animation-duration-[0s] flex w-full cursor-pointer rounded-xl border bg-muted px-4 py-12 text-muted-foreground shadow-sm",
           className,
         )}
       >

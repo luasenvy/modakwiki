@@ -3,6 +3,7 @@ import { ChevronRight } from "lucide-react";
 import Image from "next/image";
 import { AvatarProfile } from "@/components/core/AvatarProfile";
 import { Language } from "@/lib/i18n/config";
+import { useTranslation } from "@/lib/i18n/next";
 import { License, licenseImageEnum, licenseLinkEnum } from "@/lib/license";
 import { User } from "@/lib/schema/user";
 import { cn } from "@/lib/utils";
@@ -50,11 +51,13 @@ export async function PageHeadline({
       <div className="my-6 flex flex-col items-end gap-y-1">
         {category && (
           <div className="flex items-center">
-            <span className="font-semibold text-xs">{category}</span>
+            <span className="font-semibold text-xs">{t(category)}</span>
             {Boolean(tags?.length) && (
               <>
                 <ChevronRight className="mx-0.5 inline size-2.5" />
-                <span className="text-muted-foreground text-xs">{tags?.join(", ")}</span>
+                <span className="text-muted-foreground text-xs">
+                  {tags?.map((tag) => t(tag)).join(", ")}
+                </span>
               </>
             )}
           </div>

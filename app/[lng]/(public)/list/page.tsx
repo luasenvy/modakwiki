@@ -3,7 +3,7 @@ import { Breadcrumb } from "@/components/core/Breadcrumb";
 import { Advertisement } from "@/components/core/button/Advertisement";
 import { Container, Viewport } from "@/components/core/Container";
 import { DocumentFilter } from "@/components/core/DocumentFilter";
-import { DocumentList } from "@/components/core/list/DocumentList";
+import { DocumentList } from "@/components/core/DocumentList";
 import { BreadcrumbItem } from "@/hooks/use-breadcrumbs";
 import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/next";

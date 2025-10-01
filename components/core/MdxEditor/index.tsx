@@ -367,7 +367,7 @@ export default function MdxEditor({
                     <Toggle
                       variant="outline"
                       pressed={doctype === doctypeEnum.document}
-                      className={cn({
+                      className={cn("rounded-none", {
                         "!border-blue-200 !bg-blue-50 !text-blue-800":
                           doctype === doctypeEnum.document,
                       })}
@@ -385,7 +385,7 @@ export default function MdxEditor({
                     <Toggle
                       variant="outline"
                       pressed={doctype === doctypeEnum.post}
-                      className={cn({
+                      className={cn("rounded-none", {
                         "!border-rose-200 !bg-rose-50 !text-rose-800": doctype === doctypeEnum.post,
                       })}
                       onPressedChange={(pressed: boolean) =>

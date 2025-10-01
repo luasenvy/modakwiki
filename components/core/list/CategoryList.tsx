@@ -206,7 +206,7 @@ export function CategoryList({ lng: lngParam }: CategoryListProps) {
         <Toggle
           variant="outline"
           pressed={type === doctypeEnum.document}
-          className={cn({
+          className={cn("rounded-none", {
             "!border-blue-200 !bg-blue-50 !text-blue-800": type === doctypeEnum.document,
           })}
           onPressedChange={(pressed: boolean) => pressed && setType(doctypeEnum.document)}
@@ -220,7 +220,7 @@ export function CategoryList({ lng: lngParam }: CategoryListProps) {
         <Toggle
           variant="outline"
           pressed={type === doctypeEnum.post}
-          className={cn({
+          className={cn("rounded-none", {
             "!border-rose-200 !bg-rose-50 !text-rose-800": type === doctypeEnum.post,
           })}
           onPressedChange={(pressed: boolean) => pressed && setType(doctypeEnum.post)}
