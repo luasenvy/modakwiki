@@ -28,7 +28,7 @@ export function SearchForm({ lng: lngParam, ...props }: SearchFormProps) {
     const search = new FormData(e.currentTarget).get("search") as string;
     if (!search) return;
 
-    router.push(`${lng}/search?${new URLSearchParams({ search })}`);
+    router.push(`${lng}/list?${new URLSearchParams({ search })}`);
   };
 
   return (

@@ -114,16 +114,22 @@ export function DocumentFilter({
     getTags();
   }, [getTags]);
 
-  // Initialize states from searchParams on mount
   useEffect(() => {
-    setSearchKeyword(String(searchParams.search || ""));
-    setSearchCategory(String(searchParams.category || ""));
-    setSearchTags(
-      Array.isArray(searchParams.tags)
-        ? searchParams.tags
-        : [searchParams.tags as string].filter(Boolean),
-    );
-  }, []);
+    if (searchParams.search) setSearchKeyword(String(searchParams.search));
+  }, [searchParams.search]);
+
+  useEffect(() => {
+    if (searchParams.category) setSearchCategory(String(searchParams.category));
+  }, [searchParams.category]);
+
+  useEffect(() => {
+    if (searchParams.tags)
+      setSearchTags(
+        Array.isArray(searchParams.tags)
+          ? searchParams.tags
+          : [searchParams.tags as string].filter(Boolean),
+      );
+  }, [searchParams.tags]);
 
   return (
     <div className="space-y-1">
@@ -167,7 +173,7 @@ export function DocumentFilter({
             <SelectItem value="all">{t("All categories")}</SelectItem>
             {categories.map((id) => (
               <SelectItem key={id} value={id}>
-                {id}
+                {t(id)}
               </SelectItem>
             ))}
           </SelectContent>
@@ -181,7 +187,7 @@ export function DocumentFilter({
                   key={`tag-value-${tag}`}
                   onRemove={() => setSearchTags((prev) => prev.filter((t) => t !== tag))}
                 >
-                  {tag}
+                  {t(tag)}
                 </TagsValue>
               ))}
             </TagsTrigger>
@@ -203,7 +209,7 @@ export function DocumentFilter({
                         }}
                         value={id}
                       >
-                        {id}
+                        {t(id)}
                         {searchTags.includes(id) && (
                           <CheckIcon className="text-muted-foreground" size={14} />
                         )}

@@ -110,20 +110,21 @@ export default async function WeeklyPage(ctx: PageProps<"/[lng]/weekly">) {
             speed={1}
             chaos={0.5}
             thickness={2}
-            className="rounded-xl"
+            className="!border-primary mx-6 rounded-xl"
           >
             <div className="space-y-2 p-8">
-              <div className="flex gap-1 overflow-hidden">
-                {one.images?.map((src, i) => (
-                  <div
-                    key={`images-${i}`}
-                    role="img"
-                    style={{ backgroundImage: `url('${src}')` }}
-                    className="h-48 w-full bg-center bg-cover bg-no-repeat"
-                  />
-                ))}
+              <div className="flex gap-1 overflow-y-hidden md:overflow-x-hidden">
+                {Boolean(one.images?.length) &&
+                  one.images!.map((src, i) => (
+                    <div
+                      key={`top-img-${i}`}
+                      role="img"
+                      style={{ backgroundImage: `url('${src}')` }}
+                      className="h-48 w-full bg-center bg-cover bg-no-repeat shadow-sm max-md:max-w-2/5 max-md:shrink-0"
+                    />
+                  ))}
               </div>
-              <h2 className="font-bold text-xl">
+              <h2 className="truncate font-bold text-xl" title={one.title}>
                 <Link
                   href={`${lng}/${one.type}?${new URLSearchParams({ id: one.id })}`}
                   className="underline hover:text-blue-600"
@@ -131,31 +132,52 @@ export default async function WeeklyPage(ctx: PageProps<"/[lng]/weekly">) {
                   {one.title}
                 </Link>
               </h2>
-              <p className="text-base text-muted-foreground">{one.description}</p>
+              <p className="truncate text-base text-muted-foreground">{one.description}</p>
             </div>
           </ElectricBorder>
 
           <h3 className="font-semibold text-2xl">{t("Weekly Popular")}</h3>
           <div className="flex flex-nowrap gap-1 overflow-x-auto overflow-y-hidden">
-            {others.map(({ id, type, title, images, userName }) => (
-              <div
-                key={`${type}-${id}`}
-                className="mb-4 flex h-[200px] w-xs flex-col justify-end rounded-lg bg-center bg-cover bg-muted bg-no-repeat last:mb-0"
-                style={{ backgroundImage: images?.[0] ? `url('${images[0]}')` : undefined }}
-              >
-                <div className="bg-background/80 p-4 backdrop-blur-lg">
-                  <h4 className="truncate font-medium text-lg">
-                    <Link
-                      href={`${lng}/${type}?${new URLSearchParams({ id })}`}
-                      className="underline hover:text-blue-600"
-                    >
-                      {title}
-                    </Link>
-                  </h4>
-                  <p className="m-0 text-muted-foreground text-sm">{userName}</p>
+            {others.map(({ id, type, title, images, userName }) =>
+              Boolean(images?.length) ? (
+                <div
+                  key={`${type}-${id}`}
+                  className="relative flex h-[200px] min-w-3xs max-w-xs overflow-hidden rounded-t-lg border bg-accent/80 bg-center bg-cover bg-no-repeat shadow-sm"
+                  style={{ backgroundImage: `url('${images![0]}')` }}
+                >
+                  <div className="absolute inset-x-0 bottom-0 bg-background/80 p-4 backdrop-blur-sm">
+                    <h4 className="truncate font-medium text-lg" title={title}>
+                      <Link
+                        href={`${lng}/${type}?${new URLSearchParams({ id })}`}
+                        className="underline hover:text-blue-600"
+                      >
+                        {title}
+                      </Link>
+                    </h4>
+                    <p className="m-0 truncate text-muted-foreground text-xs">{userName}</p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ) : (
+                <div
+                  key={`${type}-${id}`}
+                  className="relative h-[200px] min-w-3xs max-w-xs overflow-hidden rounded-t-lg border bg-accent/80 bg-center bg-cover bg-no-repeat shadow-sm"
+                >
+                  <div className="absolute inset-0 flex flex-col items-center justify-center space-y-4 p-4 backdrop-blur-sm">
+                    <h4 className="w-full truncate text-center font-medium text-lg" title={title}>
+                      <Link
+                        href={`${lng}/${type}?${new URLSearchParams({ id })}`}
+                        className="underline hover:text-blue-600"
+                      >
+                        {title}
+                      </Link>
+                    </h4>
+                    <p className="m-0 w-full truncate text-center text-muted-foreground text-xs">
+                      {userName}
+                    </p>
+                  </div>
+                </div>
+              ),
+            )}
           </div>
         </Container>
 

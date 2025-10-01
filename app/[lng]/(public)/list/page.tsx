@@ -30,7 +30,7 @@ export default async function RecentPage(ctx: PageProps<"/[lng]/list">) {
 
   const { t } = await useTranslation(lngParam);
 
-  const breadcrumbs: Array<BreadcrumbItem> = [{ title: t("popular"), href: `${lng}/popular` }];
+  const breadcrumbs: Array<BreadcrumbItem> = [{ title: t("List"), href: `${lng}/list` }];
 
   return (
     <>
@@ -45,7 +45,6 @@ export default async function RecentPage(ctx: PageProps<"/[lng]/list">) {
             category={category}
             doctype={type}
             tags={tags}
-            sort={sort}
             pagination={{ page, pageSize }}
           />
         </Container>
