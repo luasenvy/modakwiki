@@ -24,7 +24,7 @@ import { Image as ImageType } from "@/lib/schema/image";
 import { localePrefix } from "@/lib/url";
 
 const pageSize = 6;
-export default async function HowToPage(ctx: PageProps<"/[lng]/editor/syntax">) {
+export default async function SitePage(ctx: PageProps<"/[lng]/site/image">) {
   const lngParam = (await ctx.params).lng as Language;
   const searchParams = await ctx.searchParams;
 

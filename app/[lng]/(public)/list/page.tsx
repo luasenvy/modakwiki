@@ -21,7 +21,7 @@ export async function generateMetadata(ctx: PageProps<"/[lng]/list">) {
 }
 
 const pageSize = 10;
-export default async function RecentPage(ctx: PageProps<"/[lng]/list">) {
+export default async function ListPage(ctx: PageProps<"/[lng]/list">) {
   const searchParams = await ctx.searchParams;
 
   const type = (searchParams.type || doctypeEnum.document) as Doctype;

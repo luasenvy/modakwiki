@@ -9,7 +9,7 @@ import { useTranslation } from "@/lib/i18n/next";
 import { User } from "@/lib/schema/user";
 import { localePrefix } from "@/lib/url";
 
-export default async function UserPage(ctx: PageProps<"/[lng]/me/documents">) {
+export default async function UserPage(ctx: PageProps<"/[lng]/site/user">) {
   const lngParam = (await ctx.params).lng as Language;
   const lng = localePrefix(lngParam);
 

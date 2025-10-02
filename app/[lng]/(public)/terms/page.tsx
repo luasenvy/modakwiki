@@ -8,7 +8,7 @@ import type { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/next";
 import { localePrefix } from "@/lib/url";
 
-export default async function HowToPage(ctx: PageProps<"/[lng]/privacy">) {
+export default async function TermsPage(ctx: PageProps<"/[lng]/privacy">) {
   if (!isDev) return forbidden();
 
   const lngParam = (await ctx.params).lng as Language;

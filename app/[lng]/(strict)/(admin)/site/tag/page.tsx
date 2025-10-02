@@ -7,7 +7,7 @@ import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/next";
 import { localePrefix } from "@/lib/url";
 
-export default async function MyDocsPage(ctx: PageProps<"/[lng]/me/documents">) {
+export default async function TagPage(ctx: PageProps<"/[lng]/site/tag">) {
   const lngParam = (await ctx.params).lng as Language;
   const lng = localePrefix(lngParam);
 

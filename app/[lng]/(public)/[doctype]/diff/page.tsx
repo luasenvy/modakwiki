@@ -8,7 +8,6 @@ import { knex } from "@/lib/db";
 import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/next";
 import { Doctype, Document as DocumentType, getTablesByDoctype } from "@/lib/schema/document";
-import { History as DocumentHistory } from "@/lib/schema/history";
 import { localePrefix } from "@/lib/url";
 
 export default async function DiffPage(ctx: PageProps<"/[lng]/[doctype]/diff">) {
