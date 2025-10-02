@@ -19,15 +19,11 @@ interface SeriesFilterProps {
   type?: Doctype;
 }
 
-export function SeriesFilter({
-  lng: lngParam,
-  searchParams,
-  type: doctype = doctypeEnum.document,
-}: SeriesFilterProps) {
+export function SeriesFilter({ lng: lngParam, searchParams }: SeriesFilterProps) {
   const router = useRouter();
   const { t } = useTranslation(lngParam);
 
-  const [type, setType] = useState<Doctype>(doctype);
+  const [type, setType] = useState<Doctype>((searchParams.type as Doctype) || doctypeEnum.document);
 
   const [searchKeyword, setSearchKeyword] = useState<string>("");
 
