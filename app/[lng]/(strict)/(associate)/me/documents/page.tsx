@@ -13,6 +13,16 @@ import { Doctype, doctypeEnum } from "@/lib/schema/document";
 import { User } from "@/lib/schema/user";
 import { localePrefix } from "@/lib/url";
 
+export async function generateMetadata(ctx: PageProps<"/[lng]/me/documents">) {
+  const lngParam = (await ctx.params).lng as Language;
+  const { t } = await useTranslation(lngParam);
+
+  return {
+    title: t("documents"),
+    description: t("You can view or search the list of documents you have created."),
+  };
+}
+
 const pageSize = 10;
 export default async function MyDocsPage(ctx: PageProps<"/[lng]/me/documents">) {
   const session = (await auth.api.getSession({ headers: await headers() }))!;
