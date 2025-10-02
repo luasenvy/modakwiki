@@ -47,19 +47,25 @@ export const feedColumns = {
   id: "id",
   title: "title",
   created: "created",
+  updated: "updated",
 };
 
 export async function getFeed() {
-  const { count } = (await knex
-    .sum({ count: "count" })
+  const { id } = (await knex
+    .select({ id: "o.id" })
     .from(
-      knex.unionAll([
-        knex.count({ count: "*" }).from("document").whereNull("deleted"),
-        knex.count({ count: "*" }).from("post").whereNull("deleted"),
-      ]),
+      knex
+        .unionAll([
+          knex.select({ id: "id", created: "created" }).from("document").whereNull("deleted"),
+          knex.select({ id: "id", created: "created" }).from("post").whereNull("deleted"),
+        ])
+        .as("o"),
     )
+    .orderBy("created", "desc")
     .first())!;
-  console.info(count, "@@");
+
+  // 최신 피드의 변경이 없다면 디비 검색 없이 메모리에 저장된 피드를 바로 응답
+  if (feed.items[0]?.id === id) return feed;
 
   const rows: Array<
     DocumentType & { userName: User["name"]; email: User["email"]; type: Doctype }
