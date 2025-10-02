@@ -132,7 +132,7 @@ export function HoverCardContentImageDetail({
           {image.ref ? (
             <a
               href={image.ref}
-              className="text-blue-600 hover:underline"
+              className="text-blue-600 hover:underline dark:text-blue-500"
               target="_blank"
               rel="noreferrer noopener"
             >

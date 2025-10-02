@@ -259,7 +259,9 @@ export function CategoryList({ lng: lngParam }: CategoryListProps) {
               <CommandItem
                 key={`category-${id}`}
                 onSelect={setSelectedCategory}
-                className={cn("group", { "!text-blue-600 underline": id === selectedCategory })}
+                className={cn("group", {
+                  "!text-blue-600 dark:!text-blue-500 underline": id === selectedCategory,
+                })}
               >
                 {id}
                 <div className={cn("ml-auto hidden items-center gap-1 group-hover:flex")}>

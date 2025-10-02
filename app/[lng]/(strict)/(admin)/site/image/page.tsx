@@ -124,7 +124,7 @@ export default async function SitePage(ctx: PageProps<"/[lng]/site/image">) {
                         {ref ? (
                           <a
                             href={ref}
-                            className="text-blue-600 hover:underline"
+                            className="text-blue-600 hover:underline dark:text-blue-500"
                             target="_blank"
                             rel="noreferrer noopener"
                           >
@@ -138,7 +138,7 @@ export default async function SitePage(ctx: PageProps<"/[lng]/site/image">) {
                         <span className="text-muted-foreground">{t("license")}</span>
                         <a
                           href={licenseLinkEnum[license]}
-                          className="text-blue-600 hover:underline"
+                          className="text-blue-600 hover:underline dark:text-blue-500"
                           target="_blank"
                           rel="noreferrer noopener"
                         >

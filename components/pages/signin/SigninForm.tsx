@@ -98,7 +98,7 @@ export function SigninForm({ lng: lngParam, referer, siteKey }: SigninFormProps)
           <div className="flex items-center justify-center">
             <a
               href="/privacy"
-              className="text-blue-600 text-xs hover:underline"
+              className="text-blue-600 text-xs hover:underline dark:text-blue-500"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -109,7 +109,7 @@ export function SigninForm({ lng: lngParam, referer, siteKey }: SigninFormProps)
 
             <a
               href="/terms"
-              className="text-blue-600 text-xs hover:underline"
+              className="text-blue-600 text-xs hover:underline dark:text-blue-500"
               target="_blank"
               rel="noopener noreferrer"
             >

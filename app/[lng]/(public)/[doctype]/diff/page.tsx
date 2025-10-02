@@ -96,7 +96,7 @@ export default async function DiffPage(ctx: PageProps<"/[lng]/[doctype]/diff">) 
                   href={`mailto:${prev.email}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-blue-600 no-underline hover:underline"
+                  className="text-blue-600 no-underline hover:underline dark:text-blue-500"
                 >
                   {prev.name}
                 </a>
@@ -111,7 +111,7 @@ export default async function DiffPage(ctx: PageProps<"/[lng]/[doctype]/diff">) 
                   href={`mailto:${curr.email}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-blue-600 no-underline hover:underline"
+                  className="text-blue-600 no-underline hover:underline dark:text-blue-500"
                 >
                   {curr.name}
                 </a>

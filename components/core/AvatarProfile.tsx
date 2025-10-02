@@ -42,7 +42,7 @@ export function AvatarProfile({
           {profile.email ? (
             <Link
               href={`${lng}/profile/${profile.email}`}
-              className="text-blue-600 text-xs no-underline hover:underline"
+              className="text-blue-600 text-xs no-underline hover:underline dark:text-blue-500"
             >
               {name || profile.name}
             </Link>

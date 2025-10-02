@@ -24,7 +24,10 @@ export function AutoLink({ href, children, className, icon = true, ...props }: A
     <a
       {...props}
       href={href}
-      className={cn(className, "group text-blue-600 no-underline hover:underline")}
+      className={cn(
+        className,
+        "group text-blue-600 no-underline hover:underline dark:text-blue-500",
+      )}
     >
       {children}
       {!isImage && icon && isExternal && <ExternalLink className="inline size-3" />}
@@ -34,7 +37,10 @@ export function AutoLink({ href, children, className, icon = true, ...props }: A
       {...props}
       // Avoid Nextjs Type
       href={href as string | UrlObject}
-      className={cn(className, "group text-blue-600 no-underline hover:underline")}
+      className={cn(
+        className,
+        "group text-blue-600 no-underline hover:underline dark:text-blue-500",
+      )}
       target={isExternal ? "_blank" : undefined}
       rel={isExternal ? "noopener noreferrer" : undefined}
     >

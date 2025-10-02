@@ -94,7 +94,7 @@ export function PageTOCPopoverTrigger({
       <ProgressCircle
         value={(selected + 1) / Math.max(1, items.length)}
         max={1}
-        className={cn("shrink-0", { "text-blue-600": open })}
+        className={cn("shrink-0", { "text-blue-600 dark:text-blue-500": open })}
       />
       <span className="grid flex-1 *:col-start-1 *:row-start-1 *:my-auto">
         <span

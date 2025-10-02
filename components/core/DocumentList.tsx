@@ -135,7 +135,7 @@ export async function DocumentList({
                     <Link
                       key={id}
                       href={`${lng}/${type || doctype}?${new URLSearchParams({ id })}`}
-                      className="text-blue-600 no-underline hover:underline"
+                      className="text-blue-600 no-underline hover:underline dark:text-blue-500"
                     >
                       {title}
                     </Link>

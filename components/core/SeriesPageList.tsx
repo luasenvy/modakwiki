@@ -118,7 +118,7 @@ export async function SeriesPageList({
                     <Link
                       key={id}
                       href={`${lng}/${type}?${new URLSearchParams({ id })}`}
-                      className="text-blue-600 no-underline hover:underline"
+                      className="text-blue-600 no-underline hover:underline dark:text-blue-500"
                     >
                       {title}
                     </Link>

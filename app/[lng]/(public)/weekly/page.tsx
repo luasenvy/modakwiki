@@ -125,7 +125,7 @@ export default async function WeeklyPage(ctx: PageProps<"/[lng]/weekly">) {
                 <h2 className="truncate font-bold text-xl" title={one.title}>
                   <Link
                     href={`${lng}/${one.type}?${new URLSearchParams({ id: one.id })}`}
-                    className="underline hover:text-blue-600"
+                    className="underline hover:text-blue-600 dark:hover:text-blue-500"
                   >
                     {one.title}
                   </Link>
@@ -148,7 +148,7 @@ export default async function WeeklyPage(ctx: PageProps<"/[lng]/weekly">) {
                     <h4 className="truncate font-medium text-lg" title={title}>
                       <Link
                         href={`${lng}/${type}?${new URLSearchParams({ id })}`}
-                        className="underline hover:text-blue-600"
+                        className="underline hover:text-blue-600 dark:hover:text-blue-500"
                       >
                         {title}
                       </Link>
@@ -165,7 +165,7 @@ export default async function WeeklyPage(ctx: PageProps<"/[lng]/weekly">) {
                     <h4 className="w-full truncate text-center font-medium text-lg" title={title}>
                       <Link
                         href={`${lng}/${type}?${new URLSearchParams({ id })}`}
-                        className="underline hover:text-blue-600"
+                        className="underline hover:text-blue-600 dark:hover:text-blue-500"
                       >
                         {title}
                       </Link>
