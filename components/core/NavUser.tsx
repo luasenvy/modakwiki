@@ -4,8 +4,8 @@ import { ChevronsUpDown, LogIn, LogOut, UserIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useTheme } from "next-themes";
 import { AvatarProfile } from "@/components/core/AvatarProfile";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,6 +20,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { LogoType } from "@/config";
 import { Session, signOut } from "@/lib/auth/react";
 import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/react";
@@ -30,14 +31,16 @@ import Logo from "@/public/brand/32x32.webp";
 interface NavUserProps {
   lng: Language;
   sitename: string;
+  logo: LogoType;
   dev?: boolean;
   session?: Session["user"];
 }
 
-export function NavUser({ lng: lngParam, sitename, session, dev }: NavUserProps) {
+export function NavUser({ lng: lngParam, sitename, session, logo, dev }: NavUserProps) {
   const lng = localePrefix(lngParam);
 
   const { isMobile } = useSidebar();
+  const { theme } = useTheme();
   const router = useRouter();
 
   const { t } = useTranslation(lngParam);
@@ -102,7 +105,11 @@ export function NavUser({ lng: lngParam, sitename, session, dev }: NavUserProps)
               </Link>
             ) : (
               <Link href={`${lng}/`}>
-                <Image src={Logo} alt={t(sitename)} className="size-[32px]" />
+                <img
+                  src={"dark" === theme ? logo.dark : logo.light}
+                  alt={t(sitename)}
+                  className="size-[32px]"
+                />
                 {t(sitename)}
               </Link>
             )}
