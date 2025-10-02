@@ -45,7 +45,7 @@
     "@types/mdx": "^2.0.13",
     "@types/mime-types": "^3.0.1",
     "@types/negotiator": "^0.6.4",
-    "@types/node": "^24.6.1",
+    "@types/node": "^24.6.2",
     "@types/pg": "^8.15.5",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
