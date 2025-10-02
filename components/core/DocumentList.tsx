@@ -87,6 +87,7 @@ export async function DocumentList({
       created: `p.created`,
     })
     .join({ u: "user" }, `p.userId`, `u.id`)
+    .orderBy(`p.created`, "desc")
     .offset((pagination.page - 1) * pagination.pageSize)
     .limit(pagination.pageSize);
 
