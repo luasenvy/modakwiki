@@ -7,6 +7,16 @@ import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/next";
 import { User } from "@/lib/schema/user";
 
+export async function generateMetadata(ctx: PageProps<"/[lng]/me/profile">) {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session?.user) return;
+
+  return {
+    title: `${session.user.name}`,
+    description: `Profile of ${session.user.name}`,
+  };
+}
+
 export default async function ProfilePage(ctx: PageProps<"/[lng]/me/profile">) {
   const session = (await auth.api.getSession({ headers: await headers() }))!;
 
