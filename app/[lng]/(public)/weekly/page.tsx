@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Breadcrumb } from "@/components/core/Breadcrumb";
 import { Advertisement } from "@/components/core/button/Advertisement";
 import { Container, Viewport } from "@/components/core/Container";
-import ElectricBorder from "@/components/ui/react-bits/ElectricBorder";
+import PrismaticBurst from "@/components/ui/react-bits/PrismaticBurst";
 import { BreadcrumbItem } from "@/hooks/use-breadcrumbs";
 import { knex } from "@/lib/db";
 import { WEEK } from "@/lib/format";
@@ -105,15 +105,11 @@ export default async function WeeklyPage(ctx: PageProps<"/[lng]/weekly">) {
       <Viewport>
         <Container as="div" variant="aside">
           <h2 className="font-bold text-3xl">{t("Weekly Best")}</h2>
-          <ElectricBorder
-            color="var(--primary)"
-            speed={1}
-            chaos={0.5}
-            thickness={2}
-            className="!border-primary mx-6 rounded-xl"
-          >
-            <div className="space-y-2 p-8">
-              <div className="flex gap-1 overflow-y-hidden md:overflow-x-hidden">
+          <div className="relative h-[400px] border shadow-sm">
+            <PrismaticBurst animationType="rotate3d" mixBlendMode="exclusion" />
+
+            <div className="absolute inset-0 flex flex-col justify-between space-y-2">
+              <div className="m-8 flex gap-1 overflow-y-hidden rounded-t-lg border shadow-sm md:overflow-x-hidden">
                 {Boolean(one.images?.length) &&
                   one.images!.map((src, i) => (
                     <div
@@ -124,20 +120,23 @@ export default async function WeeklyPage(ctx: PageProps<"/[lng]/weekly">) {
                     />
                   ))}
               </div>
-              <h2 className="truncate font-bold text-xl" title={one.title}>
-                <Link
-                  href={`${lng}/${one.type}?${new URLSearchParams({ id: one.id })}`}
-                  className="underline hover:text-blue-600"
-                >
-                  {one.title}
-                </Link>
-              </h2>
-              <p className="truncate text-base text-muted-foreground">{one.description}</p>
+
+              <div className="bg-background/60 p-8 backdrop-blur-sm">
+                <h2 className="truncate font-bold text-xl" title={one.title}>
+                  <Link
+                    href={`${lng}/${one.type}?${new URLSearchParams({ id: one.id })}`}
+                    className="underline hover:text-blue-600"
+                  >
+                    {one.title}
+                  </Link>
+                </h2>
+                <p className="truncate text-base text-muted-foreground">{one.description}</p>
+              </div>
             </div>
-          </ElectricBorder>
+          </div>
 
           <h3 className="font-semibold text-2xl">{t("Weekly Popular")}</h3>
-          <div className="flex flex-nowrap gap-1 overflow-x-auto overflow-y-hidden">
+          <div className="flex flex-nowrap gap-1 overflow-x-auto overflow-y-hidden pb-4">
             {others.map(({ id, type, title, images, userName }) =>
               Boolean(images?.length) ? (
                 <div

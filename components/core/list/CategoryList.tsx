@@ -233,7 +233,7 @@ export function CategoryList({ lng: lngParam }: CategoryListProps) {
       </div>
 
       <div className="flex flex-col items-center gap-4 lg:flex-row">
-        <Command className="rounded-lg border shadow-md max-lg:max-h-[calc(40dvh_-_(var(--spacing)_*_20))] lg:h-[calc(100dvh_-_(var(--spacing)_*_60))]">
+        <Command className="rounded-lg border shadow-md max-lg:max-h-[calc(40dvh_-_(var(--spacing)_*_20))] lg:h-[calc(100dvh_-_(var(--spacing)_*_74))]">
           <CommandInput
             ref={firstInputRef}
             value={inputCategory}
@@ -340,7 +340,7 @@ export function CategoryList({ lng: lngParam }: CategoryListProps) {
           {isLg ? <ChevronsRight className="size-4" /> : <ChevronsDown className="size-4" />}
         </div>
 
-        <Command className="rounded-lg border shadow-md max-lg:max-h-[calc(40dvh_-_(var(--spacing)_*_20))] lg:h-[calc(100dvh_-_(var(--spacing)_*_60))]">
+        <Command className="rounded-lg border shadow-md max-lg:max-h-[calc(40dvh_-_(var(--spacing)_*_20))] lg:h-[calc(100dvh_-_(var(--spacing)_*_74))]">
           {selectedCategory ? (
             <>
               <CommandInput
