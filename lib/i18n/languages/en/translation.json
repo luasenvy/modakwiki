@@ -261,7 +261,12 @@
   "Weekly Best": "Weekly Best",
   "Weekly Popular": "Weekly Popular",
   "List": "List",
+  "Series List": "Series List",
   "Go to a random document.": "Go to a random document.",
-  "View the list of documents.": "View the list of documents.",
-  "You can view or search the list of documents you have created.": "You can view or search the list of documents you have created."
+  "View or search the documents.": "View or search the documents.",
+  "View or search the series.": "View or search the series.",
+  "You can view or search the list of documents you have created.": "You can view or search the list of documents you have created.",
+  "No pages found.": "No pages found.",
+  "Series Pages List": "Series Pages List",
+  "View or search pages in the series.": "View or search pages in the series."
 }

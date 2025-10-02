@@ -4,57 +4,66 @@ import { Advertisement } from "@/components/core/button/Advertisement";
 import { Container, Viewport } from "@/components/core/Container";
 import { DocumentFilter } from "@/components/core/DocumentFilter";
 import { DocumentList } from "@/components/core/DocumentList";
+import { SeriesPageList } from "@/components/core/SeriesPageList";
 import { BreadcrumbItem } from "@/hooks/use-breadcrumbs";
+import { knex } from "@/lib/db";
 import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/next";
-import { Doctype, doctypeEnum } from "@/lib/schema/document";
+import { Doctype, doctypeEnum, getTablesByDoctype } from "@/lib/schema/document";
 import { localePrefix } from "@/lib/url";
+import { cn } from "@/lib/utils";
 
 export async function generateMetadata(ctx: PageProps<"/[lng]/list">) {
   const lngParam = (await ctx.params).lng as Language;
   const { t } = await useTranslation(lngParam);
 
   return {
-    title: t("List"),
-    description: t("View or search the documents."),
+    title: t("Series Pages List"),
+    description: t("View or search pages in the series."),
   };
 }
 
 const pageSize = 10;
-export default async function ListPage(ctx: PageProps<"/[lng]/list">) {
+export default async function SeriesPagesListPage(ctx: PageProps<"/[lng]/series/pages">) {
   const searchParams = await ctx.searchParams;
 
-  const type = (searchParams.type || doctypeEnum.document) as Doctype;
   const page = Number(searchParams.page ?? "1");
-  const search = searchParams.search || "";
-  const category = searchParams.category || "";
-  let sort = (searchParams.sort || "created") as "created" | "view";
-  if (!["created", "view"].includes(sort)) sort = "created";
-
-  let tags = searchParams.tags || [];
-
-  if (!Array.isArray(tags)) tags = [tags].filter(Boolean);
 
   const lngParam = (await ctx.params).lng as Language;
   const lng = localePrefix(lngParam);
 
   const { t } = await useTranslation(lngParam);
 
-  const breadcrumbs: Array<BreadcrumbItem> = [{ title: t("List"), href: `${lng}/list` }];
+  const breadcrumbs: Array<BreadcrumbItem> = [
+    { title: t("Series Pages List"), href: `${lng}/series/pages` },
+  ];
+
+  const { series } = getTablesByDoctype(searchParams.type as Doctype);
+
+  const { title, description } = await knex
+    .select(["title", "description"])
+    .from(series!)
+    .whereNull("deleted")
+    .andWhere({ id: searchParams.id })
+    .first();
 
   return (
     <>
       <Breadcrumb lng={lngParam} breadcrumbs={breadcrumbs} />
       <Viewport>
         <Container as="div" variant="aside">
-          <DocumentFilter key={type} lng={lngParam} searchParams={searchParams} type={type} />
-          <DocumentList
+          <div className="prose dark:prose-invert max-w-none">
+            {title && <h1 className="mb-2 text-center"> {title} </h1>}
+            {description && (
+              <h2 className="!m-0 text-center font-semibold text-lg text-muted-foreground">
+                {description}
+              </h2>
+            )}
+          </div>
+
+          <SeriesPageList
             lng={lngParam}
             searchParams={searchParams}
-            search={search}
-            category={category}
-            doctype={type}
-            tags={tags}
             pagination={{ page, pageSize }}
           />
         </Container>

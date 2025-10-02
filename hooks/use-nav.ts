@@ -37,6 +37,7 @@ export const mainNavs: Array<NavItem> = [
       { title: "Random", url: "/random" },
       { title: "Weekly", url: "/weekly" },
       { title: "List", url: "/list" },
+      { title: "Series List", url: "/series" },
     ],
   },
   {

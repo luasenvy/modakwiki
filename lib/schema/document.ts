@@ -13,7 +13,14 @@ export function getTablesByDoctype(doctype: Doctype) {
   const [table] = Object.entries(doctypeEnum).find(([, value]) => value === doctype) ?? [];
   if (!table) return {};
 
-  return { table, history: `${table}_history`, category: `${table}_category`, tag: `${table}_tag` };
+  return {
+    table,
+    history: `${table}_history`,
+    category: `${table}_category`,
+    tag: `${table}_tag`,
+    series: `${table}_series`,
+    seriesMap: `${table}_series_map`,
+  };
 }
 
 export type Doctype = (typeof doctypeEnum)[keyof typeof doctypeEnum];

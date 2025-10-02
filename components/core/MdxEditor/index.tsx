@@ -569,7 +569,6 @@ export default function MdxEditor({
                   </div>
                 )}
                 <div className="relative">
-                  {" "}
                   <Textarea
                     ref={lineRef}
                     name="hunk"
