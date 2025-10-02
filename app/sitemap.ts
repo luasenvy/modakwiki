@@ -3,7 +3,6 @@ import type { MetadataRoute } from "next";
 import { site } from "@/config";
 import { knex } from "@/lib/db";
 import { feedColumns } from "@/lib/feed";
-import { DAY } from "@/lib/format";
 import { languageEnum } from "@/lib/i18n/config";
 import { doctypeEnum } from "@/lib/schema/document";
 
@@ -11,8 +10,6 @@ type Frequncy = "monthly" | "yearly" | "always" | "hourly" | "daily" | "weekly" 
 
 const started = new Date();
 const changeFrequency: Frequncy = "monthly";
-
-export const revalidate = DAY;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const rows = await knex
