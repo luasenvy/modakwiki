@@ -112,8 +112,20 @@ export function getHunks(content: string) {
 
   let indicator = 0;
   while (indicator < content.length) {
-    if (content.startsWith("```", indicator)) {
+    if (content.startsWith("\n", indicator)) {
+      indicator += 1;
+      continue;
+    } else if (content.startsWith("```", indicator)) {
       let endOfHunk = content.indexOf("```", indicator + 3);
+
+      // syntax
+      if (endOfHunk < 0) endOfHunk = content.length;
+      else endOfHunk += 3;
+
+      lines.push(content.substring(indicator, endOfHunk));
+      indicator = endOfHunk;
+    } else if (content.startsWith("~~~", indicator)) {
+      let endOfHunk = content.indexOf("~~~", indicator + 3);
 
       // syntax
       if (endOfHunk < 0) endOfHunk = content.length;

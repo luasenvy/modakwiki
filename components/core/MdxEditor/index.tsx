@@ -463,7 +463,7 @@ export default function MdxEditor({
                             <SelectContent>
                               {categories.map((id) => (
                                 <SelectItem key={`category-${id}`} value={id}>
-                                  {id}
+                                  {t(id)}
                                 </SelectItem>
                               ))}
                             </SelectContent>
@@ -491,7 +491,7 @@ export default function MdxEditor({
                                     key={`tag-value-${tag}`}
                                     onRemove={() => handleRemoveTag(tag)}
                                   >
-                                    {tag}
+                                    {t(tag)}
                                   </TagsValue>
                                 ))}
                               </TagsTrigger>
@@ -508,7 +508,7 @@ export default function MdxEditor({
                                           onSelect={handleSelectTag}
                                           value={id}
                                         >
-                                          {id}
+                                          {t(id)}
                                           {selectedTags.includes(id) && (
                                             <CheckIcon
                                               className="text-muted-foreground"

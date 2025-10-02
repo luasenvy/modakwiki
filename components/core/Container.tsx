@@ -32,9 +32,13 @@ const variants = {
     // Image
     "prose-img:w-full",
     // Inline code
-    "prose-p:[&_code]:before:hidden",
-    "prose-p:[&_code]:after:hidden",
+    "prose-p:[&_code]:before:hidden prose-p:[&_code]:after:hidden",
     "prose-p:[&_code]:bg-muted prose-p:[&_code]:border prose-p:[&_code]:rounded-sm prose-p:[&_code]:px-1 prose-p:[&_code]:py-0.5 prose-p:[&_code]:text-sm prose-p:[&_code]:font-mono prose-p:[&_code]:font-normal",
+    // List Inline code
+    "prose-ul:[&>li>code]:before:hidden prose-ul:[&>li>code]:after:hidden",
+    "prose-ul:[&>li>code]:bg-muted prose-ul:[&>li>code]:border prose-ul:[&>li>code]:rounded-sm prose-ul:[&>li>code]:px-1 prose-ul:[&>li>code]:py-0.5 prose-ul:[&>li>code]:text-sm prose-ul:[&>li>code]:font-mono prose-ul:[&>li>code]:font-normal",
+    "prose-ol:[&>li>code]:before:hidden prose-ol:[&>li>code]:after:hidden",
+    "prose-ol:[&>li>code]:bg-muted prose-ol:[&>li>code]:border prose-ol:[&>li>code]:rounded-sm prose-ol:[&>li>code]:px-1 prose-ol:[&>li>code]:py-0.5 prose-ol:[&>li>code]:text-sm prose-ol:[&>li>code]:font-mono prose-ol:[&>li>code]:font-normal",
     // Task
     "prose-ol:[&.contains-task-list]:[&_[type=checkbox]]:mr-2",
     "prose-ul:[&.contains-task-list]:[&_[type=checkbox]]:mr-2",
