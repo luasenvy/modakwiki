@@ -1,4 +1,4 @@
-import { notFound, redirect } from "next/navigation";
+import { redirect } from "next/navigation";
 import { Breadcrumb } from "@/components/core/Breadcrumb";
 import { Document } from "@/components/core/Document";
 import { isDev } from "@/config";
@@ -6,13 +6,18 @@ import { BreadcrumbItem } from "@/hooks/use-breadcrumbs";
 import { knex } from "@/lib/db";
 import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/next";
-import {
-  Doctype,
-  Document as DocumentType,
-  doctypeEnum,
-  getTablesByDoctype,
-} from "@/lib/schema/document";
+import { doctypeEnum } from "@/lib/schema/document";
 import { localePrefix } from "@/lib/url";
+
+export async function generateMetadata(ctx: PageProps<"/[lng]/random">) {
+  const lngParam = (await ctx.params).lng as Language;
+  const { t } = await useTranslation(lngParam);
+
+  return {
+    title: t("Random"),
+    description: t("Go to a random document."),
+  };
+}
 
 export default async function WikiDocPage(ctx: PageProps<"/[lng]/random">) {
   const params = await ctx.params;

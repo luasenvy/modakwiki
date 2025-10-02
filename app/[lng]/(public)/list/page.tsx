@@ -10,6 +10,16 @@ import { useTranslation } from "@/lib/i18n/next";
 import { Doctype, doctypeEnum } from "@/lib/schema/document";
 import { localePrefix } from "@/lib/url";
 
+export async function generateMetadata(ctx: PageProps<"/[lng]/list">) {
+  const lngParam = (await ctx.params).lng as Language;
+  const { t } = await useTranslation(lngParam);
+
+  return {
+    title: t("List"),
+    description: t("View the list of documents."),
+  };
+}
+
 const pageSize = 10;
 export default async function RecentPage(ctx: PageProps<"/[lng]/list">) {
   const searchParams = await ctx.searchParams;
