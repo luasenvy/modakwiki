@@ -345,6 +345,26 @@ export default function MdxEditor({
     form.setValue("category", doc?.category || defaultCategory || categories[0] || "");
   }, [categories]);
 
+  const handlePopState = (event: PopStateEvent) => {
+    // 사용자가 '예'를 선택한 경우, 한 번 더 뒤로가기
+    if (window.confirm(t("There is unsaved changes. Are you sure to leave this page?")))
+      window.history.back();
+    // 사용자가 '아니요'를 선택한 경우, 다시 현재 페이지 상태로 되돌림
+    else window.history.pushState(null, "", window.location.pathname);
+  };
+
+  useEffect(() => {
+    // 뒤로가기 버튼을 눌렀을 때 동작을 가로채기 위해, 현재 페이지에 히스토리 상태를 추가
+    // 이렇게 하면 '뒤로가기'를 누르면 이 상태가 먼저 pop되어 감지할 수 있음
+    window.history.pushState(null, "", window.location.pathname);
+
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, []); // 의존성 배열에 상태를 추가
+
   return (
     <>
       <KeyboardShortcuts onSave={handleSubmit} />
