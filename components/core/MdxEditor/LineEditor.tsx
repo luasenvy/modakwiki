@@ -25,7 +25,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/react";
 import { MdxLoader } from "@/lib/mdx/react";
-import { trailingFootnotes } from "@/lib/mdx/utils";
+import { getHunks, trailingFootnotes } from "@/lib/mdx/utils";
 import { Doctype, Document as DocumentType } from "@/lib/schema/document";
 import { Image, Image as ImageType } from "@/lib/schema/image";
 import { cn } from "@/lib/utils";
@@ -67,7 +67,7 @@ export function LineEditor({
         lines.toSpliced(
           selectedLine,
           1,
-          ...trailingFootnotes(e.currentTarget.value.trim(), true).split("\n\n"),
+          ...getHunks(trailingFootnotes(e.currentTarget.value.trim(), true)),
         ),
       );
       setSelectedLine(-1);

@@ -10,6 +10,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { useNavItems } from "@/hooks/use-nav";
 import { Session } from "@/lib/auth/server";
@@ -26,6 +27,8 @@ export function SidebarNav({ lng: lngParam, session }: NavMenuProps) {
   const lng = localePrefix(lngParam);
   const { t } = useTranslation(lngParam);
   const pathname = usePathname();
+
+  const { setOpenMobile } = useSidebar();
 
   const mainNavs = useNavItems((state) => state.mainNavs);
   const subNavs = useNavItems((state) => state.subNavs);
@@ -58,7 +61,7 @@ export function SidebarNav({ lng: lngParam, session }: NavMenuProps) {
                         isActive={`${lng}${item.url}` === pathname}
                         data-url={`${lng}${item.url}`}
                       >
-                        <Link href={`${lng}${item.url}`}>
+                        <Link href={`${lng}${item.url}`} onClick={() => setOpenMobile(false)}>
                           {item.icon && createElement(item.icon)}
                           <span>{t(item.title)}</span>
                         </Link>
@@ -68,7 +71,7 @@ export function SidebarNav({ lng: lngParam, session }: NavMenuProps) {
                 ) : (
                   <SidebarMenuItem key={t(item.title)}>
                     <SidebarMenuButton asChild isActive={`${lng}${item.url}` === pathname}>
-                      <Link href={`${lng}${item.url}`}>
+                      <Link href={`${lng}${item.url}`} onClick={() => setOpenMobile(false)}>
                         {item.icon && createElement(item.icon)}
                         <span>{t(item.title)}</span>
                       </Link>
@@ -87,7 +90,7 @@ export function SidebarNav({ lng: lngParam, session }: NavMenuProps) {
             {scopedSubNavs.map((item) => (
               <SidebarMenuItem key={t(item.title)}>
                 <SidebarMenuButton asChild size="sm" isActive={`${lng}${item.url}` === pathname}>
-                  <Link href={`${lng}${item.url}`}>
+                  <Link href={`${lng}${item.url}`} onClick={() => setOpenMobile(false)}>
                     {item.icon && createElement(item.icon)}
                     <span>{t(item.title)}</span>
                   </Link>
