@@ -204,6 +204,26 @@ export function clear(content: string) {
 }
 
 export function humanReadable(content: string) {
+  // remove blocks
+  const blocktypes = ["```", "~~~", "$$"];
+  let indicator;
+  for (const blocktype of blocktypes) {
+    while ((indicator = content.indexOf(blocktype)) >= 0) {
+      const endOfIndicator = content.indexOf(blocktype, indicator + blocktype.length);
+      if (endOfIndicator < 0) break;
+      content =
+        content.substring(0, indicator) + content.substring(endOfIndicator + blocktype.length);
+    }
+  }
+
+  // remove tables
+  while ((indicator = content.search(/(^|\n)\|/)) >= 0) {
+    const endOfTable = content.indexOf("|\n\n", indicator + 1);
+    if (endOfTable < 0) break;
+
+    content = content.substring(0, indicator) + content.substring(endOfTable + 1);
+  }
+
   // remove youtubes
   content = content.replace(/^@\[[^\]]+\]/gm, "");
 
@@ -233,26 +253,6 @@ export function humanReadable(content: string) {
 
   // unwrap links
   content = content.replace(/\[([^\]]+)]\([^)]+\)/g, "$1");
-
-  // remove blocks
-  const blocktypes = ["```", "~~~", "$$"];
-  let indicator;
-  for (const blocktype of blocktypes) {
-    while ((indicator = content.indexOf(blocktype)) >= 0) {
-      const endOfIndicator = content.indexOf(blocktype, indicator + blocktype.length);
-      if (endOfIndicator < 0) break;
-      content =
-        content.substring(0, indicator) + content.substring(endOfIndicator + blocktype.length);
-    }
-  }
-
-  // remove tables
-  while ((indicator = content.search(/(^|\n)\|/)) >= 0) {
-    const endOfTable = content.indexOf("|\n\n", indicator + 1);
-    if (endOfTable < 0) break;
-
-    content = content.substring(0, indicator) + content.substring(endOfTable + 1);
-  }
 
   // remove wildcards
   content = content.replace(/\*/g, "");

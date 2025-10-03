@@ -22,7 +22,7 @@ const variants = {
     // Italic
     "[&_em]:font-semibold",
     // Bold
-    "[&_strong]:font-bold",
+    "[&_strong]:font-bold [&_strong]:text-destructive",
     // Sub
     "[&_sub]:text-muted-foreground",
     // Link
@@ -45,6 +45,8 @@ const variants = {
     // Table
     "prose-table:m-0",
     "prose-td:[&>figure]:m-auto",
+    "prose-td:[&_code]:before:hidden prose-td:[&_code]:after:hidden",
+    "prose-td:[&_code]:bg-muted prose-td:[&_code]:border prose-td:[&_code]:rounded-sm prose-td:[&_code]:px-1 prose-td:[&_code]:py-0.5 prose-td:[&_code]:text-sm prose-td:[&_code]:font-mono prose-td:[&_code]:font-normal",
     // footnote
     "[&_section.footnotes]:mt-24 [&_section.footnotes]:border-t",
     "[&_section.footnotes>ol_li_p]:first-letter:!ml-0 [&_section.footnotes>ol_li_p]:!my-1 [&_section.footnotes>ol_li_p]:text-sm",
