@@ -205,6 +205,7 @@
   "Popular": "인기순",
   "Weekly": "주간인기",
   "Recent": "최신순",
+  "recent": "최신",
   "Editor": "에디터",
   "Syntax": "문법",
   "Instructions": "작성요령",
@@ -215,7 +216,8 @@
   "Image": "이미지관리",
   "Series": "시리즈관리",
   "Profile": "내 정보",
-  "Documents": "문서함",
+  "My Documents": "내 문서",
+  "Documents": "문서",
   "{{name}} is a community wiki created by many people.": "{{name}}는 여러 사람들이 함께 만들어가는 커뮤니티 위키입니다.",
   "WhatIsThis": "모닥위키",
   "total documents: {{docCount}}": "총 작성 문서: {{docCount}}",
@@ -230,7 +232,7 @@
   "total writes": "총 작성",
   "check this week's popular articles!": "이번주의 인기 문서들을 확인해보세요!",
   "User Bio": "사용자 개요",
-  "total document views": "총 문서 조회수",
+  "Total View": "열람",
   "Software": "소프트웨어",
   "Manual": "사용설명서",
   "Computer/IT": "컴퓨터/IT",
@@ -252,5 +254,7 @@
   "Series Pages List": "시리즈 페이지 목록",
   "View or search pages in the series.": "시리즈의 페이지를 보거나 검색할 수 있습니다.",
   "There is unsaved changes. Are you sure to leave this page?": "저장되지 않은 변경사항이 있습니다. 이 페이지를 떠나시겠습니까?",
-  "total posts": "총 포스트 수"
+  "total posts": "총 포스트 수",
+  "Posts": "포스트",
+  "View Something": "임의 열람"
 }

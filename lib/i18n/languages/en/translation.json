@@ -223,6 +223,7 @@
   "Popular": "Popular",
   "Weekly": "Weekly",
   "Recent": "Recent",
+  "recent": "recent",
   "Editor": "Editor",
   "Syntax": "Syntax",
   "Instructions": "Instructions",
@@ -233,6 +234,7 @@
   "Image": "Image",
   "Series": "Series",
   "Profile": "Profile",
+  "My Documents": "My Documents",
   "Documents": "Documents",
   "{{name}} is a community wiki created by many people.": "{{name}} is a community wiki created by many people.",
   "WhatIsThis": "Modakwiki",
@@ -248,7 +250,7 @@
   "total writes": "total writes",
   "check this week's popular articles!": "check this week's popular articles!",
   "User Bio": "User Bio",
-  "total document views": "total document views",
+  "Total View": "Total View",
   "Software": "Software",
   "Manual": "Manual",
   "Computer/IT": "Computer/IT",
@@ -270,5 +272,7 @@
   "Series Pages List": "Series Pages List",
   "View or search pages in the series.": "View or search pages in the series.",
   "There is unsaved changes. Are you sure to leave this page?": "There is unsaved changes. Are you sure to leave this page?",
-  "total posts": "total posts"
+  "total posts": "total posts",
+  "Posts": "Posts",
+  "View Something": "View Something"
 }

@@ -99,7 +99,7 @@ export const subNavs: Array<NavItem> = [
     scope: scopeEnum.editor,
   },
   {
-    title: "Documents",
+    title: "My Documents",
     url: "/me/documents",
     icon: Inbox,
     scope: scopeEnum.editor,

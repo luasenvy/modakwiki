@@ -29,7 +29,7 @@ export default async function Hero({ lng: lngParam, className, ...props }: HeroP
       <div className="flex flex-col items-center justify-center gap-8">
         <Link href={`${lng}/${type}?${new URLSearchParams({ id })}`} className="no-underline">
           <Announcement>
-            <AnnouncementTag>{t("Recent")}</AnnouncementTag>
+            <AnnouncementTag>{t("recent")}</AnnouncementTag>
             <AnnouncementTitle>{title}</AnnouncementTitle>
           </Announcement>
         </Link>
@@ -41,10 +41,10 @@ export default async function Hero({ lng: lngParam, className, ...props }: HeroP
         </p>
         <div className="flex items-center gap-2">
           <Button asChild>
-            <Link href={`${lng}/what-is-this`}>{t("Get started")}</Link>
+            <Link href={`${lng}/random`}>{t("View Something")}</Link>
           </Button>
           <Button asChild variant="outline">
-            <Link className="no-underline" href="#">
+            <Link className="no-underline" href={`${lng}/what-is-this`}>
               {t("Learn more")}
             </Link>
           </Button>

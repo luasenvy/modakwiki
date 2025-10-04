@@ -122,7 +122,7 @@ export async function POST(req: NextRequest) {
 
   if (!redis.isOpen) await redis.connect();
   // not awaiting
-  redis.hSet("latest", { id, title, type: doctype });
+  redis.multi().incr(`count:${doctype}`).hSet("latest", { id, title, type: doctype }).exec();
 
   return Response.json({ id }, { status: 201 });
 }
