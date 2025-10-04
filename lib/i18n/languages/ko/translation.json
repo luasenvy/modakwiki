@@ -250,5 +250,7 @@
   "You can view or search the list of documents you have created.": "작성한 문서 목록을 보거나 검색할 수 있습니다.",
   "No pages found.": "페이지가 없습니다.",
   "Series Pages List": "시리즈 페이지 목록",
-  "View or search pages in the series.": "시리즈의 페이지를 보거나 검색할 수 있습니다."
+  "View or search pages in the series.": "시리즈의 페이지를 보거나 검색할 수 있습니다.",
+  "There is unsaved changes. Are you sure to leave this page?": "저장되지 않은 변경사항이 있습니다. 이 페이지를 떠나시겠습니까?",
+  "total posts": "총 포스트 수"
 }
