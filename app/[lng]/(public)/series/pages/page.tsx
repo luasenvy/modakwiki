@@ -1,4 +1,5 @@
 import { Info } from "lucide-react";
+import { notFound } from "next/navigation";
 import { Breadcrumb } from "@/components/core/Breadcrumb";
 import { Advertisement } from "@/components/core/button/Advertisement";
 import { Container, Viewport } from "@/components/core/Container";
@@ -39,13 +40,16 @@ export default async function SeriesPagesListPage(ctx: PageProps<"/[lng]/series/
   ];
 
   const { series } = getTablesByDoctype(searchParams.type as Doctype);
-
-  const { title, description } = await knex
+  const doc = await knex
     .select(["title", "description"])
     .from(series!)
     .whereNull("deleted")
     .andWhere({ id: searchParams.id })
     .first();
+
+  if (!doc) return notFound();
+
+  const { title, description } = doc;
 
   return (
     <>
