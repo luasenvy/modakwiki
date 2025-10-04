@@ -47,6 +47,7 @@ export default async function WeeklyPage(ctx: PageProps<"/[lng]/weekly">) {
   const now = Date.now();
   for (const key of keys) trx.ts.range(key, now - WEEK, now);
 
+  console.info(keys, "<<");
   const top10 = (await trx.exec())
     .reduce<{ id: string; type: Doctype; value: number }[]>((acc, entries, i) => {
       const key = keys[i];
@@ -109,14 +110,14 @@ export default async function WeeklyPage(ctx: PageProps<"/[lng]/weekly">) {
             <PrismaticBurst animationType="rotate3d" mixBlendMode="exclusion" />
 
             <div className="absolute inset-0 flex flex-col justify-between space-y-2">
-              <div className="m-8 flex gap-1 overflow-y-hidden rounded-t-lg border shadow-sm md:overflow-x-hidden">
+              <div className="m-8 flex gap-1 overflow-y-hidden pb-4 md:overflow-x-hidden">
                 {Boolean(one.images?.length) &&
                   one.images!.map((src, i) => (
                     <div
                       key={`top-img-${i}`}
                       role="img"
                       style={{ backgroundImage: `url('${src}')` }}
-                      className="h-48 w-full bg-center bg-cover bg-no-repeat shadow-sm max-md:max-w-2/5 max-md:shrink-0"
+                      className="h-48 w-full rounded-lg bg-center bg-cover bg-no-repeat shadow-sm max-md:max-w-2/5 max-md:shrink-0"
                     />
                   ))}
               </div>

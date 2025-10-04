@@ -23,7 +23,7 @@ export default async function Counter({ lng: lngParam, className, ...props }: He
   const [, docViewValue] = Object.values(docEntry);
 
   return (
-    <div className={cn("flex flex-col gap-16 px-8 py-24 text-center", className)} {...props}>
+    <div className={cn("flex flex-col px-8 py-6 text-center", className)} {...props}>
       <div className="flex flex-col items-center space-y-2">
         <SlidingNumber
           number={Number(postViewValue) + Number(docViewValue)}

@@ -341,7 +341,7 @@ function SidebarInset({ className, children, ...props }: React.ComponentProps<"m
       <header className="sticky top-0 flex h-10 shrink-0 items-center gap-2 border-b bg-background px-4">
         <SidebarTrigger className="-ml-1" />
         
-        <Breadcrumb className="w-full">
+        <Breadcrumb className="w-full max-lg:hidden">
           <BreadcrumbList className="flex-nowrap w-full">
             {breadcrumbs.map(({ title, href }, i) => {
               const isCurrent = breadcrumbs.length - 1 === i;

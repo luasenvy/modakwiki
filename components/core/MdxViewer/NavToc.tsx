@@ -26,7 +26,10 @@ export function NavToc({ lng: lngParam, title, className, children }: NavTocProp
     >
       <div className="mb-2 flex items-center gap-2">
         <AlignLeft className="size-4" />
-        <p className="m-0 text-muted-foreground text-sm transition-colors hover:text-accent-foreground">
+        <p
+          className="m-0 truncate text-muted-foreground text-sm transition-colors hover:text-accent-foreground"
+          title={title || t("Table of contents")}
+        >
           <a href="#doc-title">{title || t("Table of contents")}</a>
         </p>
       </div>
