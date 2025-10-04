@@ -41,7 +41,7 @@ export function SearchForm({ lng: lngParam, ...props }: SearchFormProps) {
           <SidebarInput
             id="search"
             name="search"
-            placeholder={t("Search the document")}
+            placeholder={t("Search")}
             className="pl-8"
             defaultValue={defaultTerm}
           />
