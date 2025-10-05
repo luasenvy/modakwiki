@@ -52,14 +52,15 @@ export default async function WeeklyPage(ctx: PageProps<"/[lng]/weekly">) {
   for (const key of keys) trx.ts.range(key, now - WEEK, now);
 
   const top6 = (await trx.exec())
-    .reduce<{ id: string; type: Doctype; value: number }[]>((acc, entries, i) => {
-      const key = keys[i];
-      return acc.concat({
-        id: key.substring(5, key.lastIndexOf(":")),
-        type: key.substring(3, 4) as Doctype,
-        value: Object.values(entries).reduce<number>((acc, { value }) => acc + Number(value), 0),
-      });
-    }, [])
+    .map((entries) => Object.values(entries))
+    .map((values) =>
+      values.length > 1 ? Number(values.at(-1)!.value) - Number(values[0].value) : 0,
+    )
+    .map((value, i) => ({
+      id: keys[i].substring(5, keys[i].lastIndexOf(":")),
+      type: keys[i].substring(3, 4) as Doctype,
+      value,
+    }))
     .filter(({ id }) => !id.includes("__total__"))
     .toSorted(({ value: a }, { value: b }) => b - a)
     .slice(0, 6);
@@ -102,7 +103,6 @@ export default async function WeeklyPage(ctx: PageProps<"/[lng]/weekly">) {
     .join({ u: "user" }, "u.id", "=", "o.userId");
 
   const [one, ...others] = rows;
-  const [top, ...top5] = top6;
 
   return (
     <>
@@ -139,7 +139,7 @@ export default async function WeeklyPage(ctx: PageProps<"/[lng]/weekly">) {
               </div>
 
               <Ribbon size="lg">
-                {Math.trunc(top.value)} {t("View")}
+                {Math.trunc(top6.find(({ id }) => id === one.id)?.value ?? 0)} {t("View")}
               </Ribbon>
             </div>
           </div>
@@ -166,7 +166,7 @@ export default async function WeeklyPage(ctx: PageProps<"/[lng]/weekly">) {
                   </div>
 
                   <Ribbon size="sm">
-                    {Math.trunc(top5[i].value)} {t("View")}
+                    {Math.trunc(top6.find(({ id }) => id === one.id)?.value ?? 0)} {t("View")}
                   </Ribbon>
                 </div>
               ) : (
@@ -189,7 +189,7 @@ export default async function WeeklyPage(ctx: PageProps<"/[lng]/weekly">) {
                   </div>
 
                   <Ribbon size="sm">
-                    {Math.trunc(top5[i].value)} {t("View")}
+                    {Math.trunc(top6.find(({ id }) => id === one.id)?.value ?? 0)} {t("View")}
                   </Ribbon>
                 </div>
               ),
