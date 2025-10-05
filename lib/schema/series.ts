@@ -10,3 +10,11 @@ export const series = z.object({
 });
 
 export type Series = z.infer<typeof series>;
+
+export const page = z.object({
+  id: z.string(),
+  docId: z.string(),
+  order: z.number(),
+});
+
+export type Page = z.infer<typeof page>;

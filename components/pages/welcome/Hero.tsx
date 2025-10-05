@@ -27,10 +27,13 @@ export default async function Hero({ lng: lngParam, className, ...props }: HeroP
   return (
     <div className={cn("flex flex-col gap-16 px-8 py-24 text-center", className)} {...props}>
       <div className="flex flex-col items-center justify-center gap-8">
-        <Link href={`${lng}/${type}?${new URLSearchParams({ id })}`} className="no-underline">
+        <Link
+          href={`${lng}/${type.toString("utf8")}?${new URLSearchParams({ id: id.toString("utf8") })}`}
+          className="no-underline"
+        >
           <Announcement>
             <AnnouncementTag>{t("recent")}</AnnouncementTag>
-            <AnnouncementTitle>{title}</AnnouncementTitle>
+            <AnnouncementTitle>{title.toString("utf8")}</AnnouncementTitle>
           </Announcement>
         </Link>
         <h1 className="mb-0 text-balance font-medium text-6xl md:text-7xl xl:text-[5.25rem]">

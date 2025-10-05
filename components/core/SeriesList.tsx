@@ -70,10 +70,8 @@ export async function SeriesList({
               {cover && (
                 <div
                   role="img"
-                  className="size-24 rounded bg-center bg-cover bg-no-repeat"
-                  style={{
-                    backgroundImage: `url('/api/image${cover}')`,
-                  }}
+                  className="h-24 w-18 shrink-0 rounded bg-center bg-cover bg-no-repeat sm:size-24"
+                  style={{ backgroundImage: `url('/api/image${cover}')` }}
                 />
               )}
 

@@ -249,6 +249,11 @@ export default function MdxEditor({
 
       if ("POST" === options.method) {
         const { id } = await res.json();
+
+        // '뒤로가기' 버튼을 눌렀을 때 동작을 가로채기 위해 추가한 히스토리 상태를 제거
+        // 이후 router push 함수 호출시 이 이벤트 리스너로 인한 오동작을 방지
+        window.removeEventListener("popstate", handlePopState);
+
         setTimeout(
           () =>
             router.push(`${lng}/editor/write?${new URLSearchParams({ id, type: values.type })}`),

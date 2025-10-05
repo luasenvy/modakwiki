@@ -13,6 +13,7 @@ import { redis } from "@/lib/redis";
 import { Doctype, Document as DocumentType, doctypeEnum } from "@/lib/schema/document";
 import { User } from "@/lib/schema/user";
 import { localePrefix } from "@/lib/url";
+import { cn } from "@/lib/utils";
 
 export async function generateMetadata(ctx: PageProps<"/[lng]/weekly">) {
   const lngParam = (await ctx.params).lng as Language;
@@ -41,14 +42,16 @@ export default async function WeeklyPage(ctx: PageProps<"/[lng]/weekly">) {
   const breadcrumbs: Array<BreadcrumbItem> = [{ title: t("Weekly"), href: `${lng}/weekly` }];
 
   if (!redis.isOpen) await redis.connect();
-  const keys = await redis.keys("ts:*:daily");
+  // redis.keys may return buffers when certain client options are set.
+  // Normalize to UTF-8 strings to avoid corrupted non-ASCII characters.
+  const keys = (await redis.keys("ts:*:daily")).map((k) => k.toString("utf8"));
 
   const trx = redis.multi();
   const now = Date.now();
+
   for (const key of keys) trx.ts.range(key, now - WEEK, now);
 
-  console.info(keys, "<<");
-  const top10 = (await trx.exec())
+  const top6 = (await trx.exec())
     .reduce<{ id: string; type: Doctype; value: number }[]>((acc, entries, i) => {
       const key = keys[i];
       return acc.concat({
@@ -81,7 +84,7 @@ export default async function WeeklyPage(ctx: PageProps<"/[lng]/weekly">) {
             .from("document")
             .whereIn(
               "id",
-              top10.filter(({ type }) => doctypeEnum.document === type).map(({ id }) => id),
+              top6.filter(({ type }) => doctypeEnum.document === type).map(({ id }) => id),
             ),
           knex
             .select({
@@ -91,7 +94,7 @@ export default async function WeeklyPage(ctx: PageProps<"/[lng]/weekly">) {
             .from("post")
             .whereIn(
               "id",
-              top10.filter(({ type }) => doctypeEnum.post === type).map(({ id }) => id),
+              top6.filter(({ type }) => doctypeEnum.post === type).map(({ id }) => id),
             ),
         ])
         .as("o"),
@@ -99,6 +102,7 @@ export default async function WeeklyPage(ctx: PageProps<"/[lng]/weekly">) {
     .join({ u: "user" }, "u.id", "=", "o.userId");
 
   const [one, ...others] = rows;
+  const [top, ...top5] = top6;
 
   return (
     <>
@@ -109,7 +113,7 @@ export default async function WeeklyPage(ctx: PageProps<"/[lng]/weekly">) {
           <div className="relative h-[400px] border shadow-sm">
             <PrismaticBurst animationType="rotate3d" mixBlendMode="exclusion" />
 
-            <div className="absolute inset-0 flex flex-col justify-between space-y-2">
+            <div className="absolute inset-0 flex flex-col justify-between space-y-2 overflow-hidden">
               <div className="m-8 flex gap-1 overflow-y-hidden pb-4 md:overflow-x-hidden">
                 {Boolean(one.images?.length) &&
                   one.images!.map((src, i) => (
@@ -133,12 +137,16 @@ export default async function WeeklyPage(ctx: PageProps<"/[lng]/weekly">) {
                 </h2>
                 <p className="truncate text-base text-muted-foreground">{one.description}</p>
               </div>
+
+              <Ribbon size="lg">
+                {Math.trunc(top.value)} {t("View")}
+              </Ribbon>
             </div>
           </div>
 
           <h3 className="font-semibold text-2xl">{t("Weekly Popular")}</h3>
           <div className="flex flex-nowrap gap-1 overflow-x-auto overflow-y-hidden pb-4">
-            {others.map(({ id, type, title, images, userName }) =>
+            {others.map(({ id, type, title, images, userName, view }, i) =>
               Boolean(images?.length) ? (
                 <div
                   key={`${type}-${id}`}
@@ -156,6 +164,10 @@ export default async function WeeklyPage(ctx: PageProps<"/[lng]/weekly">) {
                     </h4>
                     <p className="m-0 truncate text-muted-foreground text-xs">{userName}</p>
                   </div>
+
+                  <Ribbon size="sm">
+                    {Math.trunc(top5[i].value)} {t("View")}
+                  </Ribbon>
                 </div>
               ) : (
                 <div
@@ -175,6 +187,10 @@ export default async function WeeklyPage(ctx: PageProps<"/[lng]/weekly">) {
                       {userName}
                     </p>
                   </div>
+
+                  <Ribbon size="sm">
+                    {Math.trunc(top5[i].value)} {t("View")}
+                  </Ribbon>
                 </div>
               ),
             )}
@@ -193,5 +209,36 @@ export default async function WeeklyPage(ctx: PageProps<"/[lng]/weekly">) {
         </div>
       </Viewport>
     </>
+  );
+}
+
+interface RibbonProps extends React.PropsWithChildren {
+  size?: "sm" | "md" | "lg";
+}
+
+const variants = {
+  sm: "top-8 right-8 h-8 w-32",
+  md: "top-10 right-10 h-10 w-48",
+  lg: "top-12 right-12 h-12 w-64",
+};
+
+function Ribbon({ size = "sm", children }: RibbonProps) {
+  return (
+    <div
+      className={cn(
+        "-translate-y-1/2 absolute flex translate-x-1/2 rotate-45 bg-destructive/85",
+        variants[size],
+      )}
+    >
+      <p
+        className={cn("m-auto font-bold text-destructive-foreground", {
+          "text-xl": size === "lg",
+          "text-lg": size === "md",
+          "text-base": size === "sm",
+        })}
+      >
+        {children}
+      </p>
+    </div>
   );
 }
