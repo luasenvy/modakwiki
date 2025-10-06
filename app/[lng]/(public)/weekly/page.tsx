@@ -146,7 +146,7 @@ export default async function WeeklyPage(ctx: PageProps<"/[lng]/weekly">) {
 
           <h3 className="font-semibold text-2xl">{t("Weekly Popular")}</h3>
           <div className="flex flex-nowrap gap-1 overflow-x-auto overflow-y-hidden pb-4">
-            {others.map(({ id, type, title, images, userName, view }, i) =>
+            {others.map(({ id, type, title, images, userName }) =>
               Boolean(images?.length) ? (
                 <div
                   key={`${type}-${id}`}
