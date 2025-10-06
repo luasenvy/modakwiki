@@ -3,7 +3,6 @@ import { NextResponse } from "next/server";
 
 import { cookieName, languages } from "@/lib/i18n/config";
 import { negotiate } from "@/lib/i18n/detect";
-import { redirectStamp, reqStamp, resStamp } from "@/lib/log";
 import packageJson from "@/package.json";
 
 const { version } = packageJson;
@@ -19,6 +18,24 @@ const redirect = (url: URL, reason: string) => {
   console.debug(`${redirectStamp(url, reason)}\n`);
   return NextResponse.redirect(url);
 };
+
+const dateTimeFormat = new Intl.DateTimeFormat(undefined, {
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+  hour: "2-digit",
+  minute: "2-digit",
+  second: "2-digit",
+});
+
+const reqStamp = (req: NextRequest): string =>
+  `🠖 ${dateTimeFormat.format(Date.now())} (${req.method}) ${req.url}`;
+
+const resStamp = (res: NextResponse): string =>
+  `🠔 ${dateTimeFormat.format(Date.now())} [${res.status}]`;
+
+const redirectStamp = (url: URL, reason: string): string =>
+  `  ⮎ ${reason} ${url.pathname}${url.search}`;
 
 const PostMiddleware = (res: NextResponse) => {
   // 버전정보 삽입

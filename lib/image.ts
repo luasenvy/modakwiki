@@ -40,10 +40,7 @@ export async function optimization(
     if (height > 720) optimize.resize({ height: 720, fit: "inside" });
   } else if (height > 720) optimize.resize({ height: 720, fit: "inside" });
 
-  await optimize
-    .withMetadata()
-    // .webp({ quality: 80 }) don't need to re-encode
-    .toFile(join(dirname(filepath), `${bname}-o${options?.ext ? ename : ""}`));
+  await optimize.toFile(join(dirname(filepath), `${bname}-o${options?.ext ? ename : ""}`));
 
   // thumbnail from original
   const thumbnail = optimize.clone();
@@ -55,10 +52,7 @@ export async function optimization(
     if (height > 320) thumbnail.resize({ height: 320, fit: "inside" });
   } else if (height > 320) thumbnail.resize({ height: 320, fit: "inside" });
 
-  await thumbnail
-    .withMetadata()
-    // .webp({ quality: 80 }) don't need to re-encode
-    .toFile(join(dirname(filepath), `${bname}-t${options?.ext ? ename : ""}`));
+  await thumbnail.toFile(join(dirname(filepath), `${bname}-t${options?.ext ? ename : ""}`));
 
   return { isPortrait, originalSize, originalWidth, originalHeight };
 }

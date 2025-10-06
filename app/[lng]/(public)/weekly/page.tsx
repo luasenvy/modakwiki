@@ -6,12 +6,12 @@ import { Container, Viewport } from "@/components/core/Container";
 import PrismaticBurst from "@/components/ui/react-bits/PrismaticBurst";
 import { BreadcrumbItem } from "@/hooks/use-breadcrumbs";
 import { knex } from "@/lib/db";
-import { WEEK } from "@/lib/format";
 import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/next";
 import { redis } from "@/lib/redis";
 import { Doctype, Document as DocumentType, doctypeEnum } from "@/lib/schema/document";
 import { User } from "@/lib/schema/user";
+import { WEEK } from "@/lib/time";
 import { localePrefix } from "@/lib/url";
 import { cn } from "@/lib/utils";
 
@@ -126,7 +126,7 @@ export default async function WeeklyPage(ctx: PageProps<"/[lng]/weekly">) {
                   ))}
               </div>
 
-              <div className="bg-background/60 p-8 backdrop-blur-sm">
+              <div className="m-0 bg-background/60 p-8 backdrop-blur-sm">
                 <h2 className="truncate font-bold text-xl" title={one.title}>
                   <Link
                     href={`${lng}/${one.type}?${new URLSearchParams({ id: one.id })}`}

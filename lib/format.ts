@@ -1,74 +1,5 @@
 import { Language, languageEnum } from "@/lib/i18n/config";
-
-type DateFormatType =
-  | "default"
-  | "iso"
-  | "ymd"
-  | "hms"
-  | "md h"
-  | "md hm"
-  | "ymd h"
-  | "ymd hm"
-  | "ymd hms"
-  | "full"
-  | "log"
-  | "LLL";
-
-/**
- * 날짜를 다양한 형식으로 반환한다.
- *
- * @description
- * 날짜 객체를 지정된 형식으로 변환한다.
- *
- * @example
- * formatter(new Date(), { type: "ymd hm" })
- *
- * @param date `Date` | `number`
- * @param options.type `default` | `iso` | `ymd` | `hms` | `md h` | `md hm` | `ymd h` | `ymd hm` | `ymd hms` | `full` | `log` | `LLL`
- * @returns string
- */
-export const date = (timestamp: Date | number, options?: { type?: DateFormatType }) => {
-  const date = timestamp instanceof Date ? timestamp : new Date(timestamp);
-
-  const { type = "default" } = options ?? { type: "default" };
-
-  if ("iso" === type) return date.toISOString();
-
-  if ("ymd" === type) return date.toISOString().substring(0, 10);
-
-  const intlOptions: Intl.DateTimeFormatOptions = { hourCycle: "h23" };
-
-  // toLocaleString() 함수는 시스템에 맞추어 자동으로
-  // 타임존 오프셋을 조정하므로 undefined를 전달함
-  if ("LLL" === type) return date.toLocaleString(undefined, intlOptions);
-
-  const localeStr = date.toLocaleString(undefined, {
-    ...intlOptions,
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-  });
-
-  if ("hms" === type) return localeStr.replace(/\d+\. \d+\. \d+\./, "").trim();
-
-  const full = localeStr.replace(/(\d+)\. (\d+)\. (\d+)\./, "$1-$2-$3");
-
-  if ("md h" === type) return full.replace(/^\d+-|(:\d+){2}$/g, "");
-  if ("ymd h" === type) return full.replace(/(:\d+){2}$/g, "");
-  if ("md hm" === type) return full.replace(/^\d+-|:\d+$/g, "");
-  if ("ymd hm" === type) return full.replace(/:\d+$/g, "");
-
-  // if (["full", "ymd hms", "log"].includes(type))
-  return full;
-};
-
-export const MINUTE = 60_000;
-export const HOUR = 60 * MINUTE;
-export const DAY = 24 * HOUR;
-export const WEEK = 7 * DAY;
+import { DAY, HOUR, MINUTE } from "@/lib/time";
 
 const i18n = {
   ko: {
@@ -88,7 +19,6 @@ export function fromNow(epoch: number | Date, lng: Language = languageEnum.ko) {
   const diff = Date.now() - epoch;
 
   if (diff < HOUR) return `${Math.ceil(diff / MINUTE)} ${i18n[lng].minute}`;
-
   if (diff < DAY) return `${Math.ceil(diff / HOUR)} ${i18n[lng].hour}`;
 
   return `${Math.ceil(diff / DAY)} ${i18n[lng].day}`;

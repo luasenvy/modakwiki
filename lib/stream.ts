@@ -24,16 +24,15 @@ export class ReadableStreamResponse extends Response {
     const { mtime } = statSync(filepath);
 
     const readable = new ReadableStream({
-      async start(controller) {
+      async start(ctrl: ReadableStreamDefaultController) {
         const encoder = new TextEncoder();
 
         stream
           .on("data", (chunk) => {
-            if (chunk instanceof Buffer) controller.enqueue(chunk);
-            else controller.enqueue(encoder.encode(chunk.toString()));
+            ctrl.enqueue(chunk instanceof Buffer ? chunk : encoder.encode(chunk.toString()));
           })
-          .on("error", (err) => controller.error(err))
-          .on("end", () => controller.close());
+          .on("error", (err) => ctrl.error(err))
+          .on("end", () => ctrl.close());
       },
     });
 
