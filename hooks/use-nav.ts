@@ -34,10 +34,10 @@ export const mainNavs: Array<NavItem> = [
     title: "Wiki",
     url: "#",
     items: [
-      { title: "Random", url: "/random" },
-      { title: "Weekly", url: "/weekly" },
+      { title: "Popular", url: "/popular" },
       { title: "List", url: "/list" },
       { title: "Series List", url: "/series" },
+      { title: "Random", url: "/random" },
     ],
   },
   {

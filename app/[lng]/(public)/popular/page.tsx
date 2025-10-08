@@ -15,12 +15,12 @@ import { WEEK } from "@/lib/time";
 import { localePrefix } from "@/lib/url";
 import { cn } from "@/lib/utils";
 
-export async function generateMetadata(ctx: PageProps<"/[lng]/weekly">) {
+export async function generateMetadata(ctx: PageProps<"/[lng]/popular">) {
   const lngParam = (await ctx.params).lng as Language;
   const { t } = await useTranslation(lngParam);
 
   return {
-    title: t("Weekly"),
+    title: t("Popular"),
     description: t("check this week's popular articles!"),
   };
 }
@@ -33,13 +33,13 @@ const columns = {
   userId: "userId",
 };
 
-export default async function WeeklyPage(ctx: PageProps<"/[lng]/weekly">) {
+export default async function PopularPage(ctx: PageProps<"/[lng]/popular">) {
   const lngParam = (await ctx.params).lng as Language;
   const lng = localePrefix(lngParam);
 
   const { t } = await useTranslation(lngParam);
 
-  const breadcrumbs: Array<BreadcrumbItem> = [{ title: t("Weekly"), href: `${lng}/weekly` }];
+  const breadcrumbs: Array<BreadcrumbItem> = [{ title: t("Popular"), href: `${lng}/popular` }];
 
   if (!redis.isOpen) await redis.connect();
   // redis.keys may return buffers when certain client options are set.
@@ -121,7 +121,7 @@ export default async function WeeklyPage(ctx: PageProps<"/[lng]/weekly">) {
                       key={`top-img-${i}`}
                       role="img"
                       style={{ backgroundImage: `url('${src}')` }}
-                      className="h-48 w-full rounded-lg bg-center bg-cover bg-no-repeat shadow-sm max-md:max-w-2/5 max-md:shrink-0"
+                      className="h-48 w-full rounded-lg bg-accent/60 bg-center bg-cover bg-no-repeat shadow-sm backdrop-blur-sm max-md:max-w-2/5 max-md:shrink-0"
                     />
                   ))}
               </div>

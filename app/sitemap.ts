@@ -63,13 +63,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: started,
     },
     {
-      url: `${site.baseurl}/${ko}/promotion/weekly`,
+      url: `${site.baseurl}/${ko}/popular`,
       changeFrequency,
       priority: 0.6,
       lastModified: started,
     },
     {
-      url: `${site.baseurl}/${ko}/promotion/list`,
+      url: `${site.baseurl}/${ko}/list`,
+      changeFrequency,
+      priority: 0.6,
+      lastModified: started,
+    },
+    {
+      url: `${site.baseurl}/${ko}/series`,
       changeFrequency,
       priority: 0.6,
       lastModified: started,
