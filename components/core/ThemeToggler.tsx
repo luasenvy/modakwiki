@@ -2,14 +2,18 @@
 
 import { useTheme } from "next-themes";
 import { useCallback } from "react";
-import { Button } from "@/components/ui/button";
 import {
   ThemeToggleButton,
+  ThemeToggleButtonProps,
   useThemeTransition,
 } from "@/components/ui/shadcn-io/theme-toggle-button";
 import { cn } from "@/lib/utils";
 
-export function ThemeToggler({ className }: Parameters<typeof Button>[0]) {
+interface ThemeTogglerProps {
+  className?: ThemeToggleButtonProps["className"];
+}
+
+export function ThemeToggler({ className }: ThemeTogglerProps) {
   const { theme = "light", setTheme } = useTheme();
   const { startTransition } = useThemeTransition();
 
@@ -19,7 +23,7 @@ export function ThemeToggler({ className }: Parameters<typeof Button>[0]) {
 
   return (
     <ThemeToggleButton
-      theme={theme as "light" | "dark"}
+      theme={theme as ThemeToggleButtonProps["theme"]}
       onClick={handleThemeToggle}
       variant="circle"
       start="top-right"
