@@ -122,7 +122,6 @@ export async function GET(req: NextRequest, ctx: RouteContext<"/api/feed/[type]"
     ];
 
     redis.json.set("sitemap", ".", items).then(() => {
-      console.info("cache stored..");
       expired = Date.now() + HOUR;
     });
 
