@@ -8,7 +8,6 @@ import { negotiate } from "@/lib/i18n/detect";
 import { redis } from "@/lib/redis";
 import { doctypeEnum } from "@/lib/schema/document";
 import { HOUR } from "@/lib/time";
-import Logo from "@/public/brand/logo.webp";
 
 let expired = 0;
 
@@ -76,7 +75,7 @@ export async function GET(req: NextRequest, ctx: RouteContext<"/api/feed/[type]"
         lastModified: new Date(),
         changeFrequency: frequencyEnum.monthly,
         priority: 1,
-        images: [Logo.src],
+        images: [new URL("/brand/logo.webp", site.baseurl).toString()],
       },
       {
         url: `${site.baseurl}/what-is-this`,
