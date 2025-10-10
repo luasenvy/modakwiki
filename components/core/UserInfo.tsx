@@ -57,7 +57,7 @@ export async function UserInfo({ lng: lngParam, user }: UserInfoProps) {
 - ${t("Email")}: ${user.email}
 - ${t("Joined")}: ${dateFormatter.format(user.createdAt)} ~${fromNow(user.createdAt, lngParam)}~
 - ${t("total writes")}: ${numberFormatter.format(Number(docCount))} ${t("document")} / ${numberFormatter.format(Number(postCount))} ${t("post")}
-- ${t("total contributes")}: *+${numberFormatter.format(Number(documentAdded) + Number(postAdded))}${t("letters")}* / -${numberFormatter.format(Number(documentRemoved) + Number(postRemoved))}${t("letters")}
+- ${t("total contributes")}: *+${numberFormatter.format(Number(documentAdded) + Number(postAdded))} ${t("letters")}* / -${numberFormatter.format(Number(documentRemoved) + Number(postRemoved))} ${t("letters")}
 
 ${t("")}
 `;
