@@ -1,5 +1,6 @@
 import { Info } from "lucide-react";
 import Link from "next/link";
+import { TIME_SERIES_AGGREGATION_TYPE } from "redis";
 import { Breadcrumb } from "@/components/core/Breadcrumb";
 import { Advertisement } from "@/components/core/button/Advertisement";
 import { Container, Viewport } from "@/components/core/Container";
@@ -49,16 +50,33 @@ export default async function PopularPage(ctx: PageProps<"/[lng]/popular">) {
   const trx = redis.multi();
   const now = Date.now();
 
-  for (const key of keys) trx.ts.range(key, now - WEEK, now);
+  for (const key of keys) {
+    trx.ts.range(key, now - WEEK, now, {
+      AGGREGATION: {
+        type: TIME_SERIES_AGGREGATION_TYPE.RANGE,
+        timeBucket: WEEK + 1,
+      },
+    });
+  }
 
-  const top6 = (await trx.exec())
-    .map((entries) => Object.values(entries))
-    .map((values) =>
-      values.length > 1 ? Number(values.at(-1)!.value) - Number(values[0].value) : 0,
-    )
+  const top6: Array<
+    Pick<DocumentType, "id" | "title" | "description" | "images"> & {
+      type: Doctype;
+      value: number;
+      userName: string;
+    }
+  > = (await trx.exec())
+    .map((resp: unknown) => {
+      const [reply] = Array.from(resp as ArrayLike<{ timestamp: number; value: string }>);
+      return Number(reply?.value ?? 0);
+    })
     .map((value, i) => ({
       id: keys[i].substring(5, keys[i].lastIndexOf(":")),
       type: keys[i].substring(3, 4) as Doctype,
+      title: "",
+      description: "",
+      images: [],
+      userName: "",
       value,
     }))
     .filter(({ id }) => !id.includes("__total__"))
@@ -102,7 +120,19 @@ export default async function PopularPage(ctx: PageProps<"/[lng]/popular">) {
     )
     .join({ u: "user" }, "u.id", "=", "o.userId");
 
-  const [one, ...others] = rows;
+  top6.forEach(({ id, type }, i) => {
+    const row = rows.find(({ id: _id, type: _type }) => id === _id && type === _type)!;
+
+    top6.splice(i, 1, {
+      ...top6[i],
+      title: row?.title ?? "",
+      description: row?.description ?? "",
+      images: row?.images ?? [],
+      userName: row?.userName ?? "",
+    });
+  });
+
+  const [one, ...others] = top6;
 
   return (
     <>
@@ -139,14 +169,14 @@ export default async function PopularPage(ctx: PageProps<"/[lng]/popular">) {
               </div>
 
               <Ribbon size="lg">
-                {Math.trunc(top6.find(({ id }) => id === one.id)?.value ?? 0)} {t("View")}
+                {one.value} {t("View")}
               </Ribbon>
             </div>
           </div>
 
           <h3 className="font-semibold text-2xl">{t("Weekly Popular")}</h3>
           <div className="flex flex-nowrap gap-1 overflow-x-auto overflow-y-hidden pb-4">
-            {others.map(({ id, type, title, images, userName }) =>
+            {others.map(({ id, type, title, description, value, images, userName }) =>
               Boolean(images?.length) ? (
                 <div
                   key={`${type}-${id}`}
@@ -162,11 +192,16 @@ export default async function PopularPage(ctx: PageProps<"/[lng]/popular">) {
                         {title}
                       </Link>
                     </h4>
-                    <p className="m-0 truncate text-muted-foreground text-xs">{userName}</p>
+                    <p className="m-0 truncate text-muted-foreground text-sm" title={description}>
+                      {description}
+                    </p>
+                    <p className="m-0 truncate text-muted-foreground text-xs" title={userName}>
+                      {userName}
+                    </p>
                   </div>
 
                   <Ribbon size="sm">
-                    {Math.trunc(top6.find(({ id }) => id === one.id)?.value ?? 0)} {t("View")}
+                    {value} {t("View")}
                   </Ribbon>
                 </div>
               ) : (
@@ -183,13 +218,22 @@ export default async function PopularPage(ctx: PageProps<"/[lng]/popular">) {
                         {title}
                       </Link>
                     </h4>
-                    <p className="m-0 w-full truncate text-center text-muted-foreground text-xs">
+                    <p
+                      className="m-0 w-full truncate text-center text-muted-foreground text-sm"
+                      title={description}
+                    >
+                      {description}
+                    </p>
+                    <p
+                      className="m-0 w-full truncate text-center text-muted-foreground text-xs"
+                      title={userName}
+                    >
                       {userName}
                     </p>
                   </div>
 
                   <Ribbon size="sm">
-                    {Math.trunc(top6.find(({ id }) => id === one.id)?.value ?? 0)} {t("View")}
+                    {value} {t("View")}
                   </Ribbon>
                 </div>
               ),
