@@ -167,11 +167,14 @@ export async function DocumentList({
                         key={index}
                         className="!m-0 relative w-fit rounded-md border shadow-sm"
                       >
-                        <ImageZoom zoomImg={{ src: src.replace(/-t$/, "-o") }} zoomMargin={40}>
+                        <ImageZoom
+                          zoomImg={{ src: `/api/image${src.replace(/-t$/, "-o")}` }}
+                          zoomMargin={40}
+                        >
                           <div
                             role="img"
                             className="relative size-20 rounded-md bg-center bg-cover bg-no-repeat"
-                            style={{ backgroundImage: `url('${src}')` }}
+                            style={{ backgroundImage: `url('/api/image${src}')` }}
                           ></div>
                         </ImageZoom>
 

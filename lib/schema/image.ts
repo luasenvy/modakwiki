@@ -15,7 +15,7 @@ export const image = z.object({
   uri: z.string().min(47).max(47),
   author: z.string().min(1),
   ref: z.string().optional(),
-  license: z.nativeEnum(licenseEnum),
+  license: z.enum(licenseEnum),
   created: z.number(),
   updated: z.number().optional(),
   deleted: z.number().optional(),

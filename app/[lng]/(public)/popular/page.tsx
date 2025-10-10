@@ -120,7 +120,7 @@ export default async function PopularPage(ctx: PageProps<"/[lng]/popular">) {
                     <div
                       key={`top-img-${i}`}
                       role="img"
-                      style={{ backgroundImage: `url('${src}')` }}
+                      style={{ backgroundImage: `url('/api/image${src}')` }}
                       className="h-48 w-full rounded-lg bg-accent/60 bg-center bg-cover bg-no-repeat shadow-sm backdrop-blur-sm max-md:max-w-2/5 max-md:shrink-0"
                     />
                   ))}
@@ -151,7 +151,7 @@ export default async function PopularPage(ctx: PageProps<"/[lng]/popular">) {
                 <div
                   key={`${type}-${id}`}
                   className="relative flex h-[200px] min-w-3xs max-w-xs overflow-hidden rounded-t-lg border bg-accent/80 bg-center bg-cover bg-no-repeat shadow-sm"
-                  style={{ backgroundImage: `url('${images![0]}')` }}
+                  style={{ backgroundImage: `url('/api/image${images![0]}')` }}
                 >
                   <div className="absolute inset-x-0 bottom-0 bg-background/80 p-4 backdrop-blur-sm">
                     <h4 className="truncate font-medium text-lg" title={title}>

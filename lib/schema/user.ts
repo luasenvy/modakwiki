@@ -17,7 +17,7 @@ export const user = z.object({
   email: z.string(),
   emailVerified: z.boolean(),
   image: z.string().optional(),
-  scope: z.nativeEnum(scopeEnum),
+  scope: z.enum(scopeEnum),
   createdAt: z.date(),
   updatedAt: z.date(),
 });

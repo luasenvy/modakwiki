@@ -90,6 +90,7 @@ export async function POST(req: NextRequest) {
     images = matches.slice(0, 5).map((img) =>
       img
         .replace(/!\[[^\]]+?\]\(([^\)]+?)\)/, "$1")
+        .replace(/^\/api\/image/, "")
         .replace(/-(o|t)$/, "")
         .concat("-t"),
     );
@@ -245,6 +246,7 @@ export async function PATCH(req: NextRequest) {
       images = matches.slice(0, 5).map((img) =>
         img
           .replace(/!\[[^\]]+?\]\(([^\)]+?)\)/, "$1")
+          .replace(/^\/api\/image/, "")
           .replace(/-(o|t)$/, "")
           .concat("-t"),
       );

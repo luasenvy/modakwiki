@@ -9,14 +9,26 @@ import { User } from "@/lib/schema/user";
 const FEED_SIZE = Number(process.env.FEED_SIZE ?? "10");
 
 export const feedEnum = {
+  sitemap: "sitemap",
   rss: "rss",
   rss2: "rss2",
   atom: "atom",
   json: "json",
 } as const;
 
-// enum의 값들을 문자열 목록으로 타입변환
 export type FeedType = (typeof feedEnum)[keyof typeof feedEnum];
+
+// enum의 값들을 문자열 목록으로 타입변환
+export const frequencyEnum = {
+  monthly: "monthly",
+  yearly: "yearly",
+  always: "always",
+  hourly: "hourly",
+  daily: "daily",
+  weekly: "weekly",
+  never: "never",
+} as const;
+export type Frequency = (typeof frequencyEnum)[keyof typeof frequencyEnum];
 
 // TODO: i18n
 const ko = languageEnum.ko;
@@ -46,6 +58,7 @@ const feed = new Feed({
 export const feedColumns = {
   id: "id",
   title: "title",
+  images: "images",
   created: "created",
   updated: "updated",
 };

@@ -36,7 +36,7 @@ export const document = z.object({
   images: z.array(z.string().min(1)).optional(),
   view: z.number(),
   userId: z.string().min(1),
-  license: z.nativeEnum(licenseEnum).optional(),
+  license: z.enum(licenseEnum).optional(),
   created: z.number(),
   updated: z.number(),
   deleted: z.number().optional(),
@@ -55,7 +55,7 @@ export const documentForm = document
   })
   .extend({
     id: z.string().optional(),
-    type: z.nativeEnum(doctypeEnum),
+    type: z.enum(doctypeEnum),
   });
 
 export type DocumentForm = z.infer<typeof documentForm>;
