@@ -44,7 +44,7 @@ export default async function Hero({ lng: lngParam, className, ...props }: HeroP
         </p>
         <div className="flex items-center gap-2">
           <Button asChild>
-            <Link href={`${lng}/random`}>{t("View Something")}</Link>
+            <Link href={`${lng}/random`}>{t("Read Something")}</Link>
           </Button>
           <Button asChild variant="outline">
             <Link className="no-underline" href={`${lng}/what-is-this`}>
