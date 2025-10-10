@@ -1,10 +1,8 @@
-import { MetadataRoute } from "next";
 import type { NextRequest } from "next/server";
 import { site } from "@/config";
 import { knex } from "@/lib/db";
 import { FeedType, feedColumns, feedEnum, frequencyEnum, getFeed } from "@/lib/feed";
-import { cookieName, languages } from "@/lib/i18n/config";
-import { negotiate } from "@/lib/i18n/detect";
+import { languages } from "@/lib/i18n/config";
 import { redis } from "@/lib/redis";
 import { doctypeEnum } from "@/lib/schema/document";
 import { HOUR } from "@/lib/time";
@@ -28,14 +26,9 @@ export async function GET(req: NextRequest, ctx: RouteContext<"/api/feed/[type]"
 
   const type = (await ctx.params).type as FeedType;
   if (feedEnum.sitemap === type) {
-    const locale = negotiate(
-      req.cookies.get(cookieName)?.value || req.headers.get("accept-language"),
-    );
-
     if (!redis.isOpen) await redis.connect();
 
-    if (Date.now() <= expired)
-      return Response.json(await redis.json.get(`sitemap:${locale}`, { path: "." }));
+    if (Date.now() <= expired) return Response.json(await redis.json.get("sitemap", { path: "." }));
 
     const rows = await knex
       .select({
