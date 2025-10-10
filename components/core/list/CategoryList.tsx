@@ -55,45 +55,49 @@ export function CategoryList({ lng: lngParam }: CategoryListProps) {
 
   const [type, setType] = useState<Doctype>(doctypeEnum.document);
 
-  const [series, setSeries] = useState<Array<string>>([]);
-  const [pages, setPages] = useState<Tag[]>([]);
+  const [categories, setCategories] = useState<Array<string>>([]);
+  const [tags, setTags] = useState<Tag[]>([]);
   const [inputCategory, setInputCategory] = useState<string>("");
   const [inputTag, setInputTag] = useState<string>("");
-  const [selectedSeries, setSelectedSeries] = useState<string>("");
-  const [loadingPages, setLoadingPages] = useState<boolean>(false);
-  const [changeSeriesName, setChangeSeriesName] = useState<string>("");
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const [loadingTags, setLoadingTags] = useState<boolean>(false);
+  const [changeCategoryName, setChangeCategoryName] = useState<string>("");
+  const [changeTagName, setChangeTagName] = useState<string>("");
 
   useEffect(() => {
     firstInputRef.current?.focus();
   }, []);
 
-  const getPages = useCallback(async () => {
-    setPages([]);
+  const getTags = useCallback(async () => {
+    setTags([]);
 
-    if (!selectedSeries) return;
+    if (!selectedCategory) return;
 
-    setLoadingPages(true);
+    setLoadingTags(true);
     const res = await fetch(
-      `/api/series/pages?${new URLSearchParams({ type, series: selectedSeries })}`,
+      `/api/tag?${new URLSearchParams({
+        type,
+        category: selectedCategory,
+      })}`,
     );
 
     if (!res.ok) return toast.error(await statusMessage({ t, res }));
 
-    setPages(await res.json());
-    setLoadingPages(false);
-  }, [selectedSeries]);
+    setTags(await res.json());
+    setLoadingTags(false);
+  }, [selectedCategory]);
 
   useEffect(() => {
-    getPages();
-  }, [selectedSeries]);
+    getTags();
+  }, [selectedCategory]);
 
   useEffect(() => {
     (async () => {
-      const res = await fetch(`/api/series?${new URLSearchParams({ type })}`);
+      const res = await fetch(`/api/category?${new URLSearchParams({ type })}`);
       if (!res.ok) return toast.error(await statusMessage({ t, res }));
 
-      setSeries(await res.json());
-      setSelectedSeries("");
+      setCategories(await res.json());
+      setSelectedCategory("");
     })();
   }, [type]);
 
@@ -111,18 +115,18 @@ export function CategoryList({ lng: lngParam }: CategoryListProps) {
 
     if (!res.ok) return await statusMessage({ t, res, options });
 
-    setSeries((prev) => [...prev, inputCategory]);
+    setCategories((prev) => [...prev, inputCategory]);
     setInputCategory("");
   };
 
   const handleClickCreateTag = async () => {
-    if (!selectedSeries || !inputTag) return;
+    if (!selectedCategory || !inputTag) return;
 
     // Call your API or function to create the tag
     const options = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id: inputTag, category: selectedSeries, type }),
+      body: JSON.stringify({ id: inputTag, category: selectedCategory, type }),
     };
 
     const res = await fetch(`/api/tag`, options);
@@ -130,7 +134,23 @@ export function CategoryList({ lng: lngParam }: CategoryListProps) {
     if (!res.ok) return await statusMessage({ t, res, options });
 
     setInputTag("");
-    setPages((prev) => [...prev, { id: inputTag, category: selectedSeries, type }]);
+    setTags((prev) => [...prev, { id: inputTag, category: selectedCategory, type }]);
+  };
+
+  const handleClickEditNameTag = async (id: string, category: string, name: string) => {
+    const options = {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, category, name, type }),
+    };
+    const res = await fetch("/api/tag", options);
+
+    if (!res.ok) return await statusMessage({ t, res, options });
+
+    const index = tags.findIndex(({ id: _id }) => id === _id);
+    if (index < 0) return router.refresh();
+
+    setTags((prev) => prev.toSpliced(index, 1, { ...prev[index], id: name }));
   };
 
   const handleClickEditNameCategory = async (id: string, name: string) => {
@@ -143,11 +163,11 @@ export function CategoryList({ lng: lngParam }: CategoryListProps) {
 
     if (!res.ok) return await statusMessage({ t, res, options });
 
-    const index = series.findIndex((_id) => id === _id);
+    const index = categories.findIndex((_id) => id === _id);
     if (index < 0) return router.refresh();
 
-    setSeries((prev) => prev.toSpliced(index, 1, name));
-    setSelectedSeries(name);
+    setCategories((prev) => prev.toSpliced(index, 1, name));
+    setSelectedCategory(name);
   };
 
   const handleClickDeleteCategory = async (id: string) => {
@@ -157,8 +177,26 @@ export function CategoryList({ lng: lngParam }: CategoryListProps) {
 
     if (!res.ok) return await statusMessage({ t, res, options });
 
-    if (id === selectedSeries) setSelectedSeries("");
-    setSeries((prev) => prev.filter((_id) => _id !== id));
+    if (id === selectedCategory) setSelectedCategory("");
+    setCategories((prev) => prev.filter((_id) => _id !== id));
+  };
+
+  const handleClickDeleteTag = async (category: string, id: string) => {
+    const options = { method: "DELETE" };
+
+    const res = await fetch(
+      `/api/tag?${new URLSearchParams({
+        type,
+        category,
+        id,
+      })}`,
+      options,
+    );
+
+    if (!res.ok) return await statusMessage({ t, res, options });
+
+    setInputTag("");
+    setTags((prev) => prev.filter((tag) => tag.id !== id));
   };
 
   const isLg = useBreakpoints("lg");
@@ -217,12 +255,12 @@ export function CategoryList({ lng: lngParam }: CategoryListProps) {
                 t("No results found.")
               )}
             </CommandEmpty>
-            {series.map((id) => (
+            {categories.map((id) => (
               <CommandItem
                 key={`category-${id}`}
-                onSelect={setSelectedSeries}
+                onSelect={setSelectedCategory}
                 className={cn("group", {
-                  "!text-blue-600 dark:!text-blue-500 underline": id === selectedSeries,
+                  "!text-blue-600 dark:!text-blue-500 underline": id === selectedCategory,
                 })}
               >
                 {id}
@@ -245,7 +283,7 @@ export function CategoryList({ lng: lngParam }: CategoryListProps) {
                         <Input
                           name={`category-name-${id}`}
                           defaultValue={id}
-                          onChange={debounce((e) => setChangeSeriesName(e.target.value), 110)}
+                          onChange={debounce((e) => setChangeCategoryName(e.target.value), 110)}
                           onKeyDown={(e) => e.stopPropagation()}
                         />
                       </div>
@@ -257,7 +295,7 @@ export function CategoryList({ lng: lngParam }: CategoryListProps) {
                         <AlertDialogAction
                           onClick={(e: React.MouseEvent) => {
                             e.stopPropagation();
-                            handleClickEditNameCategory(id, changeSeriesName);
+                            handleClickEditNameCategory(id, changeCategoryName);
                           }}
                         >
                           {t("Save")}
@@ -305,14 +343,14 @@ export function CategoryList({ lng: lngParam }: CategoryListProps) {
         </div>
 
         <Command className="rounded-lg border shadow-md max-lg:max-h-[calc(40dvh_-_(var(--spacing)_*_20))] lg:h-[calc(100dvh_-_(var(--spacing)_*_74))]">
-          {selectedSeries ? (
+          {selectedCategory ? (
             <>
               <CommandInput
                 value={inputTag}
                 onValueChange={setInputTag}
                 placeholder={t("Type a tag or search...")}
               />
-              {loadingPages ? (
+              {loadingTags ? (
                 <Spinner className="mx-auto my-6" variant="ring" size={32} />
               ) : (
                 <CommandList>
@@ -330,10 +368,84 @@ export function CategoryList({ lng: lngParam }: CategoryListProps) {
                       t("No results found.")
                     )}
                   </CommandEmpty>
-
-                  {pages.map(({ category, id }) => (
+                  {tags.map(({ category, id }) => (
                     <CommandItem className="group" key={`tag-${category}-${id}`}>
                       {id}
+                      <div className={cn("ml-auto hidden items-center gap-1 group-hover:flex")}>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button variant="ghost" size="icon" className="size-5">
+                              <Edit className="size-3.5 text-orange-500" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>{t("Change name")}</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                {t("You can change the tag name here.")}
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+
+                            <div className="py-4">
+                              <Input
+                                id={`tag-name-${id}`}
+                                defaultValue={id}
+                                onChange={debounce((e) => setChangeTagName(e.target.value), 110)}
+                                onKeyDown={(e) => e.stopPropagation()}
+                              />
+                            </div>
+
+                            <AlertDialogFooter>
+                              <AlertDialogCancel
+                                onClick={(e: React.MouseEvent) => e.stopPropagation()}
+                              >
+                                {t("Cancel")}
+                              </AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={(e: React.MouseEvent) => {
+                                  e.stopPropagation();
+                                  handleClickEditNameTag(id, category, changeTagName);
+                                }}
+                              >
+                                {t("Save")}
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button variant="ghost" size="icon" className="ml-auto size-5">
+                              <Trash className="size-3.5 text-destructive" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>{t("Are you absolutely sure?")}</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                {t(
+                                  "This action cannot be undone. This will delete data permanently.",
+                                )}
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel
+                                onClick={(e: React.MouseEvent) => e.stopPropagation()}
+                              >
+                                {t("Cancel")}
+                              </AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={(e: React.MouseEvent) => {
+                                  e.stopPropagation();
+                                  handleClickDeleteTag(category, id);
+                                }}
+                              >
+                                {t("Yes, I'm sure")}
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
                     </CommandItem>
                   ))}
                 </CommandList>
