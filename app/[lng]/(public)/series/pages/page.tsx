@@ -11,6 +11,7 @@ import { knex } from "@/lib/db";
 import { Language } from "@/lib/i18n/config";
 import { useTranslation } from "@/lib/i18n/next";
 import { Doctype, doctypeEnum, getTablesByDoctype } from "@/lib/schema/document";
+import { Series } from "@/lib/schema/series";
 import { localePrefix } from "@/lib/url";
 import { cn } from "@/lib/utils";
 
@@ -40,8 +41,8 @@ export default async function SeriesPagesListPage(ctx: PageProps<"/[lng]/series/
   ];
 
   const { series } = getTablesByDoctype(searchParams.type as Doctype);
-  const doc = await knex
-    .select(["title", "description"])
+  const doc: Series = await knex
+    .select(["title", "description", "cover"])
     .from(series!)
     .whereNull("deleted")
     .andWhere({ id: searchParams.id })
@@ -49,7 +50,7 @@ export default async function SeriesPagesListPage(ctx: PageProps<"/[lng]/series/
 
   if (!doc) return notFound();
 
-  const { title, description } = doc;
+  const { title, description, cover } = doc;
 
   return (
     <>
@@ -57,12 +58,19 @@ export default async function SeriesPagesListPage(ctx: PageProps<"/[lng]/series/
       <Viewport>
         <Container as="div" variant="aside">
           <div className="prose dark:prose-invert max-w-none">
-            {title && <h1 className="mb-2 text-center"> {title} </h1>}
-            {description && (
-              <h2 className="!m-0 text-center font-semibold text-lg text-muted-foreground">
-                {description}
-              </h2>
-            )}
+            <div
+              className="series-header flex min-h-44 flex-col items-center justify-center bg-center bg-cover bg-no-repeat"
+              style={{
+                backgroundImage: `url('/api/image${cover?.replace(/-t$/, "-o")}')`,
+              }}
+            >
+              {title && <h1 className="mb-2 text-center text-shadow-lg text-white"> {title} </h1>}
+              {description && (
+                <h2 className="!m-0 text-center font-semibold text-lg text-shadow-lg text-white">
+                  {description}
+                </h2>
+              )}
+            </div>
           </div>
 
           <SeriesPageList

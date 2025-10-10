@@ -172,9 +172,12 @@ export async function DELETE(req: NextRequest) {
 
   if (!existsSync(pathname)) await mkdir(dirname(pathname), { recursive: true });
 
-  await rename(join(docroot, uri), pathname);
-  await rename(join(docroot, `${uri}-t`), `${pathname}-t`);
-  await rename(join(docroot, `${uri}-o`), `${pathname}-o`);
+  const origin = join(docroot, uri);
+  const optm = origin.concat("-t");
+  const thmb = origin.concat("-o");
+  if (existsSync(origin)) await rename(origin, pathname);
+  if (existsSync(optm)) await rename(optm, pathname);
+  if (existsSync(thmb)) await rename(thmb, pathname);
 
   return new Response(null, { status: 204 });
 }

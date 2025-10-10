@@ -34,11 +34,17 @@ export default async function SitePage(ctx: PageProps<"/[lng]/site/image">) {
 
   const { count } = (await knex.count({ count: "*" }).from("image").whereNull("deleted").first())!;
 
-  const counting = knex
+  const docCounting = knex
     .count({ count: "*" })
     .from({ d: "document" })
     .whereNull("d.deleted")
-    .andWhereRaw(knex.raw(`d.content ilike '%' || i.uri || '%'`));
+    .andWhereRaw(knex.raw(`d.content like '%' || i.uri || '%'`));
+
+  const seriesCounting = knex
+    .count({ count: "*" })
+    .from({ ds: "document_series" })
+    .whereNull("ds.deleted")
+    .andWhere({ "ds.cover": knex.raw("i.uri || '-t'") });
 
   const rows: Array<ImageType & { usedCount: number }> = await knex
     .select({
@@ -59,7 +65,16 @@ export default async function SitePage(ctx: PageProps<"/[lng]/site/image">) {
       userName: "u.name",
       usedCount: knex
         .sum({ count: "o.count" })
-        .from(knex.unionAll([counting, counting.clone().from({ d: "post" })]).as("o")),
+        .from(
+          knex
+            .unionAll([
+              docCounting,
+              docCounting.clone().from({ d: "post" }),
+              seriesCounting,
+              seriesCounting.clone().from({ ds: "post_series" }),
+            ])
+            .as("o"),
+        ),
     })
     .from({ i: "image" })
     .join({ u: "user" }, "u.id", "=", "i.userId")
