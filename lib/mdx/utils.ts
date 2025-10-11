@@ -10,6 +10,7 @@ import LanguageJava from "highlight.js/lib/languages/java";
 import LanguageJavascript from "highlight.js/lib/languages/javascript";
 import LanguageJson from "highlight.js/lib/languages/json";
 import LanguageMarkdown from "highlight.js/lib/languages/markdown";
+import LanguageNginx from "highlight.js/lib/languages/nginx";
 import LanguagePlaintext from "highlight.js/lib/languages/plaintext";
 import LanguageSql from "highlight.js/lib/languages/sql";
 import LanguageTypescript from "highlight.js/lib/languages/typescript";
@@ -59,8 +60,36 @@ export const rehypePlugins = [
         sql: LanguageSql,
         typescript: LanguageTypescript,
         xml: LanguageXml,
+        nginx: LanguageNginx,
         diff: LanguageDiff,
         markdown: LanguageMarkdown,
+        unit() {
+          return {
+            contains: [
+              {
+                className: "section",
+                begin: /^\[/,
+                end: /\]$/,
+                excludeBegin: true,
+                excludeEnd: true,
+                relevance: 0,
+              },
+              {
+                className: "variable",
+                begin: /^[^=\[]+/,
+                relevance: 0,
+              },
+              {
+                className: "string",
+                begin: /=/,
+                end: /$/,
+                excludeBegin: true,
+                excludeEnd: true,
+                relevance: 0,
+              },
+            ],
+          };
+        },
         env() {
           return {
             contains: [
