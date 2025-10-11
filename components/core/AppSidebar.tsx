@@ -38,6 +38,16 @@ export async function AppSidebar({ lng: lngParam, session, ...props }: AppSideba
             &copy; 2025 {site.copyrights || new URL(site.baseurl).hostname} All rights reserved.
           </p>
 
+          <div className="flex items-center justify-center">
+            <a
+              href="https://db-ip.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 text-xs hover:underline dark:text-blue-500"
+            >
+              IP Geolocation by DB-IP
+            </a>
+          </div>
           {isDev && (
             <div className="flex items-center justify-center">
               <Link
