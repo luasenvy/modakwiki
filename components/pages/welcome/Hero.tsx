@@ -33,7 +33,9 @@ export default async function Hero({ lng: lngParam, className, ...props }: HeroP
         >
           <Announcement>
             <AnnouncementTag>{t("recent")}</AnnouncementTag>
-            <AnnouncementTitle>{title.toString("utf8")}</AnnouncementTitle>
+            <AnnouncementTitle className="text-blue-600 hover:underline dark:text-blue-500">
+              {title.toString("utf8")}
+            </AnnouncementTitle>
           </Announcement>
         </Link>
         <h1 className="mb-0 text-balance font-medium text-6xl md:text-7xl xl:text-[5.25rem]">
